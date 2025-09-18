@@ -7,12 +7,12 @@ const router = express.Router();
 // Configure email transporter
 const createTransporter = () => {
   return nodemailer.createTransporter({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT || "587"),
+    host: process.env.NEXT_PUBLIC_SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.NEXT_PUBLIC_SMTP_PORT || "587"),
     secure: false,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: process.env.NEXT_PUBLIC_SMTP_USER,
+      pass: process.env.NEXT_PUBLIC_SMTP_PASS,
     },
   });
 };
@@ -39,7 +39,9 @@ router.post(
       }`;
 
       const mailOptions = {
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        from:
+          process.env.NEXT_PUBLIC_SMTP_FROM ||
+          process.env.NEXT_PUBLIC_SMTP_USER,
         to: recipient,
         subject: subject,
         text: message || "Please find attached the sheet metal order.",
@@ -82,7 +84,9 @@ router.post(
       }/${req.params.joineryId}`;
 
       const mailOptions = {
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        from:
+          process.env.NEXT_PUBLIC_SMTP_FROM ||
+          process.env.NEXT_PUBLIC_SMTP_USER,
         to: recipient,
         subject: subject,
         text: message || "Please find attached the sheet metal order.",
