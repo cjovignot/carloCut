@@ -27,8 +27,8 @@ app.use(
       // autoriser localhost pour dev et toutes les URLs Vercel (preview + prod)
       if (
         !origin ||
-        origin.endsWith(".vercel.app") ||
-        origin.startsWith("http://localhost")
+        origin.includes(".vercel.app") ||
+        origin.includes("http://localhost")
       ) {
         return callback(null, true);
       }
