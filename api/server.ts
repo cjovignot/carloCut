@@ -22,30 +22,43 @@ const app = express();
 app.use(helmet());
 
 const allowedOrigins = [
-  "http://localhost:5173", // dev frontend
-  "http://localhost:5000", // dev backend si besoin
+  "http://localhost:5173", // Front local
+  "http://localhost:5000", // Backend local
 ];
 
-// Permet tous les sous-domaines Vercel preview
-const vercelPreviewRegex = /\.vercel\.app$/;
+const vercelPreviewRegex = /^https:\/\/.*\.vercel\.app$/;
 
+// Middleware pour logger toutes les requêtes et leur Origin
+app.use((req, _res, next) => {
+  console.log("------ CORS Debug ------");
+  console.log("Request URL:", req.url);
+  console.log("Request Method:", req.method);
+  console.log("Origin header:", req.headers.origin);
+  console.log("------------------------");
+  next();
+});
+
+// Middleware CORS avec origine dynamique
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman, curl
+      if (!origin) return callback(null, true); // Postman, curl, same-origin
+
       if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+        console.log("✅ CORS allowed for:", origin);
         return callback(null, true);
       }
-      console.warn("Blocked CORS origin:", origin);
+
+      console.warn("❌ CORS blocked for:", origin);
       callback(new Error("CORS origin not allowed"));
     },
-    credentials: true, // essentiel pour withCredentials
+    credentials: true, // nécessaire pour withCredentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// OPTIONS preflight pour toutes les routes
+// Préflight OPTIONS pour toutes les routes
 app.options("*", cors());
 
 // Rate limiting
