@@ -133,7 +133,7 @@ export function Dashboard() {
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Quick Actions
           </h2>
-          <div className="flex justify-around">
+          <div className="flex justify-around gap-4">
             <Link to="/projects">
               <Button variant="outline" className="w-full">
                 <Plus className="w-4 h-4 mr-2" />
