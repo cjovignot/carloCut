@@ -4,12 +4,12 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth";
-import projectRoutes from "./routes/projects";
-import joineryRoutes from "./routes/joineries";
-import sheetRoutes from "./routes/sheets";
-import pdfRoutes from "./routes/pdf";
-import emailRoutes from "./routes/email";
+import authRoutes from "./routes/auth.ts";
+import projectRoutes from "./routes/projects.ts";
+import joineryRoutes from "./routes/joineries.ts";
+import sheetRoutes from "./routes/sheets.ts";
+import pdfRoutes from "./routes/pdf.ts";
+import emailRoutes from "./routes/email.ts";
 
 dotenv.config();
 
