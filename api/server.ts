@@ -21,17 +21,15 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
-const allowedOrigins = [
-  "http://localhost:5173", // frontend Vite local
-  "http://localhost:5000", // backend local si besoin
-];
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (!origin) return callback(null, true); // postman ou curl
+      // autoriser localhost pour dev
+      if (origin.startsWith("http://localhost")) return callback(null, true);
+      // autoriser tous les sous-domaines vercel.app
+      if (origin.endsWith(".vercel.app")) return callback(null, true);
+
       console.warn("Blocked CORS origin:", origin);
       return callback(new Error("CORS origin not allowed"), false);
     },
@@ -40,6 +38,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// gérer les preflight OPTIONS
+app.options("*", cors());
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
