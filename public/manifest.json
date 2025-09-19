@@ -15,7 +15,7 @@
       "short_name": "New Project",
       "description": "Create a new project",
       "url": "/projects",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": []
     }
   ]
 }
