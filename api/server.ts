@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import mongoose from "mongoose";
 
-import authRoutes from "./routes/auth.routes.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
