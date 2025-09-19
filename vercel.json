@@ -6,10 +6,15 @@
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
     },
-    { "src": "server/**/*.ts", "use": "@vercel/node" }
+    {
+      "src": "api/server/**/*.ts",
+      "use": "@vercel/node"
+    }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/server/$1" },
+    { "src": "/api/(.*)", "dest": "/api/server/$1" },
+    { "src": "/manifest.json", "dest": "/dist/manifest.json" },
+    { "src": "/favicon.ico", "dest": "/dist/favicon.ico" },
     { "src": "/(.*)", "dest": "/dist/index.html" }
   ]
 }
