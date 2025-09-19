@@ -4,17 +4,17 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth";
-import projectRoutes from "./routes/projects";
-import joineryRoutes from "./routes/joineries";
-import sheetRoutes from "./routes/sheets";
-import pdfRoutes from "./routes/pdf";
-import emailRoutes from "./routes/email";
+
+import authRoutes from "../server/routes/auth";
+import projectRoutes from "../server/routes/projects";
+import joineryRoutes from "../server/routes/joineries";
+import sheetRoutes from "../server/routes/sheets";
+import pdfRoutes from "../server/routes/pdf";
+import emailRoutes from "../server/routes/email";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
@@ -27,24 +27,26 @@ app.use(
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 app.use(limiter);
 
-// Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB connection
+// MongoDB lazy connection
+let isConnected = false;
 const connectDB = async () => {
+  if (isConnected) return;
   try {
     const mongoURI = process.env.MONGODB_URI;
     await mongoose.connect(mongoURI!);
+    isConnected = true;
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error);
-    process.exit(1);
+    throw error;
   }
 };
 
@@ -56,12 +58,10 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 
-// Health check
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
 
-// Error handling middleware
 app.use(
   (
     err: any,
@@ -74,12 +74,8 @@ app.use(
   }
 );
 
-// Start server
-const startServer = async () => {
+// ✅ Export handler for Vercel
+export default async (req: any, res: any) => {
   await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  return app(req, res);
 };
-
-startServer();

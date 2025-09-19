@@ -56,8 +56,10 @@ export function Register() {
     <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gradient-to-br from-blue-50 to-indigo-100 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <UserPlus className="w-12 h-12 mx-auto text-green-600" />
-          <h2 className="mt-4 text-3xl font-bold text-gray-900">Register</h2>
+          <div className="flex items-center justify-center">
+            <UserPlus className="w-12 h-12 mr-2 text-green-600" />
+            <h2 className="text-3xl font-bold text-gray-900">Register</h2>
+          </div>
           <p className="mt-2 text-sm text-gray-600">Create a new account</p>
         </div>
 

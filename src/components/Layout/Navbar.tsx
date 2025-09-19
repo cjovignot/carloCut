@@ -56,9 +56,8 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex flex-col items-center justify-center h-full transition-colors w-1/${
-                  navItems.length
-                } ${
+                style={{ width: `${100 / navItems.length}%` }}
+                className={`flex flex-col items-center justify-center h-full transition-colors ${
                   location.pathname === item.path
                     ? "bg-sky-800/80 text-white"
                     : "text-gray-600 hover:text-blue-600"
@@ -74,9 +73,8 @@ export function Navbar() {
               <button
                 key={item.label}
                 onClick={item.action}
-                className={`flex flex-col items-center justify-center h-full transition-colors w-1/${
-                  navItems.length
-                } ${
+                style={{ width: `${100 / navItems.length}%` }}
+                className={`flex flex-col items-center justify-center h-full transition-colors ${
                   location.pathname === item.path
                     ? "bg-blue-600 text-white"
                     : "text-gray-600 hover:text-blue-600"

@@ -36,9 +36,9 @@ export function Login() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">
-            <Settings className="w-12 h-12 text-blue-600" />
+            <Settings className="w-12 h-12 mr-2 text-blue-600" />
+            <h2 className="text-3xl font-bold text-gray-900">MetalOrders</h2>
           </div>
-          <h2 className="mt-4 text-3xl font-bold text-gray-900">MetalOrders</h2>
           <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
         </div>
 
