@@ -1,61 +1,97 @@
-import express from "express";
-import dotenv from "dotenv";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import mongoose from "mongoose";
+import rateLimit from "express-rate-limit";
+import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
+import projectRoutes from "./routes/projects.js";
+import joineryRoutes from "./routes/joineries.js";
+import sheetRoutes from "./routes/sheets.js";
+import pdfRoutes from "./routes/pdf.js";
+import emailRoutes from "./routes/email.js";
+
+import connectDB from "./utils/connectDB.js"; // à créer si nécessaire
 
 dotenv.config();
 
 const app = express();
 
-// Middlewares
+// ---------------------------
+// Security & CORS middleware
+// ---------------------------
 app.use(helmet());
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5000",
+  "https://ecb-carlo.app", // ton custom domain
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Postman, curl
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error("CORS origin not allowed"));
+    },
+    credentials: true, // important pour withCredentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// OPTIONS preflight
+app.options("*", cors());
+
+// Rate limiting
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+app.use(limiter);
+
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logger pour voir toutes les requêtes
-app.use((req, res, next) => {
-  console.log(`➡️ ${req.method} ${req.url}`, "body:", req.body);
-  next();
-});
-
+// ---------------------------
 // Routes
+// ---------------------------
 app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/joineries", joineryRoutes);
+app.use("/api/sheets", sheetRoutes);
+app.use("/api/pdf", pdfRoutes);
+app.use("/api/email", emailRoutes);
 
-// Root route (test rapide)
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "API is running 🚀" });
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.status(200).json({ message: "Server is running" });
 });
 
-// MongoDB
-const MONGO_URI = process.env.MONGO_URI || "";
-if (!MONGO_URI) {
-  console.error("❌ Missing MONGO_URI in environment variables");
-  process.exit(1);
+// ---------------------------
+// Error handling
+// ---------------------------
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ message: err.message || "Something went wrong!" });
+});
+
+// ---------------------------
+// Serverless handler (Vercel)
+export default async function handler(req: any, res: any) {
+  await connectDB();
+  return app(req, res);
 }
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1);
-  });
-
-// Port en local seulement
+// ---------------------------
+// Local dev server
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () =>
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
-  );
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to connect to MongoDB:", err);
+    });
 }
-
-export default app;
