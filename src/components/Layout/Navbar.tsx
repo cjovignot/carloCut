@@ -63,6 +63,7 @@ export function Navbar() {
                     ? "bg-sky-800/80 text-white"
                     : "text-gray-600 hover:text-blue-600"
                 }`}
+                // test
               >
                 <item.icon
                   className={`w-6 h-6 ${
