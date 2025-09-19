@@ -50,37 +50,52 @@ router.post("/register", async (req, res) => {
 
 // Login user
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("Login attempt:", email, password);
+  try {
+    const { email, password } = req.body;
+    console.log("Login attempt:", email, password);
 
-  const user = await User.findOne({ email });
-  console.log("Found user:", user);
+    const user = await User.findOne({ email });
+    console.log("Found user:", user);
 
-  if (!user)
-    return res.status(400).json({ message: "Invalid email or password" });
+    if (!user) {
+      console.warn("User not found");
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
 
-  const isMatch = await user.comparePassword(password);
-  console.log("Password match:", isMatch);
+    if (typeof user.comparePassword !== "function") {
+      console.error("comparePassword not defined on User model");
+      return res.status(500).json({ message: "Server misconfiguration" });
+    }
 
-  if (!isMatch)
-    return res.status(400).json({ message: "Invalid email or password" });
+    const isMatch = await user.comparePassword(password);
+    console.log("Password match:", isMatch);
 
-  const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET || "fallback-secret",
-    { expiresIn: "7d" }
-  );
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
 
-  res.json({
-    message: "Login successful",
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  });
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "fallback-secret",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", details: err.message });
+  }
 });
 
 // Get current user
