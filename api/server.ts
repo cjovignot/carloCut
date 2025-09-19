@@ -24,20 +24,16 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      // autoriser localhost pour dev et toutes les URLs Vercel
-      if (
-        !origin ||
-        origin.endsWith(".vercel.app") ||
-        origin.startsWith("http://localhost")
-      ) {
+      // autoriser localhost et tous les sous-domaines Vercel
+      if (!origin || origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
       console.warn("Blocked CORS origin:", origin);
       return callback(new Error("CORS origin not allowed"), false);
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // important si tu utilises des cookies
   })
 );
 
