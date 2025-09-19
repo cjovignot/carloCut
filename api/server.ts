@@ -21,45 +21,26 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
-const allowedOrigins = [
-  "http://localhost:5173", // Front local
-  "http://localhost:5000", // Backend local
-];
-
+// Supprimer tout app.use(cors()) avant
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5000"];
 const vercelPreviewRegex = /^https:\/\/.*\.vercel\.app$/;
 
-// Middleware pour logger toutes les requêtes et leur Origin
-app.use((req, _res, next) => {
-  console.log("------ CORS Debug ------");
-  console.log("Request URL:", req.url);
-  console.log("Request Method:", req.method);
-  console.log("Origin header:", req.headers.origin);
-  console.log("------------------------");
-  next();
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin) return next(); // Postman, curl
+
+  if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+    res.header("Access-Control-Allow-Origin", origin); // impératif pour withCredentials
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    return next();
+  }
+
+  console.warn("❌ CORS blocked for:", origin);
+  res.status(403).send("CORS origin not allowed");
 });
-
-// Middleware CORS avec origine dynamique
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman, curl, same-origin
-
-      if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
-        console.log("✅ CORS allowed for:", origin);
-        return callback(null, true);
-      }
-
-      console.warn("❌ CORS blocked for:", origin);
-      callback(new Error("CORS origin not allowed"));
-    },
-    credentials: true, // nécessaire pour withCredentials
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Préflight OPTIONS pour toutes les routes
-app.options("*", cors());
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
