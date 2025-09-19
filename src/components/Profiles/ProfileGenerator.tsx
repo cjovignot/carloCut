@@ -1,16 +1,14 @@
-// src/components/ProfileGenerator.tsx
 import React, { useRef, useState } from "react";
 
 export interface Point {
   x: number;
   y: number;
 }
-
 export interface ProfileGeneratorProps {
   width?: number;
   height?: number;
-  angleThreshold?: number; // seuil d'angle pour pivots
-  onChange?: (points: Point[]) => void; // callback pour récupérer le tracé final
+  angleThreshold?: number;
+  onChange?: (points: Point[]) => void;
 }
 
 export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
@@ -22,21 +20,31 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   const [points, setPoints] = useState<Point[]>([]);
   const isDrawing = useRef(false);
 
-  // ====================== MOUSE EVENTS ======================
-  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+  // ====================== EVENTS ======================
+  const getRelativePoint = (
+    clientX: number,
+    clientY: number,
+    svg: SVGSVGElement
+  ) => {
+    const rect = svg.getBoundingClientRect();
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
+  const handleStart = (
+    clientX: number,
+    clientY: number,
+    svg: SVGSVGElement
+  ) => {
     isDrawing.current = true;
-    const rect = e.currentTarget.getBoundingClientRect();
-    setPoints([{ x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+    setPoints([getRelativePoint(clientX, clientY, svg)]);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+  const handleMove = (clientX: number, clientY: number, svg: SVGSVGElement) => {
     if (!isDrawing.current) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const newPoint = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    setPoints((prev) => [...prev, newPoint]);
+    setPoints((prev) => [...prev, getRelativePoint(clientX, clientY, svg)]);
   };
 
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
     const snapped = snapToDirections(points, angleThreshold);
@@ -44,16 +52,35 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
     onChange?.(snapped);
   };
 
-  // ====================== RENDER ======================
+  // ====================== SVG ======================
   return (
     <svg
       width={width}
       height={height}
-      style={{ border: "1px solid #333", cursor: "crosshair" }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      style={{
+        border: "1px solid #333",
+        touchAction: "none",
+        cursor: "crosshair",
+      }}
+      onMouseDown={(e) => handleStart(e.clientX, e.clientY, e.currentTarget)}
+      onMouseMove={(e) => handleMove(e.clientX, e.clientY, e.currentTarget)}
+      onMouseUp={handleEnd}
+      onMouseLeave={handleEnd}
+      // =================== TOUCH EVENTS ===================
+      onTouchStart={(e) => {
+        e.preventDefault(); // bloque le scroll
+        const touch = e.touches[0];
+        handleStart(touch.clientX, touch.clientY, e.currentTarget);
+      }}
+      onTouchMove={(e) => {
+        e.preventDefault(); // bloque le scroll
+        const touch = e.touches[0];
+        handleMove(touch.clientX, touch.clientY, e.currentTarget);
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault();
+        handleEnd();
+      }}
     >
       {points.length > 1 && (
         <polyline
@@ -68,8 +95,6 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
 };
 
 // ====================== HELPER FUNCTIONS ======================
-
-// Angle entre trois points
 function angleBetweenPoints(p1: Point, p2: Point, p3: Point): number {
   const a = Math.hypot(p2.x - p3.x, p2.y - p3.y);
   const b = Math.hypot(p1.x - p3.x, p1.y - p3.y);
@@ -78,7 +103,6 @@ function angleBetweenPoints(p1: Point, p2: Point, p3: Point): number {
   return Math.acos((a * a + c * c - b * b) / (2 * a * c)) * (180 / Math.PI);
 }
 
-// Snap horizontal / vertical / diagonal 45°
 function snapToDirections(points: Point[], angleThreshold: number): Point[] {
   if (points.length < 2) return points;
 
@@ -89,15 +113,12 @@ function snapToDirections(points: Point[], angleThreshold: number): Point[] {
     const p1 = lastPivot;
     const p2 = points[i];
     const p3 = points[i + 1];
-
     const angle = angleBetweenPoints(p1, p2, p3);
 
-    // Angle fort => pivot
     if (Math.abs(180 - angle) >= angleThreshold) {
       const dx = p2.x - p1.x;
       const dy = p2.y - p1.y;
 
-      // Déterminer direction
       if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 5) {
         // diagonale 45°
         const signX = Math.sign(dx) || 1;
@@ -116,7 +137,6 @@ function snapToDirections(points: Point[], angleThreshold: number): Point[] {
     }
   }
 
-  // dernier point
   result.push(points[points.length - 1]);
   return result;
 }
