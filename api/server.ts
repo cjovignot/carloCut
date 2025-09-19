@@ -22,8 +22,8 @@ const app = express();
 app.use(helmet());
 
 const allowedOrigins = [
-  "http://localhost:5173", // frontend dev local
-  "https://carlo-cut.vercel.app", // frontend prod
+  "http://localhost:5173",
+  "https://carlo-cut.vercel.app",
 ];
 
 app.use(
@@ -101,9 +101,7 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// ---------------------------
-// Export handler for Vercel
-// ---------------------------
+// ✅ Export handler pour Vercel
 export default async function handler(req: any, res: any) {
   await connectDB();
   return app(req, res);
