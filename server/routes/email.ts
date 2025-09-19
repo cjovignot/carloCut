@@ -75,7 +75,7 @@ router.post(
           .json({ message: "Recipient and subject are required" });
       }
 
-      const transporter = createTransporter();
+      const transporter = createTransport();
 
       const pdfUrl = `${req.protocol}://${req.get("host")}/api/pdf/joinery/${
         req.params.projectId
