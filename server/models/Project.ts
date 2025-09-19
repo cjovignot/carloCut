@@ -14,7 +14,7 @@ export interface ISheet extends mongoose.Document {
 export interface IJoinery extends mongoose.Document {
   name: string;
   type: string;
-  sheets: ISheet[];
+  sheets: Types.DocumentArray<ISheet>;
 }
 
 export interface IProject extends Document {
