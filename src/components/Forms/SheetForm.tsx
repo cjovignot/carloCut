@@ -1,7 +1,10 @@
+// SheetForm.tsx
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { ProfileOption } from "../Profiles/ProfileOption";
 import { Button } from "../UI/Button";
 import { Plus, X } from "lucide-react";
+import { ProfileGenerator } from "../Profiles/ProfileGenerator.tsx";
 
 interface SheetFormProps {
   initialData?: any;
@@ -10,10 +13,9 @@ interface SheetFormProps {
 }
 
 const profileTypes = [
-  { value: "sill", label: "Sill" },
-  { value: "jamb", label: "Jamb" },
-  { value: "lintel", label: "Lintel" },
-  { value: "custom", label: "Custom" },
+  { value: "tableau", label: "Tableau" },
+  { value: "linteau", label: "Linteau" },
+  { value: "appui", label: "Appui" },
 ];
 
 const materials = [
@@ -39,6 +41,8 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   const {
     register,
     control,
+    watch,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -55,6 +59,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           })),
         }
       : {
+          profileType: "sill",
           thickness: 2,
           quantity: 1,
           dimensions: [{ value: 0 }],
@@ -83,31 +88,31 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Type *
-          </label>
-          <select
-            {...register("profileType", {
-              required: "Profile type is required",
-            })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="">Select profile type...</option>
-            {profileTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-          {errors.profileType && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.profileType.message}
-            </p>
-          )}
+      {/* Profile Type with visual thumbnails */}
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Profile Type *
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <ProfileGenerator />
+          {/* {profileTypes.map((profile) => (
+            <ProfileOption
+              key={profile.value}
+              type={profile.value}
+              selected={watch("profileType") === profile.value}
+              onSelect={() => setValue("profileType", profile.value)}
+            />
+          ))} */}
         </div>
+        {errors.profileType && (
+          <p className="mt-1 text-sm text-red-600">
+            {errors.profileType.message}
+          </p>
+        )}
+      </div>
 
+      {/* Thickness */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Thickness (mm) *
@@ -119,7 +124,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
               required: "Thickness is required",
               min: { value: 0.1, message: "Thickness must be positive" },
             })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.thickness && (
             <p className="mt-1 text-sm text-red-600">
@@ -127,16 +132,15 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
             </p>
           )}
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Material */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Material *
           </label>
           <select
             {...register("material", { required: "Material is required" })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="">Select material...</option>
             {materials.map((material) => (
@@ -152,13 +156,14 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           )}
         </div>
 
+        {/* Color */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Color *
           </label>
           <select
             {...register("color", { required: "Color is required" })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="">Select color...</option>
             {colors.map((color) => (
@@ -173,7 +178,8 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Length & Quantity */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Length (mm) *
@@ -184,7 +190,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
               required: "Length is required",
               min: { value: 1, message: "Length must be positive" },
             })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.length && (
             <p className="mt-1 text-sm text-red-600">{errors.length.message}</p>
@@ -201,7 +207,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
               required: "Quantity is required",
               min: { value: 1, message: "Quantity must be at least 1" },
             })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {errors.quantity && (
             <p className="mt-1 text-sm text-red-600">
@@ -237,7 +243,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
                   required: "Dimension is required",
                   min: { value: 1, message: "Dimension must be positive" },
                 })}
-                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="flex-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Enter dimension in mm"
               />
               {fields.length > 1 && (
@@ -254,7 +260,8 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         </div>
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      {/* Form actions */}
+      <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>

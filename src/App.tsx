@@ -17,42 +17,44 @@ function App() {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <main className="">
-            <Routes>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/projects"
-                element={
-                  <ProtectedRoute>
-                    <Projects />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/projects/:id"
-                element={
-                  <ProtectedRoute>
-                    <ProjectDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/projects/:projectId/joineries/:joineryId"
-                element={
-                  <ProtectedRoute>
-                    <JoineryDetail />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+            <div className="md:pt-14 pb-14 md:pb-0">
+              <Routes>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/projects"
+                  element={
+                    <ProtectedRoute>
+                      <Projects />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/projects/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ProjectDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/projects/:projectId/joineries/:joineryId"
+                  element={
+                    <ProtectedRoute>
+                      <JoineryDetail />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
           </main>
         </div>
       </Router>
