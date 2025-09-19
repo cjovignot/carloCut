@@ -21,25 +21,32 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
+const allowedOrigins = [
+  "http://localhost:5173", // dev frontend
+  "http://localhost:5000", // dev backend si besoin
+];
+
+// Permet tous les sous-domaines Vercel preview
+const vercelPreviewRegex = /\.vercel\.app$/;
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // postman, curl
-      if (
-        origin.startsWith("http://localhost") ||
-        origin.endsWith(".vercel.app")
-      ) {
+      if (!origin) return callback(null, true); // Postman, curl
+      if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("CORS origin not allowed"), false);
+      console.warn("Blocked CORS origin:", origin);
+      callback(new Error("CORS origin not allowed"));
     },
-    credentials: true,
+    credentials: true, // essentiel pour withCredentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-app.options("*", cors()); // préflight pour toutes les routes
+// OPTIONS preflight pour toutes les routes
+app.options("*", cors());
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
