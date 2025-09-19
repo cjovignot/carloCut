@@ -4,10 +4,12 @@ export interface Point {
   x: number;
   y: number;
 }
+
 export interface ProfileGeneratorProps {
   width?: number;
   height?: number;
   angleThreshold?: number;
+  strictMode?: boolean; // <-- contrôle supplémentaire
   onChange?: (points: Point[]) => void;
 }
 
@@ -15,12 +17,12 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   width = 600,
   height = 400,
   angleThreshold = 30,
+  strictMode = false,
   onChange,
 }) => {
   const [points, setPoints] = useState<Point[]>([]);
   const isDrawing = useRef(false);
 
-  // ====================== EVENTS ======================
   const getRelativePoint = (
     clientX: number,
     clientY: number,
@@ -41,18 +43,44 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
 
   const handleMove = (clientX: number, clientY: number, svg: SVGSVGElement) => {
     if (!isDrawing.current) return;
-    setPoints((prev) => [...prev, getRelativePoint(clientX, clientY, svg)]);
+    const newPoint = getRelativePoint(clientX, clientY, svg);
+
+    if (strictMode && points.length > 0) {
+      // snap immédiat en mode règle
+      const last = points[points.length - 1];
+      const dx = newPoint.x - last.x;
+      const dy = newPoint.y - last.y;
+      let snapped: Point;
+
+      if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 5) {
+        const signX = Math.sign(dx) || 1;
+        const signY = Math.sign(dy) || 1;
+        snapped = {
+          x: last.x + Math.abs(dy) * signX,
+          y: last.y + Math.abs(dy) * signY,
+        };
+      } else if (Math.abs(dx) > Math.abs(dy)) {
+        snapped = { x: newPoint.x, y: last.y };
+      } else {
+        snapped = { x: last.x, y: newPoint.y };
+      }
+
+      setPoints((prev) => [...prev, snapped]);
+    } else {
+      setPoints((prev) => [...prev, newPoint]);
+    }
   };
 
   const handleEnd = () => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
-    const snapped = snapToDirections(points, angleThreshold);
-    setPoints(snapped);
-    onChange?.(snapped);
+    const finalPoints = strictMode
+      ? points
+      : snapToDirections(points, angleThreshold);
+    setPoints(finalPoints);
+    onChange?.(finalPoints);
   };
 
-  // ====================== SVG ======================
   return (
     <svg
       width={width}
@@ -66,14 +94,13 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
       onMouseMove={(e) => handleMove(e.clientX, e.clientY, e.currentTarget)}
       onMouseUp={handleEnd}
       onMouseLeave={handleEnd}
-      // =================== TOUCH EVENTS ===================
       onTouchStart={(e) => {
-        e.preventDefault(); // bloque le scroll
+        e.preventDefault();
         const touch = e.touches[0];
         handleStart(touch.clientX, touch.clientY, e.currentTarget);
       }}
       onTouchMove={(e) => {
-        e.preventDefault(); // bloque le scroll
+        e.preventDefault();
         const touch = e.touches[0];
         handleMove(touch.clientX, touch.clientY, e.currentTarget);
       }}
@@ -94,7 +121,7 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   );
 };
 
-// ====================== HELPER FUNCTIONS ======================
+// ====================== HELPER ======================
 function angleBetweenPoints(p1: Point, p2: Point, p3: Point): number {
   const a = Math.hypot(p2.x - p3.x, p2.y - p3.y);
   const b = Math.hypot(p1.x - p3.x, p1.y - p3.y);
@@ -105,7 +132,6 @@ function angleBetweenPoints(p1: Point, p2: Point, p3: Point): number {
 
 function snapToDirections(points: Point[], angleThreshold: number): Point[] {
   if (points.length < 2) return points;
-
   const result: Point[] = [points[0]];
   let lastPivot = points[0];
 
@@ -120,7 +146,6 @@ function snapToDirections(points: Point[], angleThreshold: number): Point[] {
       const dy = p2.y - p1.y;
 
       if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 5) {
-        // diagonale 45°
         const signX = Math.sign(dx) || 1;
         const signY = Math.sign(dy) || 1;
         result.push({
@@ -128,9 +153,9 @@ function snapToDirections(points: Point[], angleThreshold: number): Point[] {
           y: p1.y + Math.abs(dy) * signY,
         });
       } else if (Math.abs(dx) > Math.abs(dy)) {
-        result.push({ x: p2.x, y: p1.y }); // horizontal
+        result.push({ x: p2.x, y: p1.y });
       } else {
-        result.push({ x: p1.x, y: p2.y }); // vertical
+        result.push({ x: p1.x, y: p2.y });
       }
 
       lastPivot = result[result.length - 1];
