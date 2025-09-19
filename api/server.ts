@@ -21,20 +21,18 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://carlo-cut.vercel.app",
-];
-
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Postman, curl, serverless
-      if (allowedOrigins.includes(origin)) {
+      // autoriser toutes les requêtes depuis Vercel ou localhost
+      if (
+        !origin ||
+        origin.endsWith(".vercel.app") ||
+        origin.startsWith("http://localhost")
+      ) {
         return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
       }
+      return callback(new Error("CORS origin not allowed"), false);
     },
     credentials: true,
   })
