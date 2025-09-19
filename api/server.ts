@@ -23,8 +23,8 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // autoriser toutes les requêtes depuis Vercel ou localhost
+    origin: (origin, callback) => {
+      // autoriser localhost pour dev et toutes les URLs Vercel (preview + prod)
       if (
         !origin ||
         origin.endsWith(".vercel.app") ||
@@ -32,8 +32,11 @@ app.use(
       ) {
         return callback(null, true);
       }
+      console.warn("Blocked CORS origin:", origin);
       return callback(new Error("CORS origin not allowed"), false);
     },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
