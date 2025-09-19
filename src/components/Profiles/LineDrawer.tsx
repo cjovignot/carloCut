@@ -1,4 +1,6 @@
 import { useRef, useState, useEffect } from "react";
+import { Button } from "../UI/Button";
+import { Square, RefreshCw, Undo2 } from "lucide-react";
 
 interface Segment {
   x1: number;
@@ -21,7 +23,7 @@ export default function LineDrawer() {
   const [drawing, setDrawing] = useState(true);
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
 
-  const allowedAngles = [0, 35, 45, 90, 135, 180, 225, 270, 315];
+  const allowedAngles = [0, 45, 90, 135, 180, 225, 270, 315];
 
   const snapAngle = (x1: number, y1: number, x2: number, y2: number) => {
     const dx = x2 - x1;
@@ -83,7 +85,7 @@ export default function LineDrawer() {
     setHoverPoint(snapAngle(lastPoint.x, lastPoint.y, x, y));
   };
 
-  // 🔹 Mettre à jour la taille du canvas pour qu’il remplisse le container
+  // Resize canvas on container change
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -104,7 +106,6 @@ export default function LineDrawer() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // set canvas size dynamically
     canvas.width = canvasSize.width;
     canvas.height = canvasSize.height;
 
@@ -142,34 +143,12 @@ export default function LineDrawer() {
   useEffect(draw, [segments, lastPoint, hoverPoint, canvasSize]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: "100%",
-        height: "80vh",
-        border: "1px solid black",
-        position: "relative",
-      }}
-    >
-      <canvas
-        ref={canvasRef}
-        style={{ touchAction: "none", cursor: "crosshair", display: "block" }}
-        onClick={handleClick}
-        onMouseMove={handleMove}
-        onTouchStart={handleClick}
-        onTouchMove={handleMove}
-      />
-      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-        <button
-          onClick={() => {
-            setSegments([]);
-            setLastPoint(null);
-            setHoverPoint(null);
-          }}
-        >
-          Effacer tout
-        </button>
-        <button
+    <div>
+      <div className="flex justify-end h-10 mb-2 space-x-3">
+        <Button
+          className="!p-3"
+          type="button"
+          variant="outline"
           onClick={() => {
             if (segments.length === 0) return;
             const newSegs = [...segments];
@@ -183,11 +162,49 @@ export default function LineDrawer() {
               });
           }}
         >
-          Annuler dernier segment
-        </button>
-        <button onClick={() => setDrawing(!drawing)}>
-          {drawing ? "Arrêter la saisie" : "Reprendre la saisie"}
-        </button>
+          <Undo2 className="w-4 h-5" />
+        </Button>
+        <Button
+          type="button"
+          className="!p-3"
+          variant="outline"
+          onClick={() => {
+            setSegments([]);
+            setLastPoint(null);
+            setHoverPoint(null);
+          }}
+        >
+          <RefreshCw className="w-4 h-5" />
+        </Button>
+
+        <Button
+          className="!p-3"
+          type="button"
+          variant="outline"
+          onClick={() => setDrawing(!drawing)}
+        >
+          <Square className="w-4 h-5" />
+        </Button>
+      </div>
+
+      <div
+        ref={containerRef}
+        style={{
+          width: "100%",
+          height: "40vh",
+          border: "1px solid black",
+          position: "relative",
+          borderRadius: "20px",
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          style={{ touchAction: "none", cursor: "crosshair", display: "block" }}
+          onClick={handleClick}
+          onMouseMove={handleMove}
+          onTouchStart={handleClick}
+          onTouchMove={handleMove}
+        />
       </div>
     </div>
   );
