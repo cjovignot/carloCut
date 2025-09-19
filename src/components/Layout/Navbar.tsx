@@ -14,6 +14,8 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
+  console.log("Navbar mobile render:", navItems.length, location.pathname);
+
   return (
     <nav className="fixed z-50 w-full bg-white border-b border-gray-200 shadow-md">
       {/* Desktop Navbar */}
