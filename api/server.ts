@@ -24,11 +24,11 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      // autoriser localhost pour dev et toutes les URLs Vercel (preview + prod)
+      // autoriser localhost pour dev et toutes les URLs Vercel
       if (
         !origin ||
-        origin.includes(".vercel.app") ||
-        origin.includes("http://localhost")
+        origin.endsWith(".vercel.app") ||
+        origin.startsWith("http://localhost")
       ) {
         return callback(null, true);
       }
