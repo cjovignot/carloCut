@@ -23,7 +23,7 @@ app.use(helmet());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://carlo-ls33gxb7z-cjovignots-projects.vercel.app",
+  "https://carlo-cut.vercel.app",
 ];
 
 app.use(
