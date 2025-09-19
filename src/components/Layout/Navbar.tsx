@@ -14,8 +14,6 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  console.log("Navbar mobile render:", navItems.length, location.pathname);
-
   return (
     <nav className="fixed z-50 w-full bg-white border-b border-gray-200 shadow-md">
       {/* Desktop Navbar */}
@@ -53,7 +51,6 @@ export function Navbar() {
       {/* Mobile Navbar */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md md:hidden">
         <div className="grid h-12 grid-cols-3">
-          test
           {navItems.map((item) =>
             item.path ? (
               <Link
