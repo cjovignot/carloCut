@@ -50,14 +50,13 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md md:hidden">
-        <div className="flex items-center h-16">
+        <div className="flex h-16">
           {navItems.map((item) =>
             item.path ? (
               <Link
                 key={item.label}
                 to={item.path}
-                style={{ width: `${100 / navItems.length}%` }}
-                className={`flex flex-col items-center justify-center h-full transition-colors ${
+                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
                   location.pathname === item.path
                     ? "bg-sky-800/80 text-white"
                     : "text-gray-600 hover:text-blue-600"
@@ -73,8 +72,7 @@ export function Navbar() {
               <button
                 key={item.label}
                 onClick={item.action}
-                style={{ width: `${100 / navItems.length}%` }}
-                className={`flex flex-col items-center justify-center h-full transition-colors ${
+                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
                   location.pathname === item.path
                     ? "bg-blue-600 text-white"
                     : "text-gray-600 hover:text-blue-600"
