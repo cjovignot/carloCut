@@ -21,11 +21,15 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
+const allowedOrigins = [
+  "http://localhost:5173", // frontend Vite local
+  "http://localhost:5000", // backend local si besoin
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // autoriser localhost et tous les sous-domaines Vercel
-      if (!origin || origin.endsWith(".vercel.app")) {
+      if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       console.warn("Blocked CORS origin:", origin);

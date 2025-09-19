@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "/manifest.json",
-      "dest": "/dist/manifest.json"
-    },
-    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
