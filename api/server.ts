@@ -11,7 +11,7 @@ import sheetRoutes from "./routes/sheets.js";
 import pdfRoutes from "./routes/pdf.js";
 import emailRoutes from "./routes/email.js";
 
-import connectDB from "./utils/connectDB.js"; // à créer si nécessaire
+import connectDB from "./utils/connectDB.js";
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ app.use(
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error("CORS origin not allowed"));
     },
-    credentials: true, // important pour withCredentials
+    credentials: true, // essentiel pour withCredentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -76,13 +76,20 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
 // ---------------------------
 // Serverless handler (Vercel)
+// ---------------------------
 export default async function handler(req: any, res: any) {
-  await connectDB();
-  return app(req, res);
+  try {
+    await connectDB();
+    return app(req, res);
+  } catch (err: any) {
+    console.error("Serverless handler error:", err);
+    return res.status(500).json({ message: err.message || "Server error" });
+  }
 }
 
 // ---------------------------
 // Local dev server
+// ---------------------------
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
   connectDB()
