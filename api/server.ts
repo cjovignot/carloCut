@@ -21,20 +21,20 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
-// Supprimer tout app.use(cors()) avant
 const allowedOrigins = ["http://localhost:5173", "http://localhost:5000"];
-const vercelPreviewRegex = /^https:\/\/.*\.vercel\.app$/;
+const vercelFrontRegex = /^https:\/\/.*-projet\.vercel\.app$/;
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (!origin) return next(); // Postman, curl
+  if (!origin) return next(); // Postman, curl, same-origin
 
-  if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
-    res.header("Access-Control-Allow-Origin", origin); // impératif pour withCredentials
+  if (allowedOrigins.includes(origin) || vercelFrontRegex.test(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-    if (req.method === "OPTIONS") return res.sendStatus(204);
+
+    if (req.method === "OPTIONS") return res.sendStatus(204); // preflight
     return next();
   }
 
