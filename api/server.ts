@@ -24,13 +24,13 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // postman ou curl
-      // autoriser localhost pour dev
-      if (origin.startsWith("http://localhost")) return callback(null, true);
-      // autoriser tous les sous-domaines vercel.app
-      if (origin.endsWith(".vercel.app")) return callback(null, true);
-
-      console.warn("Blocked CORS origin:", origin);
+      if (!origin) return callback(null, true); // postman, curl
+      if (
+        origin.startsWith("http://localhost") ||
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
       return callback(new Error("CORS origin not allowed"), false);
     },
     credentials: true,
@@ -39,8 +39,7 @@ app.use(
   })
 );
 
-// gérer les preflight OPTIONS
-app.options("*", cors());
+app.options("*", cors()); // préflight pour toutes les routes
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
