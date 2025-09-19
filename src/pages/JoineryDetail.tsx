@@ -105,7 +105,7 @@ export function JoineryDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -113,14 +113,14 @@ export function JoineryDetail() {
 
   if (!project || !joinery) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen pb-16">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900">
             Joinery not found
           </h2>
           <Link
             to="/projects"
-            className="mt-4 inline-block text-blue-600 hover:text-blue-800"
+            className="inline-block mt-4 text-blue-600 hover:text-blue-800"
           >
             Back to Projects
           </Link>
@@ -130,13 +130,13 @@ export function JoineryDetail() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center mb-4">
           <Link
             to={`/projects/${projectId}`}
-            className="text-blue-600 hover:text-blue-800 mr-4"
+            className="mr-4 text-blue-600 hover:text-blue-800"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -166,14 +166,14 @@ export function JoineryDetail() {
 
       {/* Sheets */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="mb-6 text-2xl font-bold text-gray-900">
           Sheets ({joinery.sheets.length})
         </h2>
 
         {joinery.sheets.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-500 text-lg">No sheets yet</p>
-            <p className="text-gray-400 mt-2">
+          <div className="p-12 text-center bg-white rounded-lg shadow-md">
+            <p className="text-lg text-gray-500">No sheets yet</p>
+            <p className="mt-2 text-gray-400">
               Add your first sheet to get started
             </p>
             <Button className="mt-4" onClick={() => setShowSheetModal(true)}>
@@ -182,27 +182,27 @@ export function JoineryDetail() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {joinery.sheets.map((sheet: any, index: number) => (
               <div
                 key={sheet._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
+                className="overflow-hidden bg-white rounded-lg shadow-md"
               >
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-start justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">
                       Sheet {index + 1}
                     </h3>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => setEditingSheet(sheet)}
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-2 text-gray-400 transition-colors hover:text-blue-600"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteSheet(sheet._id)}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

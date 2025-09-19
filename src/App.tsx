@@ -17,7 +17,7 @@ function App() {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <main className="">
-            <div className="md:pt-14 pb-14 md:pb-0">
+            <div className="md:pt-14 md:pb-0">
               <Routes>
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
