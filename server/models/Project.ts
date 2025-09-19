@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import type { Types } from "mongoose";
 
 export interface ISheet extends mongoose.Document {
   profileType: string;
@@ -16,13 +17,13 @@ export interface IJoinery extends mongoose.Document {
   sheets: ISheet[];
 }
 
-export interface IProject extends mongoose.Document {
+export interface IProject extends Document {
   name: string;
   client: string;
   address: string;
   date: Date;
   notes: string;
-  joineries: IJoinery[];
+  joineries: Types.DocumentArray<IJoinery>;
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

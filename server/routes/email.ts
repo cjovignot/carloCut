@@ -5,8 +5,8 @@ import { authenticate, AuthRequest } from "../middleware/auth.js";
 const router = express.Router();
 
 // Configure email transporter
-const createTransporter = () => {
-  return nodemailer.createTransporter({
+const createTransport = () => {
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
     secure: false,
@@ -31,7 +31,7 @@ router.post(
           .json({ message: "Recipient and subject are required" });
       }
 
-      const transporter = createTransporter();
+      const transporter = createTransport();
 
       // Generate PDF URL
       const pdfUrl = `${req.protocol}://${req.get("host")}/api/pdf/project/${
