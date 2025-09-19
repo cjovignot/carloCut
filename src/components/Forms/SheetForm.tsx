@@ -5,6 +5,7 @@ import { ProfileOption } from "../Profiles/ProfileOption";
 import { Button } from "../UI/Button";
 import { Plus, X } from "lucide-react";
 import { ProfileGenerator } from "../Profiles/ProfileGenerator.tsx";
+import LineDrawer from "../Profiles/LineDrawer.tsx";
 
 interface SheetFormProps {
   initialData?: any;
@@ -94,7 +95,8 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           Profile Type *
         </label>
         <div className="flex flex-wrap gap-2">
-          <ProfileGenerator />
+          {/* <ProfileGenerator /> */}
+          <LineDrawer />
           {/* {profileTypes.map((profile) => (
             <ProfileOption
               key={profile.value}
