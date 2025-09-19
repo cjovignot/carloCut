@@ -9,7 +9,7 @@ export interface ProfileGeneratorProps {
   width?: number;
   height?: number;
   angleThreshold?: number;
-  strictMode?: boolean; // <-- contrôle supplémentaire
+  strictMode?: boolean; // mode “règle totale”
   onChange?: (points: Point[]) => void;
 }
 
@@ -32,39 +32,20 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
     return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
-  const handleStart = (
-    clientX: number,
-    clientY: number,
-    svg: SVGSVGElement
-  ) => {
+  // ====================== EVENTS ======================
+  const handleStart = (x: number, y: number, svg: SVGSVGElement) => {
     isDrawing.current = true;
-    setPoints([getRelativePoint(clientX, clientY, svg)]);
+    setPoints([getRelativePoint(x, y, svg)]);
   };
 
-  const handleMove = (clientX: number, clientY: number, svg: SVGSVGElement) => {
+  const handleMove = (x: number, y: number, svg: SVGSVGElement) => {
     if (!isDrawing.current) return;
-    const newPoint = getRelativePoint(clientX, clientY, svg);
+    const newPoint = getRelativePoint(x, y, svg);
 
     if (strictMode && points.length > 0) {
       // snap immédiat en mode règle
       const last = points[points.length - 1];
-      const dx = newPoint.x - last.x;
-      const dy = newPoint.y - last.y;
-      let snapped: Point;
-
-      if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 5) {
-        const signX = Math.sign(dx) || 1;
-        const signY = Math.sign(dy) || 1;
-        snapped = {
-          x: last.x + Math.abs(dy) * signX,
-          y: last.y + Math.abs(dy) * signY,
-        };
-      } else if (Math.abs(dx) > Math.abs(dy)) {
-        snapped = { x: newPoint.x, y: last.y };
-      } else {
-        snapped = { x: last.x, y: newPoint.y };
-      }
-
+      const snapped = snapToStrict(last, newPoint);
       setPoints((prev) => [...prev, snapped]);
     } else {
       setPoints((prev) => [...prev, newPoint]);
@@ -74,13 +55,18 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   const handleEnd = () => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
-    const finalPoints = strictMode
+
+    let finalPoints = strictMode
       ? points
       : snapToDirections(points, angleThreshold);
+
+    finalPoints = cleanProfile(finalPoints);
+
     setPoints(finalPoints);
     onChange?.(finalPoints);
   };
 
+  // ====================== RENDER ======================
   return (
     <svg
       width={width}
@@ -96,13 +82,13 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
       onMouseLeave={handleEnd}
       onTouchStart={(e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        handleStart(touch.clientX, touch.clientY, e.currentTarget);
+        const t = e.touches[0];
+        handleStart(t.clientX, t.clientY, e.currentTarget);
       }}
       onTouchMove={(e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        handleMove(touch.clientX, touch.clientY, e.currentTarget);
+        const t = e.touches[0];
+        handleMove(t.clientX, t.clientY, e.currentTarget);
       }}
       onTouchEnd={(e) => {
         e.preventDefault();
@@ -121,7 +107,23 @@ export const ProfileGenerator: React.FC<ProfileGeneratorProps> = ({
   );
 };
 
-// ====================== HELPER ======================
+// ====================== HELPERS ======================
+
+function snapToStrict(p1: Point, p2: Point): Point {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+
+  if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 5) {
+    const signX = Math.sign(dx) || 1;
+    const signY = Math.sign(dy) || 1;
+    return { x: p1.x + Math.abs(dy) * signX, y: p1.y + Math.abs(dy) * signY };
+  } else if (Math.abs(dx) > Math.abs(dy)) {
+    return { x: p2.x, y: p1.y };
+  } else {
+    return { x: p1.x, y: p2.y };
+  }
+}
+
 function angleBetweenPoints(p1: Point, p2: Point, p3: Point): number {
   const a = Math.hypot(p2.x - p3.x, p2.y - p3.y);
   const b = Math.hypot(p1.x - p3.x, p1.y - p3.y);
@@ -160,6 +162,33 @@ function snapToDirections(points: Point[], angleThreshold: number): Point[] {
 
       lastPivot = result[result.length - 1];
     }
+  }
+
+  result.push(points[points.length - 1]);
+  return result;
+}
+
+// ====================== CLEAN PROFILE ======================
+
+// Supprime les points superflus pour garder seulement les pivots
+export function cleanProfile(points: Point[]): Point[] {
+  if (points.length < 2) return points;
+  const result: Point[] = [points[0]];
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const prev = result[result.length - 1];
+    const curr = points[i];
+    const next = points[i + 1];
+
+    const dx1 = curr.x - prev.x;
+    const dy1 = curr.y - prev.y;
+    const dx2 = next.x - curr.x;
+    const dy2 = next.y - curr.y;
+
+    // Si le segment est colinéaire avec le suivant, ignorer ce point
+    if (dx1 * dy2 === dx2 * dy1) continue;
+
+    result.push(curr);
   }
 
   result.push(points[points.length - 1]);
