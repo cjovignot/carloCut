@@ -1,6 +1,6 @@
 import express from "express";
-import Project from "../models/Project.ts";
-import { authenticate, authorize, AuthRequest } from "../middleware/auth.ts";
+import Project from "../models/Project.js";
+import { authenticate, authorize, AuthRequest } from "../middleware/auth.js";
 
 const router = express.Router();
 

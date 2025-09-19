@@ -5,12 +5,12 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
-import authRoutes from "../server/routes/auth.ts";
-import projectRoutes from "../server/routes/projects.ts";
-import joineryRoutes from "../server/routes/joineries.ts";
-import sheetRoutes from "../server/routes/sheets.ts";
-import pdfRoutes from "../server/routes/pdf.ts";
-import emailRoutes from "../server/routes/email.ts";
+import authRoutes from "../server/routes/auth.js";
+import projectRoutes from "../server/routes/projects.js";
+import joineryRoutes from "../server/routes/joineries.js";
+import sheetRoutes from "../server/routes/sheets.js";
+import pdfRoutes from "../server/routes/pdf.js";
+import emailRoutes from "../server/routes/email.js";
 
 dotenv.config();
 
