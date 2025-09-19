@@ -10,6 +10,8 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server/$1" },
+    { "src": "/manifest.json", "dest": "/dist/manifest.json" },
+    { "src": "/favicon.ico", "dest": "/dist/favicon.ico" },
     { "src": "/(.*)", "dest": "/dist/index.html" }
   ]
 }
