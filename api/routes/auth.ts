@@ -1,94 +1,58 @@
-import express from "express";
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
 
-const router = express.Router();
+export interface AuthRequest extends Request {
+  user?: any;
+}
 
-// ---------------------------
-// Register
-// ---------------------------
-router.post("/auth/register", async (req, res) => {
+export const authenticate = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { name, email, password, role = "employee" } = req.body;
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Access denied. No token provided." });
+    }
 
-    const user = new User({ name, email, password, role });
-    await user.save();
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
-      expiresIn: "7d",
-    });
-
-    res.status(201).json({
-      message: "User created successfully",
+    const decoded = jwt.verify(
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("Unknown error");
-    res.status(400).json({ message: error.message });
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as any;
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Invalid token. User not found." });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(400).json({ message: "Invalid token." });
   }
-});
+};
 
-// ---------------------------
-// Login
-// ---------------------------
-router.post("/auth/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+export const authorize = (roles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "Access denied. User not authenticated." });
+    }
 
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "Invalid email or password" });
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Insufficient permissions." });
+    }
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
-      expiresIn: "7d",
-    });
-
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("Unknown error");
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// ---------------------------
-// Get current user
-// ---------------------------
-router.get("/auth/me", authenticate, async (req: AuthRequest, res) => {
-  if (!req.user)
-    return res.status(401).json({ message: "User not authenticated" });
-
-  res.json({
-    user: {
-      id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-    },
-  });
-});
-
-export default router;
+    next();
+  };
+};

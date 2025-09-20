@@ -18,42 +18,37 @@ dotenv.config();
 const app = express();
 
 // ---------------------------
-// Vérification variables d'environnement
-// ---------------------------
-if (!process.env.MONGODB_URI) console.error("MONGODB_URI is not defined!");
-if (!process.env.JWT_SECRET)
-  console.warn(
-    "JWT_SECRET not defined! Using fallback-secret temporarily for development."
-  );
-
-// ---------------------------
-// Middleware
+// Security & CORS middleware
 // ---------------------------
 app.use(helmet());
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5000",
-  "https://ecb-carlo.app",
+  "https://ecb-carlo.app", // ton custom domain
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // Postman, curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error("CORS origin not allowed"));
     },
-    credentials: true,
+    credentials: true, // essentiel pour withCredentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// OPTIONS preflight
 app.options("*", cors());
 
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+// Rate limiting
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+app.use(limiter);
 
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -75,29 +70,25 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // Error handling
 // ---------------------------
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("Express error:", err.stack || err);
+  console.error(err.stack);
   res.status(500).json({ message: err.message || "Something went wrong!" });
 });
 
 // ---------------------------
-// Serverless handler Vercel
+// Serverless handler (Vercel)
 // ---------------------------
 export default async function handler(req: any, res: any) {
-  console.log("Function invoked:", req.url);
-
   try {
     await connectDB();
     return app(req, res);
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error("Serverless handler error:", err);
-    const error =
-      err instanceof Error ? err : new Error("Unknown server error");
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 }
 
 // ---------------------------
-// Local dev
+// Local dev server
 // ---------------------------
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
@@ -107,7 +98,7 @@ if (process.env.NODE_ENV !== "production") {
         console.log(`Server running on http://localhost:${PORT}`);
       });
     })
-    .catch((err: unknown) => {
+    .catch((err) => {
       console.error("Failed to connect to MongoDB:", err);
     });
 }
