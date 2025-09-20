@@ -6,16 +6,16 @@ interface MongooseCache {
   promise: Promise<Mongoose> | null;
 }
 
-// On met le cache sur l'objet global pour éviter les reconnections multiples en dev
 const globalWithMongoose = global as typeof globalThis & {
-  mongooseCache?: MongooseCache;
+  mongooseCache: MongooseCache;
 };
 
-let cached = globalWithMongoose.mongooseCache;
-
-if (!cached) {
-  cached = globalWithMongoose.mongooseCache = { conn: null, promise: null };
+// Initialisation du cache si pas déjà présent
+if (!globalWithMongoose.mongooseCache) {
+  globalWithMongoose.mongooseCache = { conn: null, promise: null };
 }
+
+const cached: MongooseCache = globalWithMongoose.mongooseCache;
 
 export default async function connectDB(): Promise<Mongoose> {
   if (cached.conn) {
