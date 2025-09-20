@@ -1,7 +1,7 @@
 import express from "express";
 import PDFDocument from "pdfkit";
-import Project from "../models/Project.js";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import Project from "../models/Project";
+import { authenticate, AuthRequest } from "../middleware/auth";
 
 const router = express.Router();
 

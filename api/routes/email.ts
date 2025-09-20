@@ -1,6 +1,6 @@
 import express from "express";
 import nodemailer from "nodemailer";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import { authenticate, AuthRequest } from "../middleware/auth";
 
 const router = express.Router();
 
