@@ -1,12 +1,24 @@
 {
-  "files": [],
   "compilerOptions": {
-    "module": "ESNext"
+    "target": "ES2020",                          // cible moderne pour Node
+    "module": "ESNext",                          // modules modernes
+    "moduleResolution": "node16",                // résolution comme Node 16+
+    "outDir": "dist",                             // dossier de compilation
+    "rootDir": ".",                               // racine des sources
+    "strict": true,                               // vérifications strictes
+    "esModuleInterop": true,                      // interop CommonJS / ESModules
+    "forceConsistentCasingInFileNames": true,    // casse des fichiers cohérente
+    "skipLibCheck": true,                         // ignore vérification des types des libs
+    "resolveJsonModule": true,                    // permet d'importer les .json
+    "noImplicitAny": true,                        // interdit les any implicites
+    "allowJs": true,                              // permet les imports JS si besoin
+    "checkJs": false,                             // pas de check JS
+    "types": ["node", "express"]                  // types disponibles
   },
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-"moduleResolution": "node16",
-"resolveJsonModule": true,
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
