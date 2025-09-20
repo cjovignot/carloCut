@@ -1,9 +1,9 @@
-// api/utils/connectDB.js
+// api/utils/connectDB.ts
 import mongoose from "mongoose";
 
 let isConnected = false;
 
-const connectDB = async () => {
+const connectDB = async (): Promise<void> => {
   if (isConnected) return;
   try {
     const mongoURI = process.env.MONGODB_URI;
