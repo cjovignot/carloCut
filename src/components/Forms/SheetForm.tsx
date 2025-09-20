@@ -18,11 +18,8 @@ const profileTypes = ["tableau G", "tableau D", "linteau", "appui"];
 
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   const [loading, setLoading] = useState(false);
-  const [segments, setSegments] = useState<Segment[]>(
-    initialData?.segments || []
-  );
+  const [segments, setSegments] = useState<Segment[]>(initialData?.segments || []);
   const [ralType, setRalType] = useState<"classic" | "design">("classic");
-  const [textured, setTextured] = useState(initialData?.textured || false);
 
   const colors = ralType === "classic" ? RAL_CLASSIC : RAL_DESIGN;
 
@@ -59,21 +56,21 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
     control,
     name: "dimensions",
   });
+
   const selectedProfileType = watch("profileType");
 
   const onFormSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // On convertit les dimensions en nombre et filtre les valeurs > 0
+      // Convertir les dimensions en nombre et filtrer > 0
       const dimensions = data.dimensions
         .map((d: any) => Number(d.value))
         .filter((d) => d > 0);
 
-      // Construction finale des données à envoyer
       const payload = {
         ...data,
-        segments, // les segments dessinés
-        dimensions, // dimensions calculées
+        segments,
+        dimensions,
         textured: !!data.textured,
       };
 
@@ -91,7 +88,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           Élément *
         </label>
         <select
-          {...register("profileType", { required: "Profile type is required" })}
+          {...register("profileType", { required: "Le type de profil est obligatoire" })}
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
         >
           <option value="" disabled>
@@ -103,6 +100,9 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
             </option>
           ))}
         </select>
+        {errors.profileType && (
+          <p className="mt-1 text-sm text-red-500">{errors.profileType.message}</p>
+        )}
       </div>
 
       {/* Color */}
@@ -127,19 +127,6 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           >
             Design
           </Button>
-        </div>
-
-        {/* Checkbox Texturé */}
-        <div className="flex items-center my-2 space-x-2">
-          <input
-            type="checkbox"
-            {...register("textured")}
-            id="textured"
-            className="w-4 h-4 border-gray-300 rounded"
-          />
-          <label htmlFor="textured" className="text-sm text-gray-700">
-            Texturé
-          </label>
         </div>
 
         {/* Listbox RAL */}
@@ -220,7 +207,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         </div>
       </div>
 
-      {/* Profondeur Appui */}
+      {/* Profondeur Appui (seulement pour appui) */}
       {selectedProfileType === "appui" && (
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
