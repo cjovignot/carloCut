@@ -1,11 +1,20 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User from "../models/User.js";
+import User, { IUser } from "../models/User.js";
 
+// Étendre Request pour y ajouter 'user'
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: IUser;
 }
 
+// Payload JWT typé
+interface JwtPayload extends DefaultJwtPayload {
+  userId: string;
+}
+
+// ---------------------------
+// Authentification
+// ---------------------------
 export const authenticate = async (
   req: AuthRequest,
   res: Response,
@@ -23,7 +32,8 @@ export const authenticate = async (
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "fallback-secret"
-    ) as any;
+    ) as JwtPayload;
+
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
@@ -34,11 +44,15 @@ export const authenticate = async (
 
     req.user = user;
     next();
-  } catch (error) {
-    res.status(400).json({ message: "Invalid token." });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Invalid token.");
+    res.status(400).json({ message: error.message });
   }
 };
 
+// ---------------------------
+// Autorisation
+// ---------------------------
 export const authorize = (roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {

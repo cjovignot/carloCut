@@ -26,7 +26,8 @@ router.post(
 
       const newSheet = joinery.sheets[joinery.sheets.length - 1];
       res.status(201).json(newSheet);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(400).json({ message: error.message });
     }
   }
@@ -58,7 +59,8 @@ router.put(
       await project.save();
 
       res.json(sheet);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(400).json({ message: error.message });
     }
   }
@@ -85,7 +87,8 @@ router.delete(
       await project.save();
 
       res.json({ message: "Sheet deleted successfully" });
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(500).json({ message: error.message });
     }
   }

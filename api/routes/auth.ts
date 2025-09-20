@@ -90,16 +90,22 @@ router.post("/login", async (req, res) => {
         role: user.role,
       },
     });
-  } catch (err: any) {
-    console.error("Login error:", err);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", details: err.message });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
+    console.error("Login error:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      details: error.message,
+    });
   }
 });
 
 // Get current user
 router.get("/me", authenticate, async (req: AuthRequest, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
   res.json({
     user: {
       id: req.user._id,

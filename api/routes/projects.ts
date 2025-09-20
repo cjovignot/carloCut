@@ -46,6 +46,10 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
 // ---------------------------
 router.post("/", authenticate, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated." });
+    }
+
     const projectData = { ...req.body, createdBy: req.user._id };
     const project = new Project(projectData);
     await project.save();

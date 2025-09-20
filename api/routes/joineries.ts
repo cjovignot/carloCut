@@ -21,7 +21,8 @@ router.post(
 
       const newJoinery = project.joineries[project.joineries.length - 1];
       res.status(201).json(newJoinery);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(400).json({ message: error.message });
     }
   }
@@ -48,7 +49,8 @@ router.put(
       await project.save();
 
       res.json(joinery);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(400).json({ message: error.message });
     }
   }
@@ -70,7 +72,8 @@ router.delete(
       await project.save();
 
       res.json({ message: "Joinery deleted successfully" });
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Unknown error");
       res.status(500).json({ message: error.message });
     }
   }
