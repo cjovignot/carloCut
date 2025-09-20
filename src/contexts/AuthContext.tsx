@@ -24,7 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await api.get("/auth/me");
+      const response = await api.get("/me");
       setUser(response.data.user);
     } catch {
       localStorage.removeItem("token");
