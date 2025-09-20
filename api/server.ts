@@ -1,10 +1,8 @@
-// server.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
-import { createServer } from "http";
 
 import authRoutes from "./routes/auth";
 import projectRoutes from "./routes/projects";
@@ -25,20 +23,15 @@ const app = express();
 app.use(helmet());
 
 const allowedOrigins = [
-  "http://localhost:5173",
+  process.env.VITE_API_URL || "http://localhost:5173",
   "http://localhost:5000",
   "https://ecb-carlo.app",
 ];
 
-// Ajouter automatiquement l’URL du déploiement Vercel
-if (process.env.VERCEL_URL) {
-  allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
-}
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman, curl
+      if (!origin) return callback(null, true); // Postman / curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error("CORS origin not allowed"));
     },
@@ -48,7 +41,6 @@ app.use(
   })
 );
 
-// OPTIONS preflight
 app.options("*", cors());
 
 // Rate limiting
@@ -76,10 +68,13 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: err.message || "Something went wrong!" });
-});
+app.use(
+  (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    const error = err instanceof Error ? err : new Error("Unknown error");
+    console.error(error.stack);
+    res.status(500).json({ message: error.message });
+  }
+);
 
 // ---------------------------
 // Serverless handler (Vercel)
@@ -87,11 +82,11 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 export default async function handler(req: any, res: any) {
   try {
     await connectDB();
-    const server = createServer(app);
-    return server.emit("request", req, res);
-  } catch (err: any) {
-    console.error("Serverless handler error:", err);
-    return res.status(500).json({ message: err.message || "Server error" });
+    return app(req, res);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Server error");
+    console.error("Serverless handler error:", error);
+    return res.status(500).json({ message: error.message });
   }
 }
 
