@@ -1,234 +1,184 @@
-import { useRef, useEffect, useState } from "react";
-import { Segment } from "../Profiles/LineDrawer";
+// SheetVisualization.tsx
+import { useEffect, useState } from "react";
+
+interface Segment {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
 
 interface SheetVisualizationProps {
   segments: Segment[];
-  dimensions?: number[]; // dimensions réelles pour chaque segment
+  dimensions?: number[];
+  widthAppui?: number; // utilisé pour ajuster la plus grande côte
+  padding?: number; // padding autour de la zone totale
+  offset?: number; // distance des lignes de côte par rapport au dessin
+  textOffset?: number; // distance supplémentaire pour le texte
+  arrowSize?: number; // taille des flèches
 }
 
 export function SheetVisualization({
   segments,
-  dimensions,
+  widthAppui,
+  dimensions = [],
+  padding = 30,
+  offset = 0,
+  textOffset = 15,
+  arrowSize = 4,
 }: SheetVisualizationProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 300, height: 150 });
-
-  // Met à jour la taille du canvas selon les segments
-  useEffect(() => {
-    const updateSize = () => {
-      if (!containerRef.current) return;
-      const { clientWidth } = containerRef.current;
-
-      if (segments.length > 0) {
-        const allX = segments.flatMap((s) => [s.x1, s.x2]);
-        const allY = segments.flatMap((s) => [s.y1, s.y2]);
-        const minX = Math.min(...allX);
-        const maxX = Math.max(...allX);
-        const minY = Math.min(...allY);
-        const maxY = Math.max(...allY);
-        const padding = 60;
-
-        const width = maxX - minX + 2 * padding;
-        const height = maxY - minY + 2 * padding;
-
-        setCanvasSize({ width, height });
-      } else {
-        setCanvasSize({ width: clientWidth, height: 150 });
-      }
-    };
-
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, [segments]);
-
-  // Fonction pour dessiner les flèches aux extrémités
-  const drawArrow = (
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    angle: number,
-    length: number
-  ) => {
-    const arrowAngle = Math.PI / 6; // 30°
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(
-      x - length * Math.cos(angle - arrowAngle),
-      y - length * Math.sin(angle - arrowAngle)
-    );
-    ctx.moveTo(x, y);
-    ctx.lineTo(
-      x - length * Math.cos(angle + arrowAngle),
-      y - length * Math.sin(angle + arrowAngle)
-    );
-    ctx.stroke();
-  };
+  const [svgContent, setSvgContent] = useState("");
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = canvasSize.width;
-    canvas.height = canvasSize.height;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Dessiner grille
-    ctx.strokeStyle = "#e5e7eb";
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x < canvas.width; x += 10) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, canvas.height);
-      ctx.stroke();
-    }
-    for (let y = 0; y < canvas.height; y += 10) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(canvas.width, y);
-      ctx.stroke();
+    if (!segments || segments.length === 0) {
+      setSvgContent("");
+      return;
     }
 
-    if (segments.length === 0) return;
+    // 1️⃣ Déterminer la zone du dessin
+    const minX = Math.min(...segments.flatMap((s) => [s.x1, s.x2]));
+    const maxX = Math.max(...segments.flatMap((s) => [s.x1, s.x2]));
+    const minY = Math.min(...segments.flatMap((s) => [s.y1, s.y2]));
+    const maxY = Math.max(...segments.flatMap((s) => [s.y1, s.y2]));
 
-    const allX = segments.flatMap((s) => [s.x1, s.x2]);
-    const allY = segments.flatMap((s) => [s.y1, s.y2]);
-    const minX = Math.min(...allX);
-    const minY = Math.min(...allY);
-    const padding = 60;
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
 
-    segments.forEach((seg, index) => {
-      const x1 = seg.x1 - minX + padding;
-      const y1 = seg.y1 - minY + padding;
-      const x2 = seg.x2 - minX + padding;
-      const y2 = seg.y2 - minY + padding;
+    // 2️⃣ Positions fixes des côtes
+    const verticalLeft = minX - offset - textOffset - arrowSize;
+    const verticalRight = maxX + offset + textOffset + arrowSize;
+    const horizontalTop = minY - offset - textOffset - arrowSize;
+    const horizontalBottom = maxY + offset + textOffset + arrowSize;
 
-      // Dessiner segment
-      ctx.strokeStyle = "#2563eb";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
+    // 3️⃣ Padding général
+    const vbX = verticalLeft - padding;
+    const vbY = horizontalTop - padding;
+    const vbWidth = verticalRight - verticalLeft + 3 * padding;
+    const vbHeight = horizontalBottom - horizontalTop + 2 * padding;
 
-      // Dessiner points du segment
-      ctx.fillStyle = "#3b82f6";
-      ctx.beginPath();
-      ctx.arc(x1, y1, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(x2, y2, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Dessiner la cote
-      const dim =
-        dimensions && dimensions[index]
-          ? dimensions[index]
-          : Math.round(
-              Math.sqrt((seg.x2 - seg.x1) ** 2 + (seg.y2 - seg.y1) ** 2)
-            );
-
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 1.5;
-      ctx.fillStyle = "red";
-      ctx.font = "12px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      const midX = (x1 + x2) / 2;
-      const midY = (y1 + y2) / 2;
-      const offset = 15;
-      const arrowLength = 6;
-
-      const dx = Math.abs(x2 - x1);
-      const dy = Math.abs(y2 - y1);
-
-      // Déterminer orientation forcée de la cote
-      let isHorizontalCote = false;
-      if (Math.abs(dx - dy) < 1) {
-        // diagonale parfaite → cote horizontale
-        isHorizontalCote = true;
-      } else if (dx > dy) {
-        isHorizontalCote = false; // cote verticale
-      } else {
-        isHorizontalCote = true; // cote horizontale
-      }
-
-      if (isHorizontalCote) {
-        // ligne de cote horizontale
-        const cx1 = x1 - offset;
-        const cx2 = x2 - offset;
-        const cy1 = y1;
-        const cy2 = y2;
-
-        ctx.beginPath();
-        ctx.moveTo(cx1, cy1);
-        ctx.lineTo(cx2, cy2);
-        ctx.stroke();
-
-        // points aux extrémités
-        ctx.beginPath();
-        ctx.arc(cx1, cy1, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(cx2, cy2, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // flèches
-        drawArrow(ctx, cx1, cy1, Math.PI, arrowLength);
-        drawArrow(ctx, cx2, cy2, 0, arrowLength);
-
-        // texte dimension
-        ctx.fillText(dim + "", (cx1 + cx2) / 2, (cy1 + cy2) / 2 - 5);
-      } else {
-        // ligne de cote verticale
-        const cx1 = x1;
-        const cx2 = x2;
-        const cy1 = y1 - offset;
-        const cy2 = y2 - offset;
-
-        ctx.beginPath();
-        ctx.moveTo(cx1, cy1);
-        ctx.lineTo(cx2, cy2);
-        ctx.stroke();
-
-        // points aux extrémités
-        ctx.beginPath();
-        ctx.arc(cx1, cy1, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(cx2, cy2, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // flèches
-        drawArrow(ctx, cx1, cy1, -Math.PI / 2, arrowLength);
-        drawArrow(ctx, cx2, cy2, Math.PI / 2, arrowLength);
-
-        // texte dimension
-        ctx.fillText(dim + "", (cx1 + cx2) / 2 - 5, (cy1 + cy2) / 2);
+    // 4️⃣ Trouver la plus grande dimension
+    let maxDim = -Infinity;
+    let maxLengthIndex = -1;
+    dimensions.forEach((dim, i) => {
+      if (dim > maxDim) {
+        maxDim = dim;
+        maxLengthIndex = i;
       }
     });
-  }, [segments, dimensions, canvasSize]);
+
+    // 5️⃣ Dessiner les segments et les côtes
+    let lines = "";
+    segments.forEach((s, i) => {
+      // segment principal
+      lines += `<line x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}" stroke="black" stroke-width="2"/>`;
+
+      const dim = dimensions[i];
+      if (dim === undefined) return;
+
+      let startX: number, startY: number, endX: number, endY: number;
+      let textX = 0,
+        textY = 0;
+
+      const dx = s.x2 - s.x1;
+      const dy = s.y2 - s.y1;
+
+      // orientation de la côte
+      let isVertical = Math.abs(dy) > Math.abs(dx);
+      if (Math.abs(Math.abs(dx) - Math.abs(dy)) < 1e-6) {
+        const midX = (s.x1 + s.x2) / 2;
+        const midY = (s.y1 + s.y2) / 2;
+        const distVertical = Math.abs(midX - centerX);
+        const distHorizontal = Math.abs(midY - centerY);
+        isVertical = distVertical < distHorizontal;
+      }
+
+      if (isVertical) {
+        const dir = s.x1 + s.x2 > 2 * centerX ? 1 : -1;
+        startX = endX = dir > 0 ? verticalRight : verticalLeft;
+        startY = s.y1;
+        endY = s.y2;
+        textX = textOffset * dir;
+      } else {
+        const dir = s.y1 + s.y2 > 2 * centerY ? 1 : -1;
+        startY = endY = dir > 0 ? horizontalBottom : horizontalTop;
+        startX = s.x1;
+        endX = s.x2;
+        textY = textOffset * dir;
+      }
+
+      // 🔹 Ajuster la plus grande côte avec widthAppui
+      if (i === maxLengthIndex && widthAppui && segments[0]) {
+        if (!isVertical) {
+          startX = segments[0].x1; // x du premier point du premier segment
+        } else {
+          startY = segments[0].y1; // y du premier point du premier segment
+        }
+      }
+
+      // ligne de côte
+      lines += `<line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="red" stroke-width="1" stroke-dasharray="4"/>`;
+
+      // flèches
+      if (startX === endX) {
+        lines += `
+          <line x1="${startX - arrowSize}" y1="${startY}" x2="${
+          startX + arrowSize
+        }" y2="${startY}" stroke="red" stroke-width="1"/>
+          <line x1="${startX - arrowSize}" y1="${endY}" x2="${
+          startX + arrowSize
+        }" y2="${endY}" stroke="red" stroke-width="1"/>
+        `;
+      } else {
+        lines += `
+          <line x1="${startX}" y1="${startY - arrowSize}" x2="${startX}" y2="${
+          startY + arrowSize
+        }" stroke="red" stroke-width="1"/>
+          <line x1="${endX}" y1="${endY - arrowSize}" x2="${endX}" y2="${
+          endY + arrowSize
+        }" stroke="red" stroke-width="1"/>
+        `;
+      }
+
+      // ligne de texte
+      let displayDim = dim;
+      if (i === maxLengthIndex && widthAppui) {
+        displayDim = widthAppui; // afficher widthAppui pour la plus grande côte
+      }
+
+      const midX = (s.x1 + s.x2) / 2 + 2.3 * textX;
+      const midY = (s.y1 + s.y2) / 2 + 3 * textY;
+      lines += `<text x="${midX}" y="${midY}" fill="red" font-size="12" text-anchor="middle" dominant-baseline="middle">${displayDim}</text>`;
+    });
+
+    const svg = `<svg width="100%" height="100%" viewBox="${vbX} ${vbY} ${vbWidth} ${vbHeight}" xmlns="http://www.w3.org/2000/svg">
+      ${lines}
+    </svg>`;
+
+    setSvgContent(svg);
+  }, [
+    segments,
+    dimensions,
+    widthAppui,
+    padding,
+    offset,
+    textOffset,
+    arrowSize,
+  ]);
 
   return (
-    <div ref={containerRef} className="p-4 rounded-lg bg-gray-50">
-      <h4 className="mb-3 text-sm font-medium text-gray-900">
-        Technical Drawing
-      </h4>
-      <div className="p-4 bg-white border rounded" style={{ overflow: "auto" }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: "100%",
-            height: canvasSize.height,
-            border: "1px solid #d1d5db",
-          }}
-        />
-      </div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        border: "1px solid #d1d5db",
+        backgroundColor: "#f9fafb",
+        borderRadius: "0.5rem",
+      }}
+    >
+      <div
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+        style={{ width: "100%", height: "100%" }}
+      />
     </div>
   );
 }

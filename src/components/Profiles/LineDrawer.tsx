@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Button } from "../UI/Button";
-import { Square, Play, RefreshCw, Undo2 } from "lucide-react";
+import { Square, Play, RefreshCw, Undo2, Info } from "lucide-react";
 
 export interface Segment {
   x1: number;
@@ -281,6 +281,10 @@ export default function LineDrawer({
           borderRadius: "20px",
         }}
       >
+        <p className="flex items-center pt-1 pl-2 text-sm italic text-gray-700">
+          <Info className="w-4 h-4 mr-1" />
+          Dessiner le profilé point par point
+        </p>
         <canvas
           ref={canvasRef}
           style={{ touchAction: "none", cursor: "crosshair", display: "block" }}
