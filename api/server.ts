@@ -11,7 +11,7 @@ import sheetRoutes from "./routes/sheets";
 import pdfRoutes from "./routes/pdf";
 import emailRoutes from "./routes/email";
 
-import connectDB from "./utils/connectDB";
+import connectDB from "./utils/connectDB.js";
 
 dotenv.config();
 
