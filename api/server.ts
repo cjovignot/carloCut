@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -33,7 +33,7 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true); // Postman, curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error("CORS origin not allowed"));
+      return callback(new Error("CORS origin not allowed"));
     },
     credentials: true, // essentiel pour withCredentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -69,7 +69,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
   res.status(500).json({ message: err.message || "Something went wrong!" });
 });
@@ -77,13 +77,14 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-export default async function handler(req: any, res: any) {
+export default async function handler(req: Request, res: Response) {
   try {
     await connectDB();
     return app(req, res);
-  } catch (err: any) {
-    console.error("Serverless handler error:", err);
-    return res.status(500).json({ message: err.message || "Server error" });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
+    console.error("Serverless handler error:", error);
+    return res.status(500).json({ message: error.message || "Server error" });
   }
 }
 
@@ -98,7 +99,8 @@ if (process.env.NODE_ENV !== "production") {
         console.log(`Server running on http://localhost:${PORT}`);
       });
     })
-    .catch((err) => {
-      console.error("Failed to connect to MongoDB:", err);
+    .catch((err: unknown) => {
+      const error = err instanceof Error ? err : new Error("Unknown error");
+      console.error("Failed to connect to MongoDB:", error);
     });
 }
