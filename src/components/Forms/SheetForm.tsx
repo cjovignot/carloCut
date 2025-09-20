@@ -77,8 +77,6 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         textured: !!data.textured,
       };
 
-      console.log(payload);
-
       await onSubmit(payload);
     } finally {
       setLoading(false);

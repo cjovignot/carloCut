@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import type { Types } from "mongoose";
-import { RAL_CLASSIC } from "../../src/constants/ral_classic_colors.ts";
+import { RAL_CLASSIC } from "../../src/constants/ral_classic_colors";
 
 export interface ISheet extends mongoose.Document {
   profileType: string;
