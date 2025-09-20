@@ -4,14 +4,14 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth";
-import projectRoutes from "./routes/projects";
-import joineryRoutes from "./routes/joineries";
-import sheetRoutes from "./routes/sheets";
-import pdfRoutes from "./routes/pdf";
-import emailRoutes from "./routes/email";
+import authRoutes from "./routes/auth.js";
+import projectRoutes from "./routes/projects.js";
+import joineryRoutes from "./routes/joineries.js";
+import sheetRoutes from "./routes/sheets.js";
+import pdfRoutes from "./routes/pdf.js";
+import emailRoutes from "./routes/email.js";
 
-import connectDB from "./utils/connectDB";
+import connectDB from "./utils/connectDB.js";
 
 dotenv.config();
 
