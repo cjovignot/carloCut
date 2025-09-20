@@ -8,6 +8,7 @@ import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { SheetForm } from "../components/Forms/SheetForm";
 import { EmailForm } from "../components/Forms/EmailForm";
 import { SheetVisualization } from "../components/Sheets/SheetVisualization";
+import LineDrawer, { Segment } from "../Profiles/LineDrawer";
 
 export function JoineryDetail() {
   const { projectId, joineryId } = useParams<{
@@ -20,11 +21,10 @@ export function JoineryDetail() {
   const [showSheetModal, setShowSheetModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [editingSheet, setEditingSheet] = useState<any>(null);
+  const [segmentsMap, setSegmentsMap] = useState<Record<string, Segment[]>>({});
 
   useEffect(() => {
-    if (projectId && joineryId) {
-      fetchProject();
-    }
+    if (projectId && joineryId) fetchProject();
   }, [projectId, joineryId]);
 
   const fetchProject = async () => {
@@ -34,9 +34,15 @@ export function JoineryDetail() {
       const joineryData = projectData.joineries.find(
         (j: any) => j._id === joineryId
       );
-
       setProject(projectData);
       setJoinery(joineryData);
+
+      // Préparer les segments existants pour chaque sheet
+      const initialSegments: Record<string, Segment[]> = {};
+      joineryData.sheets.forEach((sheet: any) => {
+        initialSegments[sheet._id] = sheet.segments || [];
+      });
+      setSegmentsMap(initialSegments);
     } catch (error) {
       console.error("Failed to fetch project:", error);
     } finally {
@@ -74,7 +80,6 @@ export function JoineryDetail() {
 
   const handleDeleteSheet = async (sheetId: string) => {
     if (!confirm("Are you sure you want to delete this sheet?")) return;
-
     try {
       await api.delete(
         `/sheets/${projectId}/joineries/${joineryId}/sheets/${sheetId}`
@@ -103,15 +108,14 @@ export function JoineryDetail() {
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
     );
-  }
 
-  if (!project || !joinery) {
+  if (!project || !joinery)
     return (
       <div className="flex items-center justify-center min-h-screen pb-16">
         <div className="text-center">
@@ -127,7 +131,6 @@ export function JoineryDetail() {
         </div>
       </div>
     );
-  }
 
   return (
     <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -151,15 +154,15 @@ export function JoineryDetail() {
         <div className="flex flex-wrap gap-4">
           <Button onClick={() => setShowSheetModal(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Sheet
+            Ajouter une tôle
           </Button>
           <Button variant="outline" onClick={handleExportPDF}>
             <FileText className="w-4 h-4 mr-2" />
-            Export PDF
+            PDF
           </Button>
           <Button variant="outline" onClick={() => setShowEmailModal(true)}>
             <Mail className="w-4 h-4 mr-2" />
-            Send by Email
+            Envoyer par mail
           </Button>
         </div>
       </div>
@@ -167,18 +170,18 @@ export function JoineryDetail() {
       {/* Sheets */}
       <div>
         <h2 className="mb-6 text-2xl font-bold text-gray-900">
-          Sheets ({joinery.sheets.length})
+          Tôles ({joinery.sheets.length})
         </h2>
 
         {joinery.sheets.length === 0 ? (
           <div className="p-12 text-center bg-white rounded-lg shadow-md">
             <p className="text-lg text-gray-500">No sheets yet</p>
             <p className="mt-2 text-gray-400">
-              Add your first sheet to get started
+              Ajouter une tôle pour commencer !
             </p>
             <Button className="mt-4" onClick={() => setShowSheetModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Sheet
+              Ajouter une tôle
             </Button>
           </div>
         ) : (
@@ -191,7 +194,7 @@ export function JoineryDetail() {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      Sheet {index + 1}
+                      Tôle {index + 1}
                     </h3>
                     <div className="flex space-x-2">
                       <button
@@ -212,29 +215,24 @@ export function JoineryDetail() {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <p className="text-sm text-gray-600">
-                        Profile:{" "}
-                        <span className="font-medium">{sheet.profileType}</span>
+                        Elément:{" "}
+                        <span className="font-medium">
+                          {sheet.profileType.toUpperCase()}
+                        </span>
                       </p>
                       <p className="text-sm text-gray-600">
-                        Material:{" "}
-                        <span className="font-medium">{sheet.material}</span>
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Color:{" "}
-                        <span className="font-medium">{sheet.color}</span>
+                        RAL: <span className="font-medium">{sheet.color}</span>
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">
-                        Thickness:{" "}
-                        <span className="font-medium">{sheet.thickness}mm</span>
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Length:{" "}
+                        {sheet.profileType.toLowerCase().includes("tableau")
+                          ? "Hauteur:"
+                          : "Longueur:"}{" "}
                         <span className="font-medium">{sheet.length}mm</span>
                       </p>
                       <p className="text-sm text-gray-600">
-                        Quantity:{" "}
+                        QTE:{" "}
                         <span className="font-medium">{sheet.quantity}</span>
                       </p>
                     </div>
@@ -249,7 +247,20 @@ export function JoineryDetail() {
                     </p>
                   </div>
 
-                  <SheetVisualization sheet={sheet} />
+                  {/* SheetVisualization */}
+                  <SheetVisualization
+                    segments={segmentsMap[sheet._id] || []}
+                    dimensions={sheet.dimensions}
+                  />
+
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600">
+                      Mesures:{" "}
+                      <span className="font-medium">
+                        {/* {sheet.dimensions.map(dim, index)}mm */}
+                      </span>
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -261,7 +272,7 @@ export function JoineryDetail() {
       <Modal
         isOpen={showSheetModal}
         onClose={() => setShowSheetModal(false)}
-        title="Add Sheet"
+        title="Ajouter une tôle"
         size="lg"
       >
         <SheetForm
@@ -273,7 +284,7 @@ export function JoineryDetail() {
       <Modal
         isOpen={!!editingSheet}
         onClose={() => setEditingSheet(null)}
-        title="Edit Sheet"
+        title="Edition de la tôle"
         size="lg"
       >
         {editingSheet && (
@@ -288,7 +299,7 @@ export function JoineryDetail() {
       <Modal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        title="Send Joinery by Email"
+        title="Envoyer par mail"
       >
         <EmailForm
           onSubmit={handleSendEmail}

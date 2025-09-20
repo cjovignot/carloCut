@@ -4,11 +4,17 @@ import type { Types } from "mongoose";
 export interface ISheet extends mongoose.Document {
   profileType: string;
   dimensions: number[];
-  thickness: number;
-  material: string;
+  // thickness?: number;
+  // material?: string;
   color: string;
   length: number;
   quantity: number;
+  segments: {
+    x1: number | "";
+    y1: number | "";
+    x2: number | "";
+    y2: number | "";
+  }[];
 }
 
 export interface IJoinery extends mongoose.Document {
@@ -33,7 +39,7 @@ const sheetSchema = new mongoose.Schema<ISheet>({
   profileType: {
     type: String,
     required: [true, "Profile type is required"],
-    enum: ["sill", "jamb", "lintel", "custom"],
+    enum: ["tableau G", "tableau D", "linteau", "appui"],
   },
   dimensions: [
     {
@@ -42,16 +48,16 @@ const sheetSchema = new mongoose.Schema<ISheet>({
       min: [1, "Dimension must be positive"],
     },
   ],
-  thickness: {
-    type: Number,
-    required: [true, "Thickness is required"],
-    min: [0.1, "Thickness must be positive"],
-  },
-  material: {
-    type: String,
-    required: [true, "Material is required"],
-    trim: true,
-  },
+  // thickness: {
+  //   type: Number,
+  //   required: [true, "Thickness is required"],
+  //   min: [0.1, "Thickness must be positive"],
+  // },
+  // material: {
+  //   type: String,
+  //   required: [true, "Material is required"],
+  //   trim: true,
+  // },
   color: {
     type: String,
     required: [true, "Color is required"],
@@ -68,6 +74,14 @@ const sheetSchema = new mongoose.Schema<ISheet>({
     min: [1, "Quantity must be positive"],
     default: 1,
   },
+  segments: [
+    {
+      x1: { type: Number, required: true },
+      y1: { type: Number, required: true },
+      x2: { type: Number, required: true },
+      y2: { type: Number, required: true },
+    },
+  ],
 });
 
 const joinerySchema = new mongoose.Schema<IJoinery>({

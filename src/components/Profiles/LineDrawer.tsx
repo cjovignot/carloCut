@@ -1,19 +1,27 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Button } from "../UI/Button";
-import { Square, RefreshCw, Undo2 } from "lucide-react";
+import { Square, Play, RefreshCw, Undo2 } from "lucide-react";
 
-interface Segment {
+export interface Segment {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
 }
 
-export default function LineDrawer() {
+interface LineDrawerProps {
+  segments?: Segment[];
+  onSegmentsChange?: (segments: Segment[]) => void;
+}
+
+export default function LineDrawer({
+  segments: propSegments,
+  onSegmentsChange,
+}: LineDrawerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [segments, setSegments] = useState<Segment[]>([]);
+  const [segments, setSegments] = useState<Segment[]>(propSegments || []);
   const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(
     null
   );
@@ -25,6 +33,12 @@ export default function LineDrawer() {
 
   const allowedAngles = [0, 45, 90, 135, 180, 225, 270, 315];
 
+  // Sync props
+  useEffect(() => {
+    if (propSegments) setSegments(propSegments);
+  }, [propSegments]);
+
+  // Snap angle
   const snapAngle = (x1: number, y1: number, x2: number, y2: number) => {
     const dx = x2 - x1;
     const dy = y2 - y1;
@@ -41,51 +55,71 @@ export default function LineDrawer() {
     };
   };
 
-  const getCanvasCoords = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
+  const getCanvasCoords = (clientX: number, clientY: number) => {
     const rect = canvasRef.current!.getBoundingClientRect();
-    let clientX = 0;
-    let clientY = 0;
-    if ("touches" in e && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else if ("clientX" in e) {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
     return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
-  const handleClick = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
-    if (!drawing) return;
-    const { x, y } = getCanvasCoords(e);
-    e.preventDefault();
-    if (lastPoint) {
-      const snapped = snapAngle(lastPoint.x, lastPoint.y, x, y);
-      setSegments([
-        ...segments,
-        { x1: lastPoint.x, y1: lastPoint.y, x2: snapped.x, y2: snapped.y },
-      ]);
-      setLastPoint({ x: snapped.x, y: snapped.y });
-      setHoverPoint(null);
-    } else {
-      setLastPoint({ x, y });
-    }
-  };
+  // Start drawing
+  const handleStart = useCallback(
+    (x: number, y: number) => {
+      if (!drawing) return;
+      if (lastPoint) {
+        const snapped = snapAngle(lastPoint.x, lastPoint.y, x, y);
+        const newSeg: Segment = {
+          x1: lastPoint.x,
+          y1: lastPoint.y,
+          x2: snapped.x,
+          y2: snapped.y,
+        };
+        const updatedSegs = [...segments, newSeg];
+        setSegments(updatedSegs);
+        setLastPoint({ x: snapped.x, y: snapped.y });
+        setHoverPoint(null);
+        onSegmentsChange?.(updatedSegs);
+      } else {
+        setLastPoint({ x, y });
+      }
+    },
+    [drawing, lastPoint, segments, onSegmentsChange]
+  );
 
-  const handleMove = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
-    if (!lastPoint || !drawing) return;
-    const { x, y } = getCanvasCoords(e);
-    e.preventDefault();
-    setHoverPoint(snapAngle(lastPoint.x, lastPoint.y, x, y));
-  };
+  const handleMove = useCallback(
+    (x: number, y: number) => {
+      if (!lastPoint || !drawing) return;
+      setHoverPoint(snapAngle(lastPoint.x, lastPoint.y, x, y));
+    },
+    [lastPoint, drawing]
+  );
 
-  // Resize canvas on container change
+  // Touch
+  const handleTouch = useCallback(
+    (e: TouchEvent) => {
+      if (!canvasRef.current) return;
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        const { clientX, clientY } = e.touches[0];
+        const coords = getCanvasCoords(clientX, clientY);
+        handleStart(coords.x, coords.y);
+      }
+    },
+    [handleStart]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!canvasRef.current) return;
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        const { clientX, clientY } = e.touches[0];
+        const coords = getCanvasCoords(clientX, clientY);
+        handleMove(coords.x, coords.y);
+      }
+    },
+    [handleMove]
+  );
+
+  // Canvas resize
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -100,6 +134,7 @@ export default function LineDrawer() {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
+  // Draw
   const draw = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -111,17 +146,25 @@ export default function LineDrawer() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // segments existants
+    // Existing segments
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    segments.forEach((seg) => {
+    segments.forEach((seg, i) => {
       ctx.beginPath();
       ctx.moveTo(seg.x1, seg.y1);
       ctx.lineTo(seg.x2, seg.y2);
       ctx.stroke();
+
+      const midX = (seg.x1 + seg.x2) / 2;
+      const midY = (seg.y1 + seg.y2) / 2;
+      ctx.fillStyle = "red";
+      ctx.font = "14px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`${i + 1}`, midX, midY);
     });
 
-    // segment en cours
+    // Current segment
     if (lastPoint && hoverPoint) {
       ctx.strokeStyle = "red";
       ctx.lineWidth = 1.5;
@@ -131,7 +174,7 @@ export default function LineDrawer() {
       ctx.stroke();
     }
 
-    // dernier point
+    // Last point
     if (lastPoint) {
       ctx.fillStyle = "blue";
       ctx.beginPath();
@@ -142,57 +185,98 @@ export default function LineDrawer() {
 
   useEffect(draw, [segments, lastPoint, hoverPoint, canvasSize]);
 
+  // Touch listeners
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.addEventListener("touchstart", handleTouch, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("touchstart", handleTouch);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [handleTouch, handleTouchMove]);
+
+  // Update segment (external)
+  const updateSegment = (index: number, length: number, angleDeg: number) => {
+    setSegments((prev) => {
+      if (!prev[index]) return prev;
+      const updated = [...prev];
+      const seg = updated[index];
+      const rad = (angleDeg * Math.PI) / 180;
+      updated[index] = {
+        x1: seg.x1,
+        y1: seg.y1,
+        x2: seg.x1 + length * Math.cos(rad),
+        y2: seg.y1 + length * Math.sin(rad),
+      };
+      onSegmentsChange?.(updated);
+      return updated;
+    });
+  };
+
+  // ===== JSX =====
   return (
     <div>
-      <div className="flex justify-end h-10 mb-2 space-x-3">
+      {/* Buttons */}
+      <div className="flex justify-end h-10 my-3 space-x-3">
         <Button
-          className="!p-3"
+          className="!p-3 !bg-green-700 text-white"
+          disabled={!drawing}
           type="button"
           variant="outline"
           onClick={() => {
             if (segments.length === 0) return;
-            const newSegs = [...segments];
-            newSegs.pop();
+            const newSegs = segments.slice(0, -1); // pop safely
             setSegments(newSegs);
-            if (newSegs.length === 0) setLastPoint(null);
-            else
-              setLastPoint({
-                x: newSegs[newSegs.length - 1].x2,
-                y: newSegs[newSegs.length - 1].y2,
-              });
+            const last = newSegs[newSegs.length - 1];
+            setLastPoint(last ? { x: last.x2, y: last.y2 } : null);
+            setHoverPoint(null);
+            onSegmentsChange?.(newSegs);
           }}
         >
           <Undo2 className="w-4 h-5" />
         </Button>
+
         <Button
           type="button"
-          className="!p-3"
+          className="!p-3 text-white !bg-blue-600"
+          disabled={!drawing}
           variant="outline"
           onClick={() => {
             setSegments([]);
             setLastPoint(null);
             setHoverPoint(null);
+            onSegmentsChange?.([]);
           }}
         >
           <RefreshCw className="w-4 h-5" />
         </Button>
 
         <Button
-          className="!p-3"
+          className={`!p-3 text-white ${
+            !drawing ? "!bg-green-600" : "!bg-red-700"
+          }`}
           type="button"
           variant="outline"
           onClick={() => setDrawing(!drawing)}
         >
-          <Square className="w-4 h-5" />
+          {drawing ? (
+            <Square className="w-4 h-5" />
+          ) : (
+            <Play className="w-4 h-5" />
+          )}
         </Button>
       </div>
 
+      {/* Canvas */}
       <div
         ref={containerRef}
         style={{
           width: "100%",
           height: "40vh",
-          border: "1px solid black",
+          border: "2px solid #c04d4dc0",
           position: "relative",
           borderRadius: "20px",
         }}
@@ -200,10 +284,16 @@ export default function LineDrawer() {
         <canvas
           ref={canvasRef}
           style={{ touchAction: "none", cursor: "crosshair", display: "block" }}
-          onClick={handleClick}
-          onMouseMove={handleMove}
-          onTouchStart={handleClick}
-          onTouchMove={handleMove}
+          onMouseDown={(e) => {
+            const coords = getCanvasCoords(e.clientX, e.clientY);
+            handleStart(coords.x, coords.y);
+          }}
+          onMouseMove={(e) => {
+            const coords = getCanvasCoords(e.clientX, e.clientY);
+            handleMove(coords.x, coords.y);
+          }}
+          onMouseUp={() => setHoverPoint(null)}
+          onMouseLeave={() => setHoverPoint(null)}
         />
       </div>
     </div>

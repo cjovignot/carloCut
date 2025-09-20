@@ -53,7 +53,7 @@ export function JoineryForm({
         <input
           type="text"
           {...register("name", { required: "Joinery name is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="e.g., Main Window, Front Door..."
         />
         {errors.name && (
@@ -67,7 +67,7 @@ export function JoineryForm({
         </label>
         <select
           {...register("type", { required: "Type is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
           <option value="">Select type...</option>
           {joineryTypes.map((type) => (
@@ -81,7 +81,7 @@ export function JoineryForm({
         )}
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>

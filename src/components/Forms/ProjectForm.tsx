@@ -51,7 +51,7 @@ export function ProjectForm({
         <input
           type="text"
           {...register("name", { required: "Project name is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -65,7 +65,7 @@ export function ProjectForm({
         <input
           type="text"
           {...register("client", { required: "Client name is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.client && (
           <p className="mt-1 text-sm text-red-600">{errors.client.message}</p>
@@ -79,7 +79,7 @@ export function ProjectForm({
         <input
           type="text"
           {...register("address", { required: "Address is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.address && (
           <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
@@ -93,7 +93,7 @@ export function ProjectForm({
         <input
           type="date"
           {...register("date", { required: "Date is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.date && (
           <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
@@ -105,12 +105,12 @@ export function ProjectForm({
         <textarea
           rows={4}
           {...register("notes")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Optional project notes..."
         />
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
