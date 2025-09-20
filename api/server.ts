@@ -1,15 +1,17 @@
+// server.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import { createServer } from "http";
 
-import authRoutes from "./routes/auth";
-import projectRoutes from "./routes/projects";
-import joineryRoutes from "./routes/joineries";
-import sheetRoutes from "./routes/sheets";
-import pdfRoutes from "./routes/pdf";
-import emailRoutes from "./routes/email";
+import authRoutes from "./routes/auth.js";
+import projectRoutes from "./routes/projects.js";
+import joineryRoutes from "./routes/joineries.js";
+import sheetRoutes from "./routes/sheets.js";
+import pdfRoutes from "./routes/pdf.js";
+import emailRoutes from "./routes/email.js";
 
 import connectDB from "./utils/connectDB.js";
 
@@ -25,8 +27,13 @@ app.use(helmet());
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5000",
-  "https://ecb-carlo.app", // ton custom domain
+  "https://ecb-carlo.app",
 ];
+
+// Ajouter automatiquement l’URL du déploiement Vercel
+if (process.env.VERCEL_URL) {
+  allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+}
 
 app.use(
   cors({
@@ -35,7 +42,7 @@ app.use(
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error("CORS origin not allowed"));
     },
-    credentials: true, // essentiel pour withCredentials
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -80,7 +87,8 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 export default async function handler(req: any, res: any) {
   try {
     await connectDB();
-    return app(req, res);
+    const server = createServer(app);
+    return server.emit("request", req, res);
   } catch (err: any) {
     console.error("Serverless handler error:", err);
     return res.status(500).json({ message: err.message || "Server error" });
