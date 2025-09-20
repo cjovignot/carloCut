@@ -24,7 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await api.get("/me");
+      const response = await api.get("api/auth/me");
       setUser(response.data.user);
     } catch {
       localStorage.removeItem("token");
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const login = async (email: string, password: string) => {
-    const response = await api.post("/login", { email, password });
+    const response = await api.post("api/auth/login", { email, password });
     const { token, user } = response.data;
     localStorage.setItem("token", token);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
