@@ -1,6 +1,6 @@
 import express from "express";
-import Project from "../models/Project";
-import { authenticate, AuthRequest } from "../middleware/auth";
+import Project from "../models/Project.js";
+import { authenticate, AuthRequest } from "../middleware/auth.js";
 
 const router = express.Router();
 
