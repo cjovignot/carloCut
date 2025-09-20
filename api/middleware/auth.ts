@@ -21,7 +21,7 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+    const token = req.header("Authorization")?.replace("Bearer ", "") || "fallback-secret";
 
     if (!token) {
       return res
