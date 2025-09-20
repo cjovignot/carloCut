@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -11,44 +11,49 @@ import sheetRoutes from "./routes/sheets.js";
 import pdfRoutes from "./routes/pdf.js";
 import emailRoutes from "./routes/email.js";
 
-import connectDB from "./utils/connectDB";
+import connectDB from "./utils/connectDB.js";
 
 dotenv.config();
 
 const app = express();
 
 // ---------------------------
-// Security & CORS middleware
+// Vérification variables d'environnement
+// ---------------------------
+if (!process.env.MONGODB_URI) console.error("MONGODB_URI is not defined!");
+if (!process.env.JWT_SECRET)
+  console.warn(
+    "JWT_SECRET not defined! Using fallback-secret temporarily for development."
+  );
+
+// ---------------------------
+// Middleware
 // ---------------------------
 app.use(helmet());
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5000",
-  "https://ecb-carlo.app", // ton custom domain
+  "https://ecb-carlo.app",
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman, curl
+      if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS origin not allowed"));
+      callback(new Error("CORS origin not allowed"));
     },
-    credentials: true, // essentiel pour withCredentials
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// OPTIONS preflight
 app.options("*", cors());
 
-// Rate limiting
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
-app.use(limiter);
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
-// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -69,27 +74,30 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use((err: Error, _req: Request, res: Response) => {
-  console.error(err.stack);
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Express error:", err.stack || err);
   res.status(500).json({ message: err.message || "Something went wrong!" });
 });
 
 // ---------------------------
-// Serverless handler (Vercel)
+// Serverless handler Vercel
 // ---------------------------
-export default async function handler(req: Request, res: Response) {
+export default async function handler(req: any, res: any) {
+  console.log("Function invoked:", req.url);
+
   try {
     await connectDB();
     return app(req, res);
   } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("Unknown error");
-    console.error("Serverless handler error:", error);
-    return res.status(500).json({ message: error.message || "Server error" });
+    console.error("Serverless handler error:", err);
+    const error =
+      err instanceof Error ? err : new Error("Unknown server error");
+    return res.status(500).json({ message: error.message });
   }
 }
 
 // ---------------------------
-// Local dev server
+// Local dev
 // ---------------------------
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
@@ -100,7 +108,6 @@ if (process.env.NODE_ENV !== "production") {
       });
     })
     .catch((err: unknown) => {
-      const error = err instanceof Error ? err : new Error("Unknown error");
-      console.error("Failed to connect to MongoDB:", error);
+      console.error("Failed to connect to MongoDB:", err);
     });
 }
