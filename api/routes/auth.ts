@@ -8,7 +8,7 @@ const router = express.Router();
 // ---------------------------
 // Register
 // ---------------------------
-router.post("/api/auth/register", async (req, res) => {
+router.post("/auth/register", async (req, res) => {
   try {
     const { name, email, password, role = "employee" } = req.body;
 
@@ -42,7 +42,7 @@ router.post("/api/auth/register", async (req, res) => {
 // ---------------------------
 // Login
 // ---------------------------
-router.post("/api/auth/login", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -77,7 +77,7 @@ router.post("/api/auth/login", async (req, res) => {
 // ---------------------------
 // Get current user
 // ---------------------------
-router.get("/api/auth/me", authenticate, async (req: AuthRequest, res) => {
+router.get("/auth/me", authenticate, async (req: AuthRequest, res) => {
   if (!req.user)
     return res.status(401).json({ message: "User not authenticated" });
 

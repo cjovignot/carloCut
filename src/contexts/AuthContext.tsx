@@ -22,9 +22,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  // Récupère l'utilisateur courant depuis le backend
   const fetchCurrentUser = async () => {
     try {
-      const response = await api.get("api/auth/me");
+      const response = await api.get("/auth/me"); // ✅ chemin corrigé
       setUser(response.data.user);
     } catch {
       localStorage.removeItem("token");
@@ -34,14 +35,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Login
   const login = async (email: string, password: string) => {
-    const response = await api.post("api/auth/login", { email, password });
-    const { token, user } = response.data;
-    localStorage.setItem("token", token);
-    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setUser(user);
+    try {
+      const response = await api.post("/auth/login", { email, password }); // ✅ chemin corrigé
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setUser(user);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error("Login failed");
+      throw error;
+    }
   };
 
+  // Logout
   const logout = () => {
     localStorage.removeItem("token");
     delete api.defaults.headers.common["Authorization"];
@@ -55,4 +63,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
-export default AuthContext; // export uniquement le contexte
+export default AuthContext;
