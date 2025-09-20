@@ -1,58 +1,113 @@
+import express from "express";
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
+import { authenticate, AuthRequest } from "../middleware/auth.js";
 
-export interface AuthRequest extends Request {
-  user?: any;
-}
+const router = express.Router();
 
-export const authenticate = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+// Register user (admin only in production)
+router.post("/register", async (req, res) => {
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+    const { name, email, password, role = "employee" } = req.body;
 
-    if (!token) {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res
-        .status(401)
-        .json({ message: "Access denied. No token provided." });
+        .status(400)
+        .json({ message: "User with this email already exists" });
     }
 
-    const decoded = jwt.verify(
+    // Create new user
+    const user = new User({ name, email, password, role });
+    await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "fallback-secret",
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      message: "User created successfully",
       token,
-      process.env.JWT_SECRET || "fallback-secret"
-    ) as any;
-    const user = await User.findById(decoded.userId).select("-password");
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(400).json({ message: "Unknown error" });
+    }
+  }
+});
+
+// Login user
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log("Login attempt:", email, password);
+
+    const user = await User.findOne({ email });
+    console.log("Found user:", user);
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Invalid token. User not found." });
+      console.warn("User not found");
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(400).json({ message: "Invalid token." });
+    if (typeof user.comparePassword !== "function") {
+      console.error("comparePassword not defined on User model");
+      return res.status(500).json({ message: "Server misconfiguration" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    console.log("Password match:", isMatch);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "fallback-secret",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", details: err.message });
   }
-};
+});
 
-export const authorize = (roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return res
-        .status(401)
-        .json({ message: "Access denied. User not authenticated." });
-    }
+// Get current user
+router.get("/me", authenticate, async (req: AuthRequest, res) => {
+  res.json({
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    },
+  });
+});
 
-    if (!roles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Access denied. Insufficient permissions." });
-    }
-
-    next();
-  };
-};
+export default router;

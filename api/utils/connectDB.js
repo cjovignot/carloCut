@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 let isConnected = false;
 
-const connectDB = async (): Promise<void> => {
+const connectDB = async () => {
   if (isConnected) return;
   try {
     const mongoURI = process.env.MONGODB_URI;

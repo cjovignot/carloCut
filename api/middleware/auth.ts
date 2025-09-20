@@ -1,16 +1,11 @@
-import jwt, { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User, { IUser } from "../models/User.js";
+import User from "../models/User.js";
 
 export interface AuthRequest extends Request {
-  user?: IUser;
+  user?: any;
 }
 
-interface JwtPayload extends DefaultJwtPayload {
-  userId: string;
-}
-
-// Middleware pour routes protégées
 export const authenticate = async (
   req: AuthRequest,
   res: Response,
@@ -18,34 +13,46 @@ export const authenticate = async (
 ) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-    if (!token)
+
+    if (!token) {
       return res
         .status(401)
         .json({ message: "Access denied. No token provided." });
+    }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as any;
     const user = await User.findById(decoded.userId).select("-password");
 
-    if (!user)
+    if (!user) {
       return res
         .status(401)
         .json({ message: "Invalid token. User not found." });
+    }
 
     req.user = user;
     next();
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("Invalid token.");
-    res.status(401).json({ message: error.message });
+  } catch (error) {
+    res.status(400).json({ message: "Invalid token." });
   }
 };
 
-// Middleware pour vérifier les rôles
 export const authorize = (roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user)
-      return res.status(401).json({ message: "User not authenticated" });
-    if (!roles.includes(req.user.role))
-      return res.status(403).json({ message: "Insufficient permissions" });
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "Access denied. User not authenticated." });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Insufficient permissions." });
+    }
+
     next();
   };
 };
