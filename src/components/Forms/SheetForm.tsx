@@ -18,7 +18,9 @@ const profileTypes = ["tableau G", "tableau D", "linteau", "appui"];
 
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   const [loading, setLoading] = useState(false);
-  const [segments, setSegments] = useState<Segment[]>(initialData?.segments || []);
+  const [segments, setSegments] = useState<Segment[]>(
+    initialData?.segments || []
+  );
   const [ralType, setRalType] = useState<"classic" | "design">("classic");
 
   const colors = ralType === "classic" ? RAL_CLASSIC : RAL_DESIGN;
@@ -73,7 +75,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         dimensions,
         textured: !!data.textured,
       };
-
+      console.log(payload);
       await onSubmit(payload);
     } finally {
       setLoading(false);
@@ -88,7 +90,9 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           Élément *
         </label>
         <select
-          {...register("profileType", { required: "Le type de profil est obligatoire" })}
+          {...register("profileType", {
+            required: "Le type de profil est obligatoire",
+          })}
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
         >
           <option value="" disabled>
@@ -101,7 +105,9 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           ))}
         </select>
         {errors.profileType && (
-          <p className="mt-1 text-sm text-red-500">{errors.profileType.message}</p>
+          <p className="mt-1 text-sm text-red-500">
+            {errors.profileType.message}
+          </p>
         )}
       </div>
 

@@ -49,7 +49,6 @@ const sheetSchema = new mongoose.Schema<ISheet>({
   widthAppui: {
     type: Number,
     required: false,
-    min: [1, "Dimension must be positive"],
   },
   dimensions: [
     {

@@ -23,17 +23,19 @@ const app = express();
 app.use(helmet());
 
 const allowedOrigins = [
-  process.env.VITE_API_URL || "http://localhost:5173",
-  "http://localhost:5000",
-  "https://ecb-carlo.app",
-];
+  "http://localhost:5173", // toujours autorisé pour ton frontend en local
+  "http://localhost:5000", // si tu tapes l’API directement
+  process.env.VITE_API_URL, // backend déployé (Vercel)
+  "https://ecb-carlo.app", // ton domaine prod
+].filter(Boolean); // enlève les undefined
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true); // Postman / curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error("CORS origin not allowed"));
+      console.warn(`CORS blocked for origin: ${origin}`);
+      return callback(new Error("CORS origin not allowed"));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -41,6 +43,7 @@ app.use(
   })
 );
 
+// Toujours répondre aux preflight
 app.options("*", cors());
 
 // Rate limiting
@@ -68,13 +71,11 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use(
-  (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    const error = err instanceof Error ? err : new Error("Unknown error");
-    console.error(error.stack);
-    res.status(500).json({ message: error.message });
-  }
-);
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  const error = err instanceof Error ? err : new Error("Unknown error");
+  console.error(error.stack);
+  res.status(500).json({ message: error.message });
+});
 
 // ---------------------------
 // Serverless handler (Vercel)
