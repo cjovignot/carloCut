@@ -99,13 +99,13 @@ export function ProjectDetail() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900">
-            Project not found
+            Aucun chantier trouvé
           </h2>
           <Link
             to="/projects"
             className="inline-block mt-4 text-blue-600 hover:text-blue-800"
           >
-            Back to Projects
+            Retour aux chantiers
           </Link>
         </div>
       </div>
@@ -132,7 +132,7 @@ export function ProjectDetail() {
         <div className="flex flex-wrap gap-4">
           <Button onClick={() => setShowJoineryModal(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Joinery
+            Ajouter une menuiserie
           </Button>
           <Button variant="outline" onClick={handleExportPDF}>
             <FileText className="w-4 h-4 mr-2" />
@@ -140,7 +140,7 @@ export function ProjectDetail() {
           </Button>
           <Button variant="outline" onClick={() => setShowEmailModal(true)}>
             <Mail className="w-4 h-4 mr-2" />
-            Send by Email
+            Envoyer par mail
           </Button>
         </div>
       </div>
@@ -150,21 +150,21 @@ export function ProjectDetail() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Project Details
+              Informations de chantier
             </h3>
             <div className="space-y-2">
               <p>
                 <span className="font-medium">Client:</span> {project.client}
               </p>
               <p>
-                <span className="font-medium">Address:</span> {project.address}
+                <span className="font-medium">Adresse:</span> {project.address}
               </p>
               <p>
                 <span className="font-medium">Date:</span>{" "}
                 {new Date(project.date).toLocaleDateString()}
               </p>
               <p>
-                <span className="font-medium">Created by:</span>{" "}
+                <span className="font-medium">Créé par:</span>{" "}
                 {project.createdBy?.name}
               </p>
             </div>
@@ -185,18 +185,18 @@ export function ProjectDetail() {
       {/* Joineries */}
       <div>
         <h2 className="mb-6 text-2xl font-bold text-gray-900">
-          Joineries ({project.joineries.length})
+          Menuiseries ({project.joineries.length})
         </h2>
 
         {project.joineries.length === 0 ? (
           <div className="p-12 text-center bg-white rounded-lg shadow-md">
-            <p className="text-lg text-gray-500">No joineries yet</p>
+            <p className="text-lg text-gray-500">Encore aucune menuiserie</p>
             <p className="mt-2 text-gray-400">
-              Add your first joinery to get started
+              Créer une menuiserie pour commencer
             </p>
             <Button className="mt-4" onClick={() => setShowJoineryModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Joinery
+              Créer une menuiserie
             </Button>
           </div>
         ) : (
@@ -218,7 +218,8 @@ export function ProjectDetail() {
                       Type: {joinery.type}
                     </p>
                     <p className="text-sm font-medium text-blue-600">
-                      {joinery.sheets.length} sheets
+                      {joinery.sheets.length}
+                      {joinery.sheets.length == 1 ? "tôle" : "tôles"}
                     </p>
                   </div>
                 </Link>
@@ -247,7 +248,7 @@ export function ProjectDetail() {
       <Modal
         isOpen={showJoineryModal}
         onClose={() => setShowJoineryModal(false)}
-        title="Add Joinery"
+        title="Créer une menuiserie"
       >
         <JoineryForm
           onSubmit={handleCreateJoinery}
@@ -258,7 +259,7 @@ export function ProjectDetail() {
       <Modal
         isOpen={!!editingJoinery}
         onClose={() => setEditingJoinery(null)}
-        title="Edit Joinery"
+        title="Modifier la menuiserie"
       >
         {editingJoinery && (
           <JoineryForm
@@ -272,7 +273,7 @@ export function ProjectDetail() {
       <Modal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        title="Send Project by Email"
+        title="Envoyer le chantier par mail"
       >
         <EmailForm
           onSubmit={handleSendEmail}

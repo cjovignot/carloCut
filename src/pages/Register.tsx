@@ -4,6 +4,7 @@ import { useAuth } from "../services/useAuth";
 import { Button } from "../components/UI/Button";
 import { UserPlus } from "lucide-react";
 import { api } from "../services/api";
+import logo from "../../public/pwa-512x512.png";
 
 export function Register() {
   const [name, setName] = useState("");
@@ -57,10 +58,11 @@ export function Register() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">
-            <UserPlus className="w-12 h-12 mr-2 text-green-600" />
-            <h2 className="text-3xl font-bold text-gray-900">Register</h2>
+            {/* <UserPlus className="w-12 h-12 mr-2 text-green-600" /> */}
+            {/* <h2 className="text-3xl font-bold text-gray-900">Register</h2> */}
+            <img src={logo} alt="Logo" className="rounded-2xl w-28 h-28" />
           </div>
-          <p className="mt-2 text-sm text-gray-600">Create a new account</p>
+          {/* <p className="mt-2 text-sm text-gray-600">Create a new account</p> */}
         </div>
 
         <div className="px-6 py-8 bg-white rounded-lg shadow-xl">
@@ -73,7 +75,7 @@ export function Register() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Name
+                Nom d'utilisateur
               </label>
               <input
                 type="text"
@@ -81,13 +83,13 @@ export function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="John Doe"
+                placeholder="Prénom NOM"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Email
+                E-mail
               </label>
               <input
                 type="email"
@@ -95,13 +97,13 @@ export function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="john@example.com"
+                placeholder="votre_email@exemple.com"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Password
+                Mot de passe
               </label>
               <input
                 type="password"
@@ -109,13 +111,13 @@ export function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="••••••••"
+                placeholder="Mot de passe"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Role
+                Rôle
               </label>
               <select
                 value={role}
@@ -124,13 +126,14 @@ export function Register() {
                 }
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
               >
-                <option value="employee">Employee</option>
-                <option value="admin">Admin</option>
+                <option value="employee">Employé</option>
+                <option value="admin">Employeur</option>
+                <option value="admin">Administrateur</option>
               </select>
             </div>
 
             <Button type="submit" className="w-full" loading={loading}>
-              Register
+              Inscription
             </Button>
           </form>
         </div>

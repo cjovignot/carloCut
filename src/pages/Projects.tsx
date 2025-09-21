@@ -82,12 +82,12 @@ export function Projects() {
     <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-          <p className="mt-2 text-gray-600">Manage your sheet metal projects</p>
+          <h1 className="text-3xl font-bold text-gray-900">Chantiers</h1>
+          {/* <p className="mt-2 text-gray-600">Manage your sheet metal projects</p> */}
         </div>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          New Project
+          Nouveau chantier
         </Button>
       </div>
 
@@ -97,7 +97,7 @@ export function Projects() {
           <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder="Rechercher un chantier..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -108,9 +108,9 @@ export function Projects() {
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-lg text-gray-500">No projects found</p>
+          <p className="text-lg text-gray-500">Aucun chantier trouvé</p>
           <p className="mt-2 text-gray-400">
-            Create your first project to get started
+            Créer un nouveau chantier pour commencer
           </p>
         </div>
       ) : (
@@ -135,10 +135,13 @@ export function Projects() {
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-sm font-medium text-blue-600">
-                      {project.joineries.length} joineries
+                      {project.joineries.length}{" "}
+                      {project.joineries.length == 1
+                        ? "menuiserie"
+                        : "menuiseries"}
                     </span>
                     <span className="text-xs text-gray-500">
-                      by {project.createdBy?.name}
+                      par {project.createdBy?.name}
                     </span>
                   </div>
                 </div>
@@ -169,7 +172,7 @@ export function Projects() {
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title="Create New Project"
+        title="Créer un chantier"
         size="lg"
       >
         <ProjectForm
@@ -182,7 +185,7 @@ export function Projects() {
       <Modal
         isOpen={!!editingProject}
         onClose={() => setEditingProject(null)}
-        title="Edit Project"
+        title="Modifier un chantier"
         size="lg"
       >
         {editingProject && (

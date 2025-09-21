@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../services/useAuth";
 import { Button } from "../components/UI/Button";
 import { Settings } from "lucide-react";
+import logo from "../../public/pwa-512x512.png";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -36,10 +37,11 @@ export function Login() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">
-            <Settings className="w-12 h-12 mr-2 text-blue-600" />
-            <h2 className="text-3xl font-bold text-gray-900">MetalOrders</h2>
+            {/* <Settings className="w-12 h-12 mr-2 text-blue-600" /> */}
+            {/* <h2 className="text-3xl font-bold text-gray-900">MetalOrders</h2> */}
+            <img src={logo} alt="Logo" className="rounded-2xl w-28 h-28" />
           </div>
-          <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
+          {/* <p className="mt-2 text-sm text-gray-600">Sign in to your account</p> */}
         </div>
 
         <div className="px-6 py-8 bg-white rounded-lg shadow-xl">
@@ -55,7 +57,7 @@ export function Login() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email address
+                E-mail
               </label>
               <input
                 id="email"
@@ -66,7 +68,7 @@ export function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your email"
+                placeholder="votre_email@exemple.com"
               />
             </div>
 
@@ -75,7 +77,7 @@ export function Login() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Password
+                Mot de passe
               </label>
               <input
                 id="password"
@@ -86,18 +88,18 @@ export function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your password"
+                placeholder="Mot de passe"
               />
             </div>
 
             <Button type="submit" className="w-full" loading={loading}>
-              Sign in
+              Connexion
             </Button>
 
             <p className="mt-4 text-sm text-center">
-              Don’t have an account?{" "}
+              Pas encore de compte?{" "}
               <Link to="/register" className="text-blue-600 underline">
-                Register
+                Inscription
               </Link>
             </p>
           </form>

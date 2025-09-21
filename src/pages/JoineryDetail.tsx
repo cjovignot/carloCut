@@ -84,7 +84,7 @@ export function JoineryDetail() {
   if (!project || !joinery)
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Joinery not found
+        Aucune menuiserie trouvée
       </div>
     );
 

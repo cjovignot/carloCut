@@ -48,13 +48,13 @@ export function JoineryForm({
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Joinery Name *
+          Menuiserie *
         </label>
         <input
           type="text"
           {...register("name", { required: "Joinery name is required" })}
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="e.g., Main Window, Front Door..."
+          placeholder="Fenêtre SDB, Porte d'entrée..."
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -69,7 +69,7 @@ export function JoineryForm({
           {...register("type", { required: "Type is required" })}
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
-          <option value="">Select type...</option>
+          <option value="">Sélectionner un type</option>
           {joineryTypes.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
@@ -83,10 +83,10 @@ export function JoineryForm({
 
       <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {initialData ? "Update" : "Create"} Joinery
+          {initialData ? "Mettre à jour" : "Créer"} la menuiserie
         </Button>
       </div>
     </form>
