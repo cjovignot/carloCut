@@ -24,7 +24,7 @@ export function SheetVisualization({
   dimensions = [],
   padding = 30,
   offset = 0,
-  textOffset = 15,
+  textOffset = 19,
   arrowSize = 4,
 }: SheetVisualizationProps) {
   const [svgContent, setSvgContent] = useState("");

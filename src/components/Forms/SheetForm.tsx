@@ -153,7 +153,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
                   )}
                   {selectedColor
                     ? `${selectedColor.code} - ${selectedColor.name}`
-                    : "Sélectionner une couleur"}
+                    : "Sélectionner un RAL"}
                 </Listbox.Button>
                 <Listbox.Options className="z-10 mt-1 overflow-auto bg-white border rounded-md max-h-60">
                   {colors.map((color) => (
@@ -217,7 +217,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       {selectedProfileType === "appui" && (
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
-            Profondeur Appui (mm) *
+            Côte menuiserie ➡️ arase mur *
           </label>
           <input
             type="number"
@@ -225,9 +225,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
             className="flex-1 mt-2 border-gray-300 rounded-md"
           />
           {errors.widthAppui && (
-            <p className="mt-1 text-sm text-red-500">
-              Veuillez entrer une profondeur valide
-            </p>
+            <p className="mt-1 text-sm text-red-500">Saisir une côte valide</p>
           )}
         </div>
       )}
@@ -249,32 +247,34 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       {/* Dimensions */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-700">
-          Dimensions (mm) *
+          Côtes (mm) *
         </label>
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => append({ value: 0 })}
         >
-          <Plus className="w-4 h-4 mr-1" /> Ajouter une dimension
-        </Button>
+          <Plus className="w-4 h-4 mr-1" /> Ajouter une côte
+        </Button> */}
         <div className="mt-2 space-y-2">
           {fields.map((field, i) => (
-            <div key={field.id} className="flex items-center space-x-2">
+            <div key={field.id} className="grid items-center grid-cols-6 gap-2">
+              <b className="col-span-1">{i + 1} : </b>
               <input
                 type="number"
                 {...register(`dimensions.${i}.value`, {
                   required: true,
                   min: 1,
                 })}
-                className="flex-1 border-gray-300 rounded-md"
+                className="w-full col-span-3 border-gray-300 rounded-md text-end"
               />
+              <p className="col-span-1">mm</p>
               {fields.length > 1 && (
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="p-2 text-red-500 hover:text-red-700"
+                  className="col-span-1 p-2 text-red-500 hover:text-red-700"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -287,10 +287,10 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       {/* Actions */}
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {initialData ? "Update" : "Create"} Sheet
+          {initialData ? "Mettre à jour" : "Créer"} la tôle
         </Button>
       </div>
     </form>

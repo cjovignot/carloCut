@@ -276,7 +276,7 @@ export default function LineDrawer({
         style={{
           width: "100%",
           height: "40vh",
-          border: "2px solid #c04d4dc0",
+          border: "1.5px dashed #665ba5c0",
           position: "relative",
           borderRadius: "20px",
         }}

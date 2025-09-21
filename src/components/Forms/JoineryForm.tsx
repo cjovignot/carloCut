@@ -9,10 +9,9 @@ interface JoineryFormProps {
 }
 
 const joineryTypes = [
-  { value: "window", label: "Window" },
-  { value: "door", label: "Door" },
-  { value: "curtain-wall", label: "Curtain Wall" },
-  { value: "custom", label: "Custom" },
+  { value: "fenetre", label: "Fenêtre" },
+  { value: "porte", label: "Porte" },
+  { value: "baie", label: "Baie" },
 ];
 
 export function JoineryForm({
@@ -52,7 +51,7 @@ export function JoineryForm({
         </label>
         <input
           type="text"
-          {...register("name", { required: "Joinery name is required" })}
+          {...register("name", { required: "Nom de menuiserie requis" })}
           className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Fenêtre SDB, Porte d'entrée..."
         />

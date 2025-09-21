@@ -95,7 +95,7 @@ const joinerySchema = new mongoose.Schema<IJoinery>({
   type: {
     type: String,
     required: [true, "Joinery type is required"],
-    enum: ["window", "door", "curtain-wall", "custom"],
+    enum: ["fenetre", "porte", "baie"],
   },
   sheets: [sheetSchema],
 });

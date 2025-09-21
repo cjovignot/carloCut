@@ -33,19 +33,20 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Recipient Email *
+          Destinataire *
         </label>
         <input
           type="email"
-          {...register("recipient", {
-            required: "Recipient email is required",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email address",
-            },
-          })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          // {...register("recipient", {
+          //   required: "Le destinataire est requis",
+          //   pattern: {
+          //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+          //     message: "Adresse email invalide",
+          //   },
+          // })}
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="supplier@example.com"
+          value="contact@carlo.fr"
         />
         {errors.recipient && (
           <p className="mt-1 text-sm text-red-600">
@@ -56,12 +57,12 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Subject *
+          Objet *
         </label>
         <input
           type="text"
-          {...register("subject", { required: "Subject is required" })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          {...register("subject", { required: "L'objet du mail est requis" })}
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.subject && (
           <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
@@ -75,17 +76,17 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
         <textarea
           rows={4}
           {...register("message")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="Please find attached our sheet metal order..."
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="Vous trouverez ci-joint les différentes tôles à fabriquer..."
         />
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          Send Email
+          Envoyer
         </Button>
       </div>
     </form>
