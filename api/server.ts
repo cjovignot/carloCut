@@ -12,7 +12,6 @@ import pdfRoutes from "./routes/pdf.js";
 import emailRoutes from "./routes/email.js";
 
 import connectDB from "./utils/connectDB.js";
-import { createServerlessHandler } from "express-vercel-adapter";
 
 dotenv.config();
 
@@ -23,24 +22,22 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
-// Origines autorisées depuis .env
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5000",
-  process.env.VITE_API_URL, // ton backend déployé (si défini)
-  "https://ecb-carlo.app",  // ton domaine prod
+  "http://localhost:5173", // frontend local
+  "http://localhost:5000", // API directe
+  process.env.VITE_API_URL, // backend déployé (Vercel)
+  "https://ecb-carlo.app", // domaine prod
 ].filter(Boolean);
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: any) => {
     if (!origin) return callback(null, true); // Postman / curl
 
-    // whitelist explicite
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    // autoriser toutes les branches preview de vercel
+    // autoriser toutes les branches preview vercel
     if (/\.vercel\.app$/.test(origin)) {
       return callback(null, true);
     }
@@ -94,11 +91,22 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-const handler = createServerlessHandler(app, async () => {
-  await connectDB();
-});
+let dbReady: Promise<void> | null = null;
 
-export default handler;
+export default async function handler(req: any, res: any) {
+  try {
+    if (!dbReady) {
+      dbReady = connectDB();
+    }
+    await dbReady;
+
+    return app(req, res);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error("Server error");
+    console.error("Serverless handler error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 // ---------------------------
 // Local dev server
