@@ -21,7 +21,7 @@ export function Navbar() {
 
   const navItems = [
     { label: "Dashboard", icon: Home, path: "/" },
-    { label: "Projects", icon: FolderOpen, path: "/projects" }, { label: "Settings", icon: Settings, path: /settings },
+    { label: "Projects", icon: FolderOpen, path: "/projects" }, { label: "Settings", icon: Settings, path: "/settings" },
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
