@@ -9,6 +9,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Projects } from "./pages/Projects";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { JoineryDetail } from "./pages/JoineryDetail";
+import { Settings } from "./pages/Settings";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <JoineryDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                 <Route
+                  path="/settings"
+                  element={
+                    <ProtectedRoute>
+                      <Settings />
                     </ProtectedRoute>
                   }
                 />
