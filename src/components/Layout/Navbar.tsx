@@ -1,11 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
-import { useSettings } from "../../services/useSettings"; // <-- ton context RAL
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const { selectedRAL } = useSettings(); 
   const location = useLocation();
 
   if (!user || location.pathname === "/login") return null;
@@ -17,7 +15,7 @@ export function Navbar() {
   ];
 
   // Couleur hex du RAL sélectionné (par défaut #FFFFFF)
-  const bgColor = selectedRAL?.hex || "#FFFFFF";
+  const bgColor = "#FFFFFF";
 
   return (
     <nav
