@@ -5,11 +5,11 @@ import { useSettings } from "../../services/useSettings";
 
 // Fonction utilitaire pour déterminer si une couleur est claire ou foncée
 function isColorLight(hex: string) {
+  if (!hex) return true;
   const c = hex.replace("#", "");
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
-  // Formule de luminance relative
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return luminance > 180; // seuil à ajuster si besoin
 }
@@ -28,19 +28,20 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const bgColor = selectedRAL?.hex;
+  const bgColor = selectedRAL?.hex || "#FFFFFF"; // ✅ valeur par défaut
   const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
   const hoverBgColor = isColorLight(bgColor) ? "hover:bg-black/5" : "hover:bg-white/10";
   const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
 
   return (
     <nav
-      className={`fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300 bg-[${bgColor.hex}]`}
+      className="fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300"
+      style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link to="/" className={`flex items-center space-x-2 ${textColor}`}>
-          <Anvil className={`w-8 h-8`} />
+          <Anvil className="w-8 h-8" />
           <span className="text-xl font-bold tracking-wide uppercase">ECB-Carlo</span>
         </Link>
 
@@ -69,7 +70,8 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        className={`fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300 bg-[${bgColor.hex}]`}
+        className="fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300"
+        style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
