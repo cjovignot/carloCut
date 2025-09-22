@@ -23,59 +23,34 @@ const app = express();
 app.use(helmet());
 
 const allowedOrigins = [
-  "http://localhost:5173", // frontend local
-  "http://localhost:5000", // API directe
+  "http://localhost:5173", // toujours autorisé pour ton frontend en local
+  "http://localhost:5000", // si tu tapes l’API directement
   process.env.VITE_API_URL, // backend déployé (Vercel)
-  "https://ecb-carlo.app", // domaine prod
-  "https://carlo-cut-git-preview-cjovignots-projects.vercel.app", // preview Vercel
-].filter(Boolean);
+  "https://ecb-carlo.app", // ton domaine prod
+].filter(Boolean); // enlève les undefined
 
-// fonction utilitaire
-function isOriginAllowed(origin?: string): boolean {
-  if (!origin) return false;
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Postman / curl
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      console.warn(`CORS blocked for origin: ${origin}`);
+      return callback(new Error("CORS origin not allowed"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-  // Toujours autoriser en local
-  if (origin.startsWith("http://localhost")) return true;
+// Toujours répondre aux preflight
+app.options("*", cors());
 
-  // En production : stricte whitelist
-  if (process.env.VERCEL_ENV === "production") {
-    return allowedOrigins.includes(origin);
-  }
-
-  // En preview/dev : autoriser tous les *.vercel.app
-  if (origin.endsWith(".vercel.app")) return true;
-
-  return false;
-}
-
-const corsOptions = {
-  origin: (origin: string | undefined, callback: any) => {
-    if (!origin) return callback(null, true); // Postman / curl
-
-    if (isOriginAllowed(origin)) {
-      return callback(null, true);
-    }
-
-    console.warn(`CORS blocked for origin: ${origin}`);
-    return callback(new Error("CORS origin not allowed"));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-// ---------------------------
 // Rate limiting
-// ---------------------------
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
-// ---------------------------
 // Body parsing
-// ---------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -105,15 +80,9 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-let dbReady: Promise<void> | null = null;
-
 export default async function handler(req: any, res: any) {
   try {
-    if (!dbReady) {
-      dbReady = connectDB();
-    }
-    await dbReady;
-
+    await connectDB();
     return app(req, res);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
@@ -131,8 +100,6 @@ if (process.env.NODE_ENV !== "production") {
     .then(() => {
       app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
-        console.log("Allowed origins:", allowedOrigins);
-        console.log("VERCEL_ENV:", process.env.VERCEL_ENV);
       });
     })
     .catch((err) => {
