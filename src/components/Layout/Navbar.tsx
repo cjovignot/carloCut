@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
+import { useSettings } from "../../services/useSettings";
 
 // Fonction utilitaire pour déterminer si une couleur est claire ou foncée
 function isColorLight(hex: string) {
@@ -15,17 +16,19 @@ function isColorLight(hex: string) {
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { selectedRAL } = useSettings();
   const location = useLocation();
 
   if (!user || location.pathname === "/login") return null;
 
   const navItems = [
-    { label: "Dashboard", icon: Home, path: "/" },
-    { label: "Projects", icon: FolderOpen, path: "/projects" }, { label: "Settings", icon: Settings, path: "/settings" },
+    { label: "Tableau de bord", icon: Home, path: "/" },
+    { label: "Projets", icon: FolderOpen, path: "/projects" },
+    { label: "Réglages", icon: Settings, path: "/settings" },
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const bgColor = "#FFFFFF";
+  const bgColor = selectedRAL?.hex || "#FFFFFF";
   const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
   const hoverBgColor = isColorLight(bgColor) ? "hover:bg-black/5" : "hover:bg-white/10";
   const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
