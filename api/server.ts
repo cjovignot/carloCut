@@ -26,7 +26,6 @@ const allowedOrigins = [
   "http://localhost:5173", // toujours autorisé pour ton frontend en local
   "http://localhost:5000", // si tu tapes l’API directement
   process.env.VITE_API_URL, // backend déployé (Vercel)
-  "https://carlo-cut.vercel.app", // ton domaine prod
 ].filter(Boolean); // enlève les undefined
 
 app.use(
