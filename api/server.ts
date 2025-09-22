@@ -12,6 +12,7 @@ import pdfRoutes from "./routes/pdf.js";
 import emailRoutes from "./routes/email.js";
 
 import connectDB from "./utils/connectDB.js";
+import { createServerlessHandler } from "express-vercel-adapter";
 
 dotenv.config();
 
@@ -22,20 +23,25 @@ const app = express();
 // ---------------------------
 app.use(helmet());
 
+// Origines autorisées depuis .env
 const allowedOrigins = [
-  "http://localhost:5173", // toujours autorisé pour ton frontend en local
-  "http://localhost:5000", // si tu tapes l’API directement
-  process.env.VITE_API_URL, // backend déployé (Vercel)
-  "https://ecb-carlo.app", // ton domaine prod
-].filter(Boolean); // enlève les undefined
+  "http://localhost:5173",
+  "http://localhost:5000",
+  process.env.VITE_API_URL, // ton backend déployé (si défini)
+  "https://ecb-carlo.app",  // ton domaine prod
+].filter(Boolean);
 
 const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    if (!origin) return callback(null, true);
+  origin: (origin: string | undefined, callback: any) => {
+    if (!origin) return callback(null, true); // Postman / curl
 
-    const vercelRegex = /\.vercel\.app$/;
+    // whitelist explicite
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-    if (allowedOrigins.includes(origin) || vercelRegex.test(origin)) {
+    // autoriser toutes les branches preview de vercel
+    if (/\.vercel\.app$/.test(origin)) {
       return callback(null, true);
     }
 
@@ -50,11 +56,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
+// ---------------------------
 // Rate limiting
+// ---------------------------
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
+// ---------------------------
 // Body parsing
+// ---------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -84,16 +94,11 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-export default async function handler(req: any, res: any) {
-  try {
-    await connectDB();
-    return app(req, res);
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("Server error");
-    console.error("Serverless handler error:", error);
-    return res.status(500).json({ message: error.message });
-  }
-}
+const handler = createServerlessHandler(app, async () => {
+  await connectDB();
+});
+
+export default handler;
 
 // ---------------------------
 // Local dev server
@@ -104,6 +109,7 @@ if (process.env.NODE_ENV !== "production") {
     .then(() => {
       app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
+        console.log("Allowed origins:", allowedOrigins);
       });
     })
     .catch((err) => {
