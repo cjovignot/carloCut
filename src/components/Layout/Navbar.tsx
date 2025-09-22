@@ -16,16 +16,14 @@ export function Navbar() {
 
   return (
     <nav
-      className="fixed z-50 w-full border-b
-      bg-[linear-gradient(135deg,#d1d5db,#9ca3af,#f3f4f6)]
-      bg-[length:200%_200%]
-      border-gray-400
-      shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),0_2px_6px_rgba(0,0,0,0.4)]"
+      className="fixed z-50 w-full border-b border-gray-400
+      bg-[repeating-linear-gradient(90deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]
+      shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),inset_0_-1px_2px_rgba(0,0,0,0.15),0_2px_6px_rgba(0,0,0,0.4)]"
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link to="/" className="flex items-center space-x-2">
-          <Anvil className="w-8 h-8 text-gray-800 drop-shadow" />
+          <Anvil className="w-8 h-8 text-gray-700 drop-shadow" />
           <span className="text-xl font-bold text-gray-900 tracking-wide uppercase">
             MetalOrders
           </span>
@@ -60,10 +58,9 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        className="fixed bottom-0 left-0 w-full border-t md:hidden
-        bg-[linear-gradient(135deg,#e5e7eb,#9ca3af,#d1d5db)]
-        border-gray-400
-        shadow-[inset_0_1px_2px_rgba(255,255,255,0.5),0_-2px_6px_rgba(0,0,0,0.4)]"
+        className="fixed bottom-0 left-0 w-full border-t border-gray-400 md:hidden
+        bg-[repeating-linear-gradient(90deg,#f3f4f6,#f3f4f6_2px,#e5e7eb_2px,#e5e7eb_4px)]
+        shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),inset_0_-1px_2px_rgba(0,0,0,0.15),0_-2px_6px_rgba(0,0,0,0.4)]"
       >
         <div className="grid h-12 grid-cols-3">
           {navItems.map((item) =>
