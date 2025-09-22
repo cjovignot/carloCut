@@ -2,6 +2,17 @@ import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 
+// Fonction utilitaire pour déterminer si une couleur est claire ou foncée
+function isColorLight(hex: string) {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  // Formule de luminance relative
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 180; // seuil à ajuster si besoin
+}
+
 export function Navbar() {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -14,8 +25,10 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  // Couleur hex du RAL sélectionné (par défaut #FFFFFF)
   const bgColor = "#FFFFFF";
+  const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
+  const hoverBgColor = isColorLight(bgColor) ? "hover:bg-black/5" : "hover:bg-white/10";
+  const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
 
   return (
     <nav
@@ -24,9 +37,9 @@ export function Navbar() {
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
-        <Link to="/" className="flex items-center space-x-2">
-          <Anvil className="w-8 h-8 text-gray-800" />
-          <span className="text-xl font-bold text-gray-900">MetalOrders</span>
+        <Link to="/" className={`flex items-center space-x-2 ${textColor}`}>
+          <Anvil className={`w-8 h-8`} />
+          <span className="text-xl font-bold tracking-wide uppercase">MetalOrders</span>
         </Link>
 
         <div className="flex items-center space-x-4">
@@ -34,10 +47,8 @@ export function Navbar() {
             <Link
               key={item.label}
               to={item.path}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === item.path
-                  ? "bg-black/10 text-gray-900"
-                  : "text-gray-700 hover:bg-black/5"
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${textColor} ${
+                location.pathname === item.path ? activeBgColor : hoverBgColor
               }`}
             >
               <item.icon className="w-4 h-4 mr-2" />
@@ -46,7 +57,7 @@ export function Navbar() {
           ))}
           <button
             onClick={logout}
-            className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-black/5"
+            className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${textColor} ${hoverBgColor}`}
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -65,10 +76,8 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex-1 flex flex-col items-center justify-center ${
-                  location.pathname === item.path
-                    ? "text-gray-900 bg-black/10"
-                    : "text-gray-700 hover:bg-black/5"
+                className={`flex-1 flex flex-col items-center justify-center ${textColor} ${
+                  location.pathname === item.path ? activeBgColor : hoverBgColor
                 }`}
               >
                 <item.icon className="w-6 h-6" />
@@ -77,7 +86,7 @@ export function Navbar() {
               <button
                 key={item.label}
                 onClick={item.action}
-                className="flex-1 flex flex-col items-center justify-center text-gray-700 hover:bg-black/5"
+                className={`flex-1 flex flex-col items-center justify-center ${textColor} ${hoverBgColor}`}
               >
                 <item.icon className="w-6 h-6" />
               </button>
