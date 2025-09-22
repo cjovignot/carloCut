@@ -35,7 +35,7 @@ export function Navbar() {
 
   return (
     <nav
-      className='fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300 bg-${bgColor.hex}'
+      className={ˋfixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300 bg-${bgColor.hex}ˋ}
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
@@ -69,7 +69,7 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        className='fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300 bg-${bgColor.hex}'
+        className={ˋfixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300 bg-${bgColor.hex}ˋ}
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
