@@ -27,6 +27,7 @@ const allowedOrigins = [
   "http://localhost:5000", // API directe
   process.env.VITE_API_URL, // backend déployé (Vercel)
   "https://ecb-carlo.app", // domaine prod
+  "https://carlo-cut-git-preview-cjovignots-projects.vercel.app", // preview Vercel
 ].filter(Boolean);
 
 // fonction utilitaire
