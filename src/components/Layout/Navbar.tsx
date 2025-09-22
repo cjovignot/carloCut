@@ -70,7 +70,7 @@ export function Navbar() {
         style={{ backgroundColor: bgColor }}
         className="fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300"
       >
-        <div className="grid h-12 grid-cols-3">
+        <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
             item.path ? (
               <Link
