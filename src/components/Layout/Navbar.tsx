@@ -35,8 +35,7 @@ export function Navbar() {
 
   return (
     <nav
-      style={{ backgroundColor: bgColor }}
-      className="fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300"
+      className=´fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300 bg-${bgColor.hex}´
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
