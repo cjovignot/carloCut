@@ -28,7 +28,7 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const bgColor = selectedRAL?.hex || "#FFFFFF";
+  const bgColor = selectedRAL?.hex;
   const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
   const hoverBgColor = isColorLight(bgColor) ? "hover:bg-black/5" : "hover:bg-white/10";
   const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
@@ -70,8 +70,7 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        style={{ backgroundColor: bgColor }}
-        className="fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300"
+        className=´fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300 bg-${bgColor.hex}´
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
