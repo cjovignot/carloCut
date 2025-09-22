@@ -32,8 +32,22 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman / curl
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (!origin) return callback(null, true);
+
+      // whitelist fixe
+      const whitelist = [
+        "http://localhost:5173",
+        "http://localhost:5000",
+        "https://ecb-carlo.app"
+      ];
+
+      // autorise tous les sous-domaines *.vercel.app
+      const vercelRegex = /\.vercel\.app$/;
+
+      if (whitelist.includes(origin) || vercelRegex.test(origin)) {
+        return callback(null, true);
+      }
+
       console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error("CORS origin not allowed"));
     },
