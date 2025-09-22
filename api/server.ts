@@ -1,4 +1,3 @@
-// api/server.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -19,76 +18,69 @@ dotenv.config();
 const app = express();
 
 // ---------------------------
-// Allowed origins (gardés depuis ton .env si besoin)
+// Security & CORS middleware
+// ---------------------------
+app.use(helmet());
+
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5000",
-  process.env.VITE_API_URL,
-  "https://ecb-carlo.app",
+  "http://localhost:5173", // frontend local
+  "http://localhost:5000", // API directe
+  process.env.VITE_API_URL, // backend déployé (Vercel)
+  "https://ecb-carlo.app", // domaine prod
 ].filter(Boolean);
 
-function isOriginAllowed(origin?: string) {
+// fonction utilitaire
+function isOriginAllowed(origin?: string): boolean {
   if (!origin) return false;
-  if (allowedOrigins.includes(origin)) return true;
-  if (/\.vercel\.app$/.test(origin)) return true; // autorise tous les *.vercel.app
+
+  // Toujours autoriser en local
+  if (origin.startsWith("http://localhost")) return true;
+
+  // En production : stricte whitelist
+  if (process.env.VERCEL_ENV === "production") {
+    return allowedOrigins.includes(origin);
+  }
+
+  // En preview/dev : autoriser tous les *.vercel.app
+  if (origin.endsWith(".vercel.app")) return true;
+
   return false;
 }
 
-// ---------------------------
-// Debug : log des origins arrivants (utile pour vérifier ce que voit le serveur)
-app.use((req, _res, next) => {
-  console.log("[CORS DEBUG] origin:", req.headers.origin, "method:", req.method, "url:", req.url);
-  next();
-});
-
-// ---------------------------
-// Manual CORS preflight handler - DOIT être exécuté très tôt
-app.use((req, res, next) => {
-  const origin = req.headers.origin as string | undefined;
-
-  if (origin && isOriginAllowed(origin)) {
-    // IMPORTANT : echoer l'origine exacte (ne PAS mettre '*') si tu veux utiliser credentials
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  }
-
-  if (req.method === "OPTIONS") {
-    // réponse rapide pour le preflight
-    return res.status(204).end();
-  }
-  next();
-});
-
-// ---------------------------
-// Security & other middlewares
-app.use(helmet());
-
-// fallback to cors package (keeps behaviour consistent)
 const corsOptions = {
   origin: (origin: string | undefined, callback: any) => {
-    if (!origin) return callback(null, true);
-    if (isOriginAllowed(origin)) return callback(null, true);
-    console.warn(`CORS blocked for origin (corsOptions): ${origin}`);
+    if (!origin) return callback(null, true); // Postman / curl
+
+    if (isOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+
+    console.warn(`CORS blocked for origin: ${origin}`);
     return callback(new Error("CORS origin not allowed"));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
+// ---------------------------
 // Rate limiting
+// ---------------------------
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
+// ---------------------------
 // Body parsing
+// ---------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ---------------------------
 // Routes
+// ---------------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/joineries", joineryRoutes);
@@ -100,7 +92,9 @@ app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Server is running" });
 });
 
+// ---------------------------
 // Error handling
+// ---------------------------
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   const error = err instanceof Error ? err : new Error("Unknown error");
   console.error(error.stack);
@@ -108,12 +102,15 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // ---------------------------
-// Serverless handler (Vercel) - connect DB once
+// Serverless handler (Vercel)
+// ---------------------------
 let dbReady: Promise<void> | null = null;
 
 export default async function handler(req: any, res: any) {
   try {
-    if (!dbReady) dbReady = connectDB();
+    if (!dbReady) {
+      dbReady = connectDB();
+    }
     await dbReady;
 
     return app(req, res);
@@ -124,7 +121,9 @@ export default async function handler(req: any, res: any) {
   }
 }
 
-// Local dev
+// ---------------------------
+// Local dev server
+// ---------------------------
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
   connectDB()
@@ -132,6 +131,7 @@ if (process.env.NODE_ENV !== "production") {
       app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
         console.log("Allowed origins:", allowedOrigins);
+        console.log("VERCEL_ENV:", process.env.VERCEL_ENV);
       });
     })
     .catch((err) => {
