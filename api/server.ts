@@ -29,36 +29,26 @@ const allowedOrigins = [
   "https://ecb-carlo.app", // ton domaine prod
 ].filter(Boolean); // enlève les undefined
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin: any, callback: any) => {
+    if (!origin) return callback(null, true);
 
-      // whitelist fixe
-      const whitelist = [
-        "http://localhost:5173",
-        "http://localhost:5000",
-        "https://ecb-carlo.app"
-      ];
+    const vercelRegex = /\.vercel\.app$/;
 
-      // autorise tous les sous-domaines *.vercel.app
-      const vercelRegex = /\.vercel\.app$/;
+    if (allowedOrigins.includes(origin) || vercelRegex.test(origin)) {
+      return callback(null, true);
+    }
 
-      if (whitelist.includes(origin) || vercelRegex.test(origin)) {
-        return callback(null, true);
-      }
+    console.warn(`CORS blocked for origin: ${origin}`);
+    return callback(new Error("CORS origin not allowed"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-      console.warn(`CORS blocked for origin: ${origin}`);
-      return callback(new Error("CORS origin not allowed"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Toujours répondre aux preflight
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
