@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, Home, FolderOpen, Anvil } from "lucide-react";
+import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 
 // Fonction utilitaire pour déterminer si une couleur est claire ou foncée
@@ -21,7 +21,7 @@ export function Navbar() {
 
   const navItems = [
     { label: "Dashboard", icon: Home, path: "/" },
-    { label: "Projects", icon: FolderOpen, path: "/projects" },
+    { label: "Projects", icon: FolderOpen, path: "/projects" }, { label: "Settings", icon: Settings, path: /settings },
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
@@ -39,7 +39,7 @@ export function Navbar() {
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link to="/" className={`flex items-center space-x-2 ${textColor}`}>
           <Anvil className={`w-8 h-8`} />
-          <span className="text-xl font-bold tracking-wide uppercase">MetalOrders</span>
+          <span className="text-xl font-bold tracking-wide uppercase">ECB-Carlo</span>
         </Link>
 
         <div className="flex items-center space-x-4">
