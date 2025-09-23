@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SettingsProvider } from "./services/useSettings"; // ✅ importer
+import { useThemeColor } from "./services/useThemeColor";
 import { Navbar } from "./components/Layout/Navbar";
 
 import { ProtectedRoute } from "./components/Auth/ProtectedRoute";
@@ -17,6 +18,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+useThemeColor();
+
   return (
     <SettingsProvider>
       <AuthProvider>
