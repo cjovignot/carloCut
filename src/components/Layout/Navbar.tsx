@@ -50,7 +50,7 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center space-x-4">
-          {navItems.slice(0, 2).map((item) => (
+          {navItems.slice(0, 3).map((item) => (
             <Link
               key={item.label}
               to={item.path}
