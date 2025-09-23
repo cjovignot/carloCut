@@ -1,5 +1,8 @@
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/UI/Button";
+import { useAuth } from "../services/useAuth";
 import { useSettings } from "../services/useSettings";
 
 // ✅ Import toast
@@ -8,35 +11,35 @@ import { toast } from "react-toastify";
 import { RAL_CLASSIC } from "../constants/ral_classic_colors";
 import { Listbox } from "@headlessui/react";
 
-// Exemple de palette RAL minimaliste (tu peux l’étendre)
-const RAL_COLORS = [
-  { code: "RAL 1000", name: "Beige vert", hex: "#CDBA88" },
-  { code: "RAL 3000", name: "Rouge feu", hex: "#AF2B1E" },
-  { code: "RAL 5005", name: "Bleu signalisation", hex: "#004C91" },
-  { code: "RAL 7016", name: "Gris anthracite", hex: "#383E42" },
-  { code: "RAL 9010", name: "Blanc pur", hex: "#FFFFFF" },
-];
-
 export function Settings() {
-
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { navbarColor, setNavbarColor } = useSettings();
-  const [selected, setSelected] = useState(navbarColor);
+  const [selectedRAL, setSelectedRAL] = useState(
+    RAL_CLASSIC.find((c) => c.hex === navbarColor) || null
+  );
 
   const handleSave = () => {
-    setNavbarColor(selected);
+    if (!selectedRAL) {
+      toast.error("Veuillez sélectionner une couleur ⚠️", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    setNavbarColor(selectedRAL.hex);
     toast.success("Réglages enregistrés ✅", {
       position: "top-right",
       autoClose: 3000,
     });
   };
 
-
   return (
     <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center mb-8 space-x-3">
+        <ArrowLeft className="w-5 h-5 text-gray-500" />
         <h1 className="text-3xl font-bold text-gray-900">Paramètres</h1>
       </div>
 
@@ -47,16 +50,14 @@ export function Settings() {
         </h2>
 
         <Listbox
-          value={tempRAL?.code || ""}
+          value={selectedRAL?.code || ""}
           onChange={(code) => {
             const color = RAL_CLASSIC.find((c) => c.code === code) || null;
-            setTempRAL(color); // ✅ change direct la navbar
+            setSelectedRAL(color);
           }}
         >
           {({ open }) => {
-            const selectedColor = RAL_CLASSIC.find(
-              (c) => c.code === tempRAL?.code
-            );
+            const selectedColor = selectedRAL;
             return (
               <>
                 <Listbox.Button className="flex items-center w-full gap-2 p-2 text-left border rounded-md">
@@ -102,7 +103,7 @@ export function Settings() {
         </Listbox>
 
         <div className="mt-6">
-          <Button onClick={saveRAL}>Enregistrer</Button>
+          <Button onClick={handleSave}>Enregistrer</Button>
         </div>
       </div>
     </div>
