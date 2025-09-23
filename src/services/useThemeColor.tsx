@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSettings } from "./useSettings";
+import { useSettings } from "./SettingsContext/useSettings";
 
 export function useThemeColor() {
   const { tempRAL } = useSettings(); // 👈 on regarde tempRAL
