@@ -1,40 +1,48 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
-export interface RALColor {
-  code: string;
-  name: string;
-  hex: string;
-}
+export type RALColor = { code: string; name: string; hex: string };
 
 interface SettingsContextType {
-  selectedRAL: RALColor | null;
-  setSelectedRAL: (ral: RALColor) => void;
+  savedRAL: RALColor | null;
+  tempRAL: RALColor | null;
+  setTempRAL: (color: RALColor | null) => void;
+  saveRAL: () => void;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined
+);
 
-export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [selectedRAL, setSelectedRALState] = useState<RALColor | null>(null);
+export function SettingsProvider({ children }: { children: React.ReactNode }) {
+  const [savedRAL, setSavedRAL] = useState<RALColor | null>(null);
+  const [tempRAL, setTempRAL] = useState<RALColor | null>(null);
 
-  // Charger depuis localStorage au montage
+  // 🔹 Charger depuis localStorage au montage
   useEffect(() => {
-    const storedRAL = localStorage.getItem("selectedRAL");
+    const storedRAL = localStorage.getItem("savedRAL");
     if (storedRAL) {
-      setSelectedRALState(JSON.parse(storedRAL));
-    } else {
-      // Valeur par défaut si rien en storage
-      setSelectedRALState({ code: "DEFAULT", name: "Blanc", hex: "#FFFFFF" });
+      try {
+        const parsed: RALColor = JSON.parse(storedRAL);
+        setSavedRAL(parsed);
+        setTempRAL(parsed); // on initialise aussi le temp
+      } catch (e) {
+        console.error("Erreur parsing savedRAL:", e);
+      }
     }
   }, []);
 
-  // Sauvegarder dans localStorage à chaque changement
-  const setSelectedRAL = (ral: RALColor) => {
-    setSelectedRALState(ral);
-    localStorage.setItem("selectedRAL", JSON.stringify(ral));
+  // 🔹 Fonction pour sauvegarder
+  const saveRAL = () => {
+    if (tempRAL) {
+      setSavedRAL(tempRAL);
+      localStorage.setItem("savedRAL", JSON.stringify(tempRAL));
+    }
   };
 
   return (
-    <SettingsContext.Provider value={{ selectedRAL, setSelectedRAL }}>
+    <SettingsContext.Provider
+      value={{ savedRAL, tempRAL, setTempRAL, saveRAL }}
+    >
       {children}
     </SettingsContext.Provider>
   );
@@ -42,8 +50,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
 export function useSettings() {
   const context = useContext(SettingsContext);
-  if (!context) {
-    throw new Error("useSettings doit être utilisé à l’intérieur d’un SettingsProvider");
-  }
+  if (!context)
+    throw new Error("useSettings must be used within SettingsProvider");
   return context;
 }
