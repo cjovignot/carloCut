@@ -1,13 +1,24 @@
-function App() {
-  return (
-    <SettingsProvider>
-      <InnerApp />   {/* on déplace la logique dans un composant enfant */}
-    </SettingsProvider>
-  );
-}
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { SettingsProvider } from "./services/useSettings";
+import { useThemeColor } from "./services/useThemeColor";
+import { Navbar } from "./components/Layout/Navbar";
+
+import { ProtectedRoute } from "./components/Auth/ProtectedRoute";
+import { Register } from "./pages/Register";
+import { Login } from "./pages/Login";
+import { Dashboard } from "./pages/Dashboard";
+import { Projects } from "./pages/Projects";
+import { ProjectDetail } from "./pages/ProjectDetail";
+import { JoineryDetail } from "./pages/JoineryDetail";
+import { Settings } from "./pages/Settings";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function InnerApp() {
-  useThemeColor(); // ✅ maintenant le provider existe
+  // ✅ maintenant SettingsProvider existe, on peut utiliser le hook
+  useThemeColor();
 
   return (
     <AuthProvider>
@@ -63,6 +74,7 @@ function InnerApp() {
             </div>
           </main>
 
+          {/* ✅ Toast notifications */}
           <ToastContainer
             position="top-right"
             autoClose={3000}
@@ -80,3 +92,13 @@ function InnerApp() {
     </AuthProvider>
   );
 }
+
+function App() {
+  return (
+    <SettingsProvider>
+      <InnerApp />
+    </SettingsProvider>
+  );
+}
+
+export default App;
