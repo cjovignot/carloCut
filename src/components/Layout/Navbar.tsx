@@ -16,7 +16,7 @@ function isColorLight(hex: string) {
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const { selectedRAL } = useSettings();
+  const { savedRAL, tempRAL } = useSettings();
   const location = useLocation();
 
   if (!user || location.pathname === "/login") return null;
@@ -28,21 +28,25 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const bgColor = selectedRAL?.hex || "#FFFFFF"; // ✅ valeur par défaut
+  const bgColor = tempRAL?.hex || savedRAL?.hex || "#FFFFFF";
   const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
-  const hoverBgColor = isColorLight(bgColor) ? "hover:bg-black/5" : "hover:bg-white/10";
+  const hoverBgColor = isColorLight(bgColor)
+    ? "hover:bg-black/5"
+    : "hover:bg-white/10";
   const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
 
   return (
     <nav
-      className="fixed z-50 w-full border-b border-gray-200 shadow-md transition-colors duration-300"
+      className="fixed z-50 w-full transition-colors duration-300 border-b border-gray-200 shadow-md"
       style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link to="/" className={`flex items-center space-x-2 ${textColor}`}>
           <Anvil className="w-8 h-8" />
-          <span className="text-xl font-bold tracking-wide uppercase">ECB-Carlo</span>
+          <span className="text-xl font-bold tracking-wide uppercase">
+            ECB-Carlo
+          </span>
         </Link>
 
         <div className="flex items-center space-x-4">
@@ -70,7 +74,7 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        className="fixed bottom-0 left-0 w-full border-t border-gray-200 shadow-md md:hidden transition-colors duration-300"
+        className="fixed bottom-0 left-0 w-full transition-colors duration-300 border-t border-gray-200 shadow-md md:hidden"
         style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
       >
         <div className="grid h-12 grid-cols-4">
