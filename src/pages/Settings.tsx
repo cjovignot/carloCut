@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/UI/Button";
 import { useSettings } from "../services/useSettings";
-import { RAL_CLASSIC } from "../../constants/ral_classic_colors";
+import { RAL_CLASSIC } from "../constants/ral_classic_colors";
 import { Listbox } from "@headlessui/react";
 
 export function Settings() {
