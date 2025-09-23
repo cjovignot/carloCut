@@ -37,7 +37,7 @@ export function Navbar() {
 
   return (
     <nav
-      className="fixed z-50 w-full transition-colors duration-300 border-b border-gray-200 shadow-md"
+      className="fixed z-50 w-full transition-colors duration-300 shadow-md"
       style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
     >
       {/* Desktop Navbar */}
