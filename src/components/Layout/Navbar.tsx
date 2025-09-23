@@ -74,7 +74,7 @@ export function Navbar() {
 
       {/* Mobile Navbar */}
       <div
-        className="fixed bottom-0 left-0 w-full transition-colors duration-300 border-t border-gray-200 shadow-md md:hidden"
+        className="fixed bottom-0 left-0 w-full transition-colors duration-300 shadow-md md:hidden"
         style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
       >
         <div className="grid h-12 grid-cols-4">
