@@ -9,28 +9,44 @@ export type Theme = {
   text: string;
   navbar: string;
 
-  // Couleurs calculées automatiquement pour le contraste
   textOnPrimary?: string;
   textOnSecondary?: string;
   textOnNavbar?: string;
 };
 
+// 🔹 Détection si couleur claire ou foncée
+function isColorLight(hex: string) {
+  if (!hex) return true;
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 180;
+}
+
+// 🔹 Retourne la couleur de texte lisible sur un fond
+function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
+  return isColorLight(bgHex) ? darkText : lightText;
+}
+
+// 🔹 10 thèmes élégants et modernes
 export const THEMES: Theme[] = [
   {
     name: "Blanc Élégant",
-    primary: "#1D4ED8",       // Bleu
-    secondary: "#2563EB",     // Bleu clair
-    background: "#F9FAFB",    // Gris très clair
-    text: "#111827",           // Gris foncé
-    navbar: "#FFFFFF",         // Blanc
+    primary: "#1D4ED8",
+    secondary: "#2563EB",
+    background: "#F9FAFB",
+    text: "#111827",
+    navbar: "#FFFFFF",
   },
   {
     name: "Gris Anthracite",
-    primary: "#383E42",       // Gris foncé
-    secondary: "#4B5563",     // Gris moyen
-    background: "#F3F4F6",    // Gris clair
-    text: "#F9FAFB",           // Blanc
-    navbar: "#383E42",         // Gris foncé
+    primary: "#383E42",
+    secondary: "#4B5563",
+    background: "#F3F4F6",
+    text: "#F9FAFB",
+    navbar: "#383E42",
   },
   {
     name: "Bleu Signalisation",
@@ -58,16 +74,16 @@ export const THEMES: Theme[] = [
   },
   {
     name: "Vert Nature",
-    primary: "#4C7C4A",       // Vert forêt
-    secondary: "#6CA26C",     // Vert clair
+    primary: "#4C7C4A",
+    secondary: "#6CA26C",
     background: "#EFFAF0",
     text: "#111827",
     navbar: "#4C7C4A",
   },
   {
     name: "Orange Moderne",
-    primary: "#D97706",       // Orange foncé
-    secondary: "#F59E0B",     // Orange clair
+    primary: "#D97706",
+    secondary: "#F59E0B",
     background: "#FFF7ED",
     text: "#111827",
     navbar: "#D97706",
@@ -98,22 +114,6 @@ export const THEMES: Theme[] = [
   },
 ];
 
-// 🔹 Détection si couleur claire ou foncée
-function isColorLight(hex: string) {
-  if (!hex) return true;
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 180;
-}
-
-// 🔹 Retourne la couleur de texte lisible sur un fond
-function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
-  return isColorLight(bgHex) ? darkText : lightText;
-}
-
 interface SettingsContextType {
   savedTheme: Theme | null;
   tempTheme: Theme | null;
@@ -125,22 +125,36 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [savedTheme, setSavedTheme] = useState<Theme | null>(null);
-  const [tempTheme, setTempTheme] = useState<Theme | null>(null);
+  const [tempTheme, setTempThemeState] = useState<Theme | null>(null);
+
+  // 🔹 Ajouter automatiquement les couleurs de texte
+  const enhanceTheme = (theme: Theme): Theme => ({
+    ...theme,
+    textOnPrimary: getTextColorForBackground(theme.primary),
+    textOnSecondary: getTextColorForBackground(theme.secondary),
+    textOnNavbar: getTextColorForBackground(theme.navbar),
+  });
+
+  // 🔹 Setter tempTheme avec contraste calculé
+  const setTempTheme = (theme: Theme) => setTempThemeState(enhanceTheme(theme));
 
   useEffect(() => {
     const stored = localStorage.getItem("savedTheme");
     if (stored) {
       try {
         const parsed: Theme = JSON.parse(stored);
-        setSavedTheme(parsed);
-        setTempTheme(parsed);
+        const enhanced = enhanceTheme(parsed);
+        setSavedTheme(enhanced);
+        setTempThemeState(enhanced);
       } catch {
-        setSavedTheme(THEMES[0]);
-        setTempTheme(THEMES[0]);
+        const defaultTheme = enhanceTheme(THEMES[0]);
+        setSavedTheme(defaultTheme);
+        setTempThemeState(defaultTheme);
       }
     } else {
-      setSavedTheme(THEMES[0]);
-      setTempTheme(THEMES[0]);
+      const defaultTheme = enhanceTheme(THEMES[0]);
+      setSavedTheme(defaultTheme);
+      setTempThemeState(defaultTheme);
     }
   }, []);
 
@@ -164,5 +178,4 @@ export function useSettings() {
   return context;
 }
 
-// 🔹 Export utils pour appliquer le contraste
 export { getTextColorForBackground };
