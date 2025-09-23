@@ -18,19 +18,19 @@ export type Theme = {
 export const THEMES: Theme[] = [
   {
     name: "Blanc Élégant",
-    primary: "#1D4ED8",
-    secondary: "#2563EB",
-    background: "#F9FAFB",
-    text: "#111827",
-    navbar: "#FFFFFF",
+    primary: "#1D4ED8",       // Bleu
+    secondary: "#2563EB",     // Bleu clair
+    background: "#F9FAFB",    // Gris très clair
+    text: "#111827",           // Gris foncé
+    navbar: "#FFFFFF",         // Blanc
   },
   {
     name: "Gris Anthracite",
-    primary: "#383E42",
-    secondary: "#4B5563",
-    background: "#F3F4F6",
-    text: "#F9FAFB",
-    navbar: "#383E42",
+    primary: "#383E42",       // Gris foncé
+    secondary: "#4B5563",     // Gris moyen
+    background: "#F3F4F6",    // Gris clair
+    text: "#F9FAFB",           // Blanc
+    navbar: "#383E42",         // Gris foncé
   },
   {
     name: "Bleu Signalisation",
@@ -55,6 +55,46 @@ export const THEMES: Theme[] = [
     background: "#FEFDF8",
     text: "#111827",
     navbar: "#CDBA88",
+  },
+  {
+    name: "Vert Nature",
+    primary: "#4C7C4A",       // Vert forêt
+    secondary: "#6CA26C",     // Vert clair
+    background: "#EFFAF0",
+    text: "#111827",
+    navbar: "#4C7C4A",
+  },
+  {
+    name: "Orange Moderne",
+    primary: "#D97706",       // Orange foncé
+    secondary: "#F59E0B",     // Orange clair
+    background: "#FFF7ED",
+    text: "#111827",
+    navbar: "#D97706",
+  },
+  {
+    name: "Violet Royal",
+    primary: "#6B21A8",
+    secondary: "#8B5CF6",
+    background: "#F5F3FF",
+    text: "#111827",
+    navbar: "#6B21A8",
+  },
+  {
+    name: "Turquoise Élégant",
+    primary: "#0D9488",
+    secondary: "#14B8A6",
+    background: "#ECFEFF",
+    text: "#111827",
+    navbar: "#0D9488",
+  },
+  {
+    name: "Rose Douceur",
+    primary: "#BE185D",
+    secondary: "#EC4899",
+    background: "#FFF1F6",
+    text: "#111827",
+    navbar: "#BE185D",
   },
 ];
 
