@@ -5,6 +5,9 @@ import { Button } from "../components/UI/Button";
 import { useAuth } from "../services/useAuth";
 import { useSettings } from "../services/useSettings";
 
+// ✅ Import toast
+import { toast } from "react-toastify";
+
 // Exemple de palette RAL minimaliste (tu peux l’étendre)
 const RAL_COLORS = [
   { code: "RAL 1000", name: "Beige vert", hex: "#CDBA88" },
@@ -22,6 +25,10 @@ export function Settings() {
 
   const handleSave = () => {
     setNavbarColor(selected);
+    toast.success("Réglages enregistrés ✅", {
+      position: "top-right",
+      autoClose: 3000,
+    });
   };
 
   return (

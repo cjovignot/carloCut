@@ -12,9 +12,13 @@ import { ProjectDetail } from "./pages/ProjectDetail";
 import { JoineryDetail } from "./pages/JoineryDetail";
 import { Settings } from "./pages/Settings";
 
+// ✅ Toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
-    <SettingsProvider> {/* ✅ Wrap ici pour que Navbar et pages accèdent au contexte */}
+    <SettingsProvider>
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-gray-50">
@@ -67,6 +71,20 @@ function App() {
                 </Routes>
               </div>
             </main>
+
+            {/* ✅ Toast Container */}
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored" // light | dark | colored
+            />
           </div>
         </Router>
       </AuthProvider>
