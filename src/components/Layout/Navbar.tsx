@@ -38,11 +38,13 @@ export function Navbar() {
   return (
     <nav
       className="fixed z-50 w-full transition-colors duration-300 shadow-md"
-      style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
+      style={{ backgroundColor: "var(--color-navbar)" }}
     >
       {/* Desktop Navbar */}
-      <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
-        <Link to="/" className={`flex items-center space-x-2 ${textColor}`}>
+      <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl"
+      >
+        <Link to="/" style={{ 
+color: "var(--color-text-on-navbar)" }} className={`flex items-center space-x-2 `}>
           <Anvil className="w-8 h-8" />
           <span className="text-xl font-bold tracking-wide uppercase">
             ECB-Carlo
@@ -54,7 +56,8 @@ export function Navbar() {
             <Link
               key={item.label}
               to={item.path}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${textColor} ${
+              
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 location.pathname === item.path ? activeBgColor : hoverBgColor
               }`}
             >
@@ -75,7 +78,7 @@ export function Navbar() {
       {/* Mobile Navbar */}
       <div
         className="fixed bottom-0 left-0 w-full transition-colors duration-300 shadow-md md:hidden"
-        style={{ backgroundColor: bgColor }} // ✅ couleur dynamique
+        style={{ backgroundColor: "var(--color-navbar)" }}
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
@@ -83,7 +86,9 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex-1 flex flex-col items-center justify-center ${textColor} ${
+                style={{ 
+color: "var(--color-text-on-navbar)" }}
+                className={`flex-1 flex flex-col items-center justify-center ${
                   location.pathname === item.path ? activeBgColor : hoverBgColor
                 }`}
               >

@@ -8,6 +8,11 @@ export type Theme = {
   background: string;
   text: string;
   navbar: string;
+
+  // Couleurs calculées automatiquement pour le contraste
+  textOnPrimary?: string;
+  textOnSecondary?: string;
+  textOnNavbar?: string;
 };
 
 export const THEMES: Theme[] = [
@@ -53,6 +58,22 @@ export const THEMES: Theme[] = [
   },
 ];
 
+// 🔹 Détection si couleur claire ou foncée
+function isColorLight(hex: string) {
+  if (!hex) return true;
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 180;
+}
+
+// 🔹 Retourne la couleur de texte lisible sur un fond
+function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
+  return isColorLight(bgHex) ? darkText : lightText;
+}
+
 interface SettingsContextType {
   savedTheme: Theme | null;
   tempTheme: Theme | null;
@@ -73,8 +94,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         const parsed: Theme = JSON.parse(stored);
         setSavedTheme(parsed);
         setTempTheme(parsed);
-      } catch (e) {
-        console.error("Erreur parsing savedTheme:", e);
+      } catch {
         setSavedTheme(THEMES[0]);
         setTempTheme(THEMES[0]);
       }
@@ -85,13 +105,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const saveTheme = () => {
-    if (tempTheme) {
-      setSavedTheme(tempTheme);
-      localStorage.setItem("savedTheme", JSON.stringify(tempTheme));
-      toast.success(`Thème enregistré : ${tempTheme.name}`);
-    } else {
-      toast.error("Aucun thème sélectionné !");
-    }
+    if (!tempTheme) return toast.error("Aucun thème sélectionné !");
+    setSavedTheme(tempTheme);
+    localStorage.setItem("savedTheme", JSON.stringify(tempTheme));
+    toast.success(`Thème enregistré : ${tempTheme.name}`);
   };
 
   return (
@@ -106,3 +123,6 @@ export function useSettings() {
   if (!context) throw new Error("useSettings must be used within SettingsProvider");
   return context;
 }
+
+// 🔹 Export utils pour appliquer le contraste
+export { getTextColorForBackground };
