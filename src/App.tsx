@@ -26,7 +26,7 @@ function InnerApp() {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <main>
-            <div className="md:pt-14 md:pb-0">
+            <div className="p-0">
               <Routes>
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
