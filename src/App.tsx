@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SettingsProvider } from "./services/useSettings";
-import { useThemeColor } from "./services/useThemeColor";
+import { useApplyTheme } from "./services/useApplyTheme";
 import { Navbar } from "./components/Layout/Navbar";
 
 import { ProtectedRoute } from "./components/Auth/ProtectedRoute";
@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function InnerApp() {
   // ✅ maintenant SettingsProvider existe, on peut utiliser le hook
-  useThemeColor();
+  useApplyTheme();
 
   return (
     <AuthProvider>
