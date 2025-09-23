@@ -4,7 +4,7 @@ export function ThemeSelector() {
   const { tempTheme, setTempTheme, saveTheme, savedTheme } = useSettings();
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 m-2">
       {THEMES.map((theme) => {
         const isSelected = tempTheme?.name === theme.name;
         return (
