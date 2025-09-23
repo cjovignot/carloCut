@@ -67,9 +67,12 @@ color: "var(--color-text-on-navbar)" }} className={`flex items-center space-x-2 
           ))}
           <button
             onClick={logout}
-            className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${textColor} ${hoverBgColor}`}
+            style={{ 
+color: "var(--color-text-on-navbar)" }}
+            className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${hoverBgColor}`}
           >
-            <LogOut className="w-4 h-4 mr-2" />
+            <LogOut style={{ 
+color: "var(--color-text-on-navbar)" }} className="w-4 h-4 mr-2" />
             Logout
           </button>
         </div>
@@ -97,8 +100,10 @@ color: "var(--color-text-on-navbar)" }}
             ) : (
               <button
                 key={item.label}
+                style={{ 
+color: "var(--color-text-on-navbar)" }}
                 onClick={item.action}
-                className={`flex-1 flex flex-col items-center justify-center ${textColor} ${hoverBgColor}`}
+                className={`flex-1 flex flex-col items-center justify-center ${hoverBgColor}`}
               >
                 <item.icon className="w-6 h-6" />
               </button>
