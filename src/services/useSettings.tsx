@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 export type RALColor = { code: string; name: string; hex: string };
 
@@ -24,7 +25,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       try {
         const parsed: RALColor = JSON.parse(storedRAL);
         setSavedRAL(parsed);
-        setTempRAL(parsed); // on initialise aussi le temp
+        setTempRAL(parsed); // initialise aussi le temp
       } catch (e) {
         console.error("Erreur parsing savedRAL:", e);
       }
@@ -36,6 +37,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     if (tempRAL) {
       setSavedRAL(tempRAL);
       localStorage.setItem("savedRAL", JSON.stringify(tempRAL));
+
+      // ✅ Feedback visuel
+      toast.success(`Couleur enregistrée : ${tempRAL.code} - ${tempRAL.name}`);
+    } else {
+      toast.error("Aucune couleur sélectionnée !");
     }
   };
 
