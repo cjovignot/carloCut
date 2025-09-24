@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 import { useSettings } from "../../services/useSettings";
+// Push
 
 // Fonction utilitaire pour déterminer si une couleur est claire ou foncée
 function isColorLight(hex: string) {
@@ -41,10 +42,14 @@ export function Navbar() {
       style={{ backgroundColor: "var(--color-navbar)" }}
     >
       {/* Desktop Navbar */}
-      <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl"
-      >
-        <Link to="/" style={{ 
-color: "var(--color-text-on-navbar)" }} className={`flex items-center space-x-2 `}>
+      <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
+        <Link
+          to="/"
+          style={{
+            color: "var(--color-text-on-navbar)",
+          }}
+          className={`flex items-center space-x-2 `}
+        >
           <Anvil className="w-8 h-8" />
           <span className="text-xl font-bold tracking-wide uppercase">
             ECB-Carlo
@@ -56,8 +61,9 @@ color: "var(--color-text-on-navbar)" }} className={`flex items-center space-x-2 
             <Link
               key={item.label}
               to={item.path}
-              style={{ 
-color: "var(--color-text-on-navbar)" }}
+              style={{
+                color: "var(--color-text-on-navbar)",
+              }}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 location.pathname === item.path ? activeBgColor : hoverBgColor
               }`}
@@ -68,12 +74,17 @@ color: "var(--color-text-on-navbar)" }}
           ))}
           <button
             onClick={logout}
-            style={{ 
-color: "var(--color-text-on-navbar)" }}
+            style={{
+              color: "var(--color-text-on-navbar)",
+            }}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${hoverBgColor}`}
           >
-            <LogOut style={{ 
-color: "var(--color-text-on-navbar)" }} className="w-4 h-4 mr-2" />
+            <LogOut
+              style={{
+                color: "var(--color-text-on-navbar)",
+              }}
+              className="w-4 h-4 mr-2"
+            />
             Logout
           </button>
         </div>
@@ -90,8 +101,9 @@ color: "var(--color-text-on-navbar)" }} className="w-4 h-4 mr-2" />
               <Link
                 key={item.label}
                 to={item.path}
-                style={{ 
-color: "var(--color-text-on-navbar)" }}
+                style={{
+                  color: "var(--color-text-on-navbar)",
+                }}
                 className={`flex-1 flex flex-col items-center justify-center ${
                   location.pathname === item.path ? activeBgColor : hoverBgColor
                 }`}
@@ -101,8 +113,9 @@ color: "var(--color-text-on-navbar)" }}
             ) : (
               <button
                 key={item.label}
-                style={{ 
-color: "var(--color-text-on-navbar)" }}
+                style={{
+                  color: "var(--color-text-on-navbar)",
+                }}
                 onClick={item.action}
                 className={`flex-1 flex flex-col items-center justify-center ${hoverBgColor}`}
               >
