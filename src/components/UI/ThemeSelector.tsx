@@ -1,47 +1,64 @@
-import { useSettings, THEMES, getTextColorForBackground } from "../services/useSettings";
+import { useSettings, THEMES } from "../services/useSettings";
 
 export function ThemeSelector() {
-  const { tempTheme, setTempTheme, saveTheme, savedTheme } = useSettings();
+  const { tempTheme, setTempTheme, saveTheme } = useSettings();
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 m-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 m-4">
       {THEMES.map((theme) => {
         const isSelected = tempTheme?.name === theme.name;
+
         return (
           <div
             key={theme.name}
-            className={`border rounded-md cursor-pointer overflow-hidden transition-transform hover:scale-105 ${
+            className={`cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105 ${
               isSelected ? "ring-2 ring-blue-500" : "border-gray-200"
             }`}
             onClick={() => setTempTheme(theme)}
           >
-            {/* Navbar miniature */}
+            {/* Aperçu miniature */}
             <div
               className="h-6 flex items-center justify-center text-xs font-bold"
-              style={{ backgroundColor: theme.navbar, color: getTextColorForBackground(theme.navbar) }}
+              style={{
+                backgroundColor: theme.navbar,
+                color: theme.textOnNavbar,
+              }}
             >
               Navbar
             </div>
-            {/* Couleurs principales */}
-            <div className="flex">
-              <div
-                className="flex-1 h-6"
-                style={{ backgroundColor: theme.primary }}
-              />
-              <div
-                className="flex-1 h-6"
-                style={{ backgroundColor: theme.secondary }}
-              />
-            </div>
-            {/* Fond et texte */}
+
             <div
-              className="h-16 flex items-center justify-center text-sm font-medium"
+              className="p-3 space-y-2"
               style={{ backgroundColor: theme.background, color: theme.text }}
             >
-              Texte
+              {/* Texte exemple */}
+              <div className="text-sm font-medium">Exemple texte</div>
+
+              {/* Boutons */}
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 py-1 px-2 rounded text-xs font-semibold"
+                  style={{
+                    backgroundColor: theme.primary,
+                    color: theme.textOnPrimary,
+                  }}
+                >
+                  Bouton
+                </button>
+                <button
+                  className="flex-1 py-1 px-2 rounded text-xs font-semibold"
+                  style={{
+                    backgroundColor: theme.secondary,
+                    color: theme.textOnSecondary,
+                  }}
+                >
+                  Action
+                </button>
+              </div>
             </div>
+
             {/* Nom du thème */}
-            <div className="p-1 text-center text-xs font-semibold bg-gray-50">
+            <div className="p-2 text-center text-xs font-semibold bg-gray-50">
               {theme.name}
             </div>
           </div>
@@ -51,7 +68,7 @@ export function ThemeSelector() {
       {/* Bouton sauvegarder */}
       <button
         onClick={saveTheme}
-        className="col-span-full mt-4 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        className="col-span-full mt-2 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
       >
         Enregistrer le thème
       </button>
