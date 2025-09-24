@@ -93,12 +93,12 @@ export const THEMES: Theme[] = [
     text: "#111827",
     navbar: "#BE185D",
   },
-  {
-    name: "iOS",
-    primary: "#007AFF", // bleu iOS
-    secondary: "#34C759", // vert iOS
-    background: "#F2F2F7", // fond clair
-    text: "#1C1C1E", // texte sombre
-    navbar: "#FFFFFF", // navbar blanche
-  },
+  // {
+  //   name: "iOS",
+  //   primary: "#007AFF", // bleu iOS
+  //   secondary: "#34C759", // vert iOS
+  //   background: "#F2F2F7", // fond clair
+  //   text: "#1C1C1E", // texte sombre
+  //   navbar: "#FFFFFF", // navbar blanche
+  // },
 ];
