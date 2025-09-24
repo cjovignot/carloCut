@@ -5,7 +5,7 @@ export function Settings() {
   const { tempTheme, setTempTheme, saveTheme } = useSettings();
 
   return (
-    <div className="px-4 py-8 max-w-7xl mx-auto">
+    <div className="px-4 py-8 pb-14 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Sélection du thème</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

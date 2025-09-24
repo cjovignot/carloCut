@@ -56,7 +56,8 @@ color: "var(--color-text-on-navbar)" }} className={`flex items-center space-x-2 
             <Link
               key={item.label}
               to={item.path}
-              
+              style={{ 
+color: "var(--color-text-on-navbar)" }}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 location.pathname === item.path ? activeBgColor : hoverBgColor
               }`}
