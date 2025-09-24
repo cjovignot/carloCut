@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 import { useSettings } from "../../services/useSettings";
-// Push
 
 // Fonction utilitaire pour déterminer si une couleur est claire ou foncée
 function isColorLight(hex: string) {
