@@ -29,7 +29,7 @@ export function ThemeSelector() {
 
             <div
               className="p-3 space-y-2"
-              style={{ backgroundColor: theme.background, color: theme.text }}
+              style={{ backgroundColor: theme.navbar, color: theme.text }}
             >
               {/* Texte exemple */}
               <div className="text-sm font-medium">Exemple texte</div>
