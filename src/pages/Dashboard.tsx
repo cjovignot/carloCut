@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Plus, FolderOpen, Users, Package, TrendingUp } from "lucide-react";
+import { Plus, FolderOpen, Users, Package } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
@@ -68,69 +68,120 @@ export function Dashboard() {
   return (
     <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Tableau de bord PREVIEW</h1>
-        {/* <p className="mt-2 text-gray-600">
-          Overview of your sheet metal ordering system
-        </p> */}
+        <h1
+          className="text-3xl font-bold"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          Tableau de bord PREVIEW
+        </h1>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-        <div className="p-6 bg-white border-l-4 border-blue-500 rounded-lg shadow">
+        <div
+          className="p-6 border-l-4 rounded-lg shadow"
+          style={{
+            backgroundColor: "var(--color-card-bg)",
+            borderColor: "var(--color-primary)",
+          }}
+        >
           <div className="flex items-center">
-            <FolderOpen className="w-8 h-8 text-blue-500" />
+            <FolderOpen
+              className="w-8 h-8"
+              style={{
+                color: "var(--color-textOnNavbar)",
+              }}
+            />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
+              <p
+                className="text-sm font-medium"
+                style={{
+                  color: "var(--color-text-secondary)",
+                }}
+              >
                 Total Chantiers
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p
+                className="text-2xl font-bold"
+                style={{
+                  color: "var(--color-text-primary)",
+                }}
+              >
                 {stats.totalProjects}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 bg-white border-l-4 border-teal-500 rounded-lg shadow">
+        <div
+          className="p-6 border-l-4 rounded-lg shadow"
+          style={{
+            backgroundColor: "var(--color-card-bg)",
+            borderColor: "var(--color-accent)",
+          }}
+        >
           <div className="flex items-center">
-            <Users className="w-8 h-8 text-teal-500" />
+            <Users
+              className="w-8 h-8"
+              style={{ color: "var(--color-accent)" }}
+            />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
+              <p
+                className="text-sm font-medium"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
                 Total menuiseries
               </p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p
+                className="text-2xl font-bold"
+                style={{ color: "var(--color-text-primary)" }}
+              >
                 {stats.totalJoineries}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 bg-white border-l-4 border-orange-500 rounded-lg shadow">
+        <div
+          className="p-6 border-l-4 rounded-lg shadow"
+          style={{
+            backgroundColor: "var(--color-card-bg)",
+            borderColor: "var(--color-warning)",
+          }}
+        >
           <div className="flex items-center">
-            <Package className="w-8 h-8 text-orange-500" />
+            <Package
+              className="w-8 h-8"
+              style={{ color: "var(--color-warning)" }}
+            />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total tôles</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p
+                className="text-sm font-medium"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
+                Total tôles
+              </p>
+              <p
+                className="text-2xl font-bold"
+                style={{ color: "var(--color-text-primary)" }}
+              >
                 {stats.totalSheets}
               </p>
             </div>
           </div>
         </div>
-
-        {/* <div className="p-6 bg-white border-l-4 border-green-500 rounded-lg shadow">
-          <div className="flex items-center">
-            <TrendingUp className="w-8 h-8 text-green-500" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Efficiency</p>
-              <p className="text-2xl font-bold text-gray-900">98%</p>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="p-6 bg-white rounded-lg shadow-md">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+        <div
+          className="p-6 rounded-lg shadow-md"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          <h2
+            className="mb-4 text-lg font-semibold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
             Actions rapides
           </h2>
           <div className="flex justify-around gap-4">
@@ -150,12 +201,21 @@ export function Dashboard() {
         </div>
 
         {/* Recent Projects */}
-        <div className="p-6 bg-white rounded-lg shadow-md">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+        <div
+          className="p-6 rounded-lg shadow-md"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          <h2
+            className="mb-4 text-lg font-semibold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
             Chantiers récents
           </h2>
           {stats.recentProjects.length === 0 ? (
-            <p className="py-4 text-center text-gray-500">
+            <p
+              className="py-4 text-center"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
               Pas encore de chantier
             </p>
           ) : (
@@ -164,23 +224,41 @@ export function Dashboard() {
                 <Link
                   key={project._id}
                   to={`/projects/${project._id}`}
-                  className="block p-3 transition-colors border rounded-md hover:bg-gray-50"
+                  className="block p-3 transition-colors border rounded-md"
+                  style={{
+                    borderColor: "var(--color-border)",
+                    color: "var(--color-text-primary)",
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium text-gray-900">
+                      <h3
+                        className="font-medium"
+                        style={{ color: "var(--color-text-primary)" }}
+                      >
                         {project.name}
                       </h3>
-                      <p className="text-sm text-gray-600">{project.client}</p>
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--color-text-secondary)" }}
+                      >
+                        {project.client}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "var(--color-text-primary)" }}
+                      >
                         {project.joineries.length}{" "}
-                        {project.joineries.length == 1
+                        {project.joineries.length === 1
                           ? "menuiserie"
                           : "menuiseries"}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--color-text-muted)" }}
+                      >
                         {new Date(project.date).toLocaleDateString()}
                       </p>
                     </div>

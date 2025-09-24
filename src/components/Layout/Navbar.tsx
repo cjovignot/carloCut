@@ -3,17 +3,6 @@ import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 import { useSettings } from "../../services/useSettings";
 
-// Fonction utilitaire pour déterminer si une couleur est claire ou foncée
-function isColorLight(hex: string) {
-  if (!hex) return true;
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 180; // seuil à ajuster si besoin
-}
-
 export function Navbar() {
   const { user, logout } = useAuth();
   const { savedRAL, tempRAL } = useSettings();
@@ -28,12 +17,7 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const bgColor = tempRAL?.hex || savedRAL?.hex || "#FFFFFF";
-  const textColor = isColorLight(bgColor) ? "text-gray-900" : "text-white";
-  const hoverBgColor = isColorLight(bgColor)
-    ? "hover:bg-black/5"
-    : "hover:bg-white/10";
-  const activeBgColor = isColorLight(bgColor) ? "bg-black/10" : "bg-white/20";
+  const textColorStyle = { color: "var(--color-text-on-navbar)" };
 
   return (
     <nav
@@ -44,13 +28,14 @@ export function Navbar() {
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link
           to="/"
-          style={{
-            color: "var(--color-text-on-navbar)",
-          }}
-          className={`flex items-center space-x-2 `}
+          style={textColorStyle}
+          className="flex items-center space-x-2"
         >
-          <Anvil className="w-8 h-8" />
-          <span className="text-xl font-bold tracking-wide uppercase">
+          <Anvil className="w-8 h-8" style={textColorStyle} />
+          <span
+            className="text-xl font-bold tracking-wide uppercase"
+            style={textColorStyle}
+          >
             ECB-Carlo
           </span>
         </Link>
@@ -60,30 +45,23 @@ export function Navbar() {
             <Link
               key={item.label}
               to={item.path}
-              style={{
-                color: "var(--color-text-on-navbar)",
-              }}
+              style={textColorStyle}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === item.path ? activeBgColor : hoverBgColor
+                location.pathname === item.path
+                  ? "bg-[var(--color-navbar-active)]"
+                  : "hover:bg-[var(--color-navbar-hover)]"
               }`}
             >
-              <item.icon className="w-4 h-4 mr-2" />
+              <item.icon className="w-4 h-4 mr-2" style={textColorStyle} />
               {item.label}
             </Link>
           ))}
           <button
             onClick={logout}
-            style={{
-              color: "var(--color-text-on-navbar)",
-            }}
-            className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${hoverBgColor}`}
+            style={textColorStyle}
+            className="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-[var(--color-navbar-hover)] transition-colors"
           >
-            <LogOut
-              style={{
-                color: "var(--color-text-on-navbar)",
-              }}
-              className="w-4 h-4 mr-2"
-            />
+            <LogOut className="w-4 h-4 mr-2" style={textColorStyle} />
             Logout
           </button>
         </div>
@@ -100,25 +78,23 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                style={{
-                  color: "var(--color-text-on-navbar)",
-                }}
-                className={`flex-1 flex flex-col items-center justify-center ${
-                  location.pathname === item.path ? activeBgColor : hoverBgColor
+                style={textColorStyle}
+                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
+                  location.pathname === item.path
+                    ? "bg-[var(--color-navbar-active)]"
+                    : "hover:bg-[var(--color-navbar-hover)]"
                 }`}
               >
-                <item.icon className="w-6 h-6" />
+                <item.icon className="w-6 h-6" style={textColorStyle} />
               </Link>
             ) : (
               <button
                 key={item.label}
-                style={{
-                  color: "var(--color-text-on-navbar)",
-                }}
+                style={textColorStyle}
                 onClick={item.action}
-                className={`flex-1 flex flex-col items-center justify-center ${hoverBgColor}`}
+                className="flex-1 flex flex-col items-center justify-center hover:bg-[var(--color-navbar-hover)] transition-colors"
               >
-                <item.icon className="w-6 h-6" />
+                <item.icon className="w-6 h-6" style={textColorStyle} />
               </button>
             )
           )}

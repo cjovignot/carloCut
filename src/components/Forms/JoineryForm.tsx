@@ -45,28 +45,50 @@ export function JoineryForm({
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      {/* Nom */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
           Menuiserie *
         </label>
         <input
           type="text"
           {...register("name", { required: "Nom de menuiserie requis" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-border)",
+            color: "var(--color-text)",
+            backgroundColor: "var(--color-background)",
+            outlineColor: "var(--color-primary)",
+          }}
           placeholder="Fenêtre SDB, Porte d'entrée..."
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
+            {errors.name.message}
+          </p>
         )}
       </div>
 
+      {/* Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
           Type *
         </label>
         <select
           {...register("type", { required: "Type is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-border)",
+            color: "var(--color-text)",
+            backgroundColor: "var(--color-background)",
+            outlineColor: "var(--color-primary)",
+          }}
         >
           <option value="">Sélectionner un type</option>
           {joineryTypes.map((type) => (
@@ -76,10 +98,13 @@ export function JoineryForm({
           ))}
         </select>
         {errors.type && (
-          <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
+            {errors.type.message}
+          </p>
         )}
       </div>
 
+      {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Annuler

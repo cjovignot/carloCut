@@ -18,18 +18,11 @@ export function Modal({
 }: ModalProps) {
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.keyCode === 27) {
-        onClose();
-      }
+      if (event.key === "Escape") onClose();
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEsc);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEsc);
-    };
+    if (isOpen) document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -44,8 +37,13 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {/* Overlay */}
         <div
-          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+          className="fixed inset-0 transition-opacity"
+          style={{
+            backgroundColor: "var(--color-text)", // couleur neutre du thème
+            opacity: 0.75,
+          }}
           onClick={onClose}
         />
 
@@ -53,16 +51,27 @@ export function Modal({
           &#8203;
         </span>
 
+        {/* Modal content */}
         <div
-          className={`inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizeClasses[size]} sm:p-6`}
+          className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizeClasses[size]} sm:p-6`}
+          style={{
+            backgroundColor: "var(--color-background)",
+            color: "var(--color-text)",
+          }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+            <h3
+              className="text-lg font-medium"
+              style={{ color: "var(--color-text)" }}
+            >
+              {title}
+            </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="transition-colors"
+              style={{ color: "var(--color-text-on-primary)" }}
             >
-              <X className="h-6 w-6" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 

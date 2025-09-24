@@ -70,7 +70,7 @@ export function SheetVisualization({
     let lines = "";
     segments.forEach((s, i) => {
       // segment principal
-      lines += `<line x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}" stroke="black" stroke-width="2"/>`;
+      lines += `<line x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}" stroke="var(--color-text)" stroke-width="2"/>`;
 
       const dim = dimensions[i];
       if (dim === undefined) return;
@@ -109,45 +109,45 @@ export function SheetVisualization({
       // 🔹 Ajuster la plus grande côte avec widthAppui
       if (i === maxLengthIndex && widthAppui && segments[0]) {
         if (!isVertical) {
-          startX = segments[0].x1; // x du premier point du premier segment
+          startX = segments[0].x1;
         } else {
-          startY = segments[0].y1; // y du premier point du premier segment
+          startY = segments[0].y1;
         }
       }
 
       // ligne de côte
-      lines += `<line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="red" stroke-width="1" stroke-dasharray="4"/>`;
+      lines += `<line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="var(--color-primary)" stroke-width="1" stroke-dasharray="4"/>`;
 
       // flèches
       if (startX === endX) {
         lines += `
           <line x1="${startX - arrowSize}" y1="${startY}" x2="${
           startX + arrowSize
-        }" y2="${startY}" stroke="red" stroke-width="1"/>
+        }" y2="${startY}" stroke="var(--color-primary)" stroke-width="1"/>
           <line x1="${startX - arrowSize}" y1="${endY}" x2="${
           startX + arrowSize
-        }" y2="${endY}" stroke="red" stroke-width="1"/>
+        }" y2="${endY}" stroke="var(--color-primary)" stroke-width="1"/>
         `;
       } else {
         lines += `
           <line x1="${startX}" y1="${startY - arrowSize}" x2="${startX}" y2="${
           startY + arrowSize
-        }" stroke="red" stroke-width="1"/>
+        }" stroke="var(--color-primary)" stroke-width="1"/>
           <line x1="${endX}" y1="${endY - arrowSize}" x2="${endX}" y2="${
           endY + arrowSize
-        }" stroke="red" stroke-width="1"/>
+        }" stroke="var(--color-primary)" stroke-width="1"/>
         `;
       }
 
       // ligne de texte
       let displayDim = dim;
       if (i === maxLengthIndex && widthAppui) {
-        displayDim = widthAppui; // afficher widthAppui pour la plus grande côte
+        displayDim = widthAppui;
       }
 
       const midX = (s.x1 + s.x2) / 2 + 2.3 * textX;
       const midY = (s.y1 + s.y2) / 2 + 3 * textY;
-      lines += `<text x="${midX}" y="${midY}" fill="red" font-size="12" text-anchor="middle" dominant-baseline="middle">${displayDim}</text>`;
+      lines += `<text x="${midX}" y="${midY}" fill="var(--color-primary)" font-size="12" text-anchor="middle" dominant-baseline="middle">${displayDim}</text>`;
     });
 
     const svg = `<svg width="100%" height="100%" viewBox="${vbX} ${vbY} ${vbWidth} ${vbHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -170,8 +170,8 @@ export function SheetVisualization({
       style={{
         width: "100%",
         height: "100%",
-        border: "1px solid #d1d5db",
-        backgroundColor: "#f9fafb",
+        border: "1px solid var(--color-secondary)",
+        backgroundColor: "var(--color-background)",
         borderRadius: "0.5rem",
       }}
     >

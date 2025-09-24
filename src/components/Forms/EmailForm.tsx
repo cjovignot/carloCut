@@ -31,8 +31,12 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      {/* Destinataire */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
           Destinataire *
         </label>
         <input
@@ -44,43 +48,72 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
           //     message: "Adresse email invalide",
           //   },
           // })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-border)",
+            color: "var(--color-text)",
+            backgroundColor: "var(--color-background)",
+            outlineColor: "var(--color-primary)",
+          }}
           placeholder="supplier@example.com"
           value="contact@carlo.fr"
         />
         {errors.recipient && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
             {errors.recipient.message}
           </p>
         )}
       </div>
 
+      {/* Objet */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
           Objet *
         </label>
         <input
           type="text"
           {...register("subject", { required: "L'objet du mail est requis" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-border)",
+            color: "var(--color-text)",
+            backgroundColor: "var(--color-background)",
+            outlineColor: "var(--color-primary)",
+          }}
         />
         {errors.subject && (
-          <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
+            {errors.subject.message}
+          </p>
         )}
       </div>
 
+      {/* Message */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
           Message
         </label>
         <textarea
           rows={4}
           {...register("message")}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-border)",
+            color: "var(--color-text)",
+            backgroundColor: "var(--color-background)",
+            outlineColor: "var(--color-primary)",
+          }}
           placeholder="Vous trouverez ci-joint les différentes tôles à fabriquer..."
         />
       </div>
 
+      {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Annuler

@@ -17,13 +17,18 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function InnerApp() {
-  // ✅ maintenant SettingsProvider existe, on peut utiliser le hook
   useApplyTheme();
 
   return (
     <AuthProvider>
       <Router>
-        <div style={{ backgroundColor: "var(--color-navbar)", color: "var(--color-text-on-navbar)" }} className="min-h-screen">
+        <div
+          style={{
+            backgroundColor: "var(--color-app-background)",
+            color: "var(--color-text-on-navbar)",
+          }}
+          className="min-h-screen"
+        >
           <Navbar />
           <main>
             <div className="p-0">

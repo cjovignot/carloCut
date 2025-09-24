@@ -1,27 +1,32 @@
-import { useSettings, THEMES } from "../services/useSettings";
+import { useSettings } from "../../services/useSettings";
+import { THEMES } from "../../services/themes";
 
 export function ThemeSelector() {
   const { tempTheme, setTempTheme, saveTheme } = useSettings();
 
+  if (!tempTheme) return null;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 m-4">
+    <div className="grid grid-cols-1 gap-6 m-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {THEMES.map((theme) => {
-        const isSelected = tempTheme?.name === theme.name;
+        const isSelected = tempTheme.name === theme.name;
 
         return (
           <div
             key={theme.name}
-            className={`cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105 ${
-              isSelected ? "ring-2 ring-blue-500" : "border-gray-200"
-            }`}
+            className={`cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105`}
+            style={{
+              backgroundColor: "var(--color-card-bg)",
+              borderColor: isSelected ? "var(--color-primary)" : "#E5E7EB",
+            }}
             onClick={() => setTempTheme(theme)}
           >
             {/* Aperçu miniature */}
             <div
-              className="h-6 flex items-center justify-center text-xs font-bold"
+              className="flex items-center justify-center h-6 text-xs font-bold"
               style={{
-                backgroundColor: theme.navbar,
-                color: theme.textOnNavbar,
+                backgroundColor: "var(--color-navbar)",
+                color: "var(--color-text-on-navbar)",
               }}
             >
               Navbar
@@ -29,7 +34,10 @@ export function ThemeSelector() {
 
             <div
               className="p-3 space-y-2"
-              style={{ backgroundColor: theme.navbar, color: theme.text }}
+              style={{
+                backgroundColor: "var(--color-navbar)",
+                color: "var(--color-text)",
+              }}
             >
               {/* Texte exemple */}
               <div className="text-sm font-medium">Exemple texte</div>
@@ -37,19 +45,19 @@ export function ThemeSelector() {
               {/* Boutons */}
               <div className="flex gap-2">
                 <button
-                  className="flex-1 py-1 px-2 rounded text-xs font-semibold"
+                  className="flex-1 px-2 py-1 text-xs font-semibold rounded"
                   style={{
-                    backgroundColor: theme.primary,
-                    color: theme.textOnPrimary,
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-text-on-primary)",
                   }}
                 >
                   Bouton
                 </button>
                 <button
-                  className="flex-1 py-1 px-2 rounded text-xs font-semibold"
+                  className="flex-1 px-2 py-1 text-xs font-semibold rounded"
                   style={{
-                    backgroundColor: theme.secondary,
-                    color: theme.textOnSecondary,
+                    backgroundColor: "var(--color-secondary)",
+                    color: "var(--color-text-on-secondary)",
                   }}
                 >
                   Action
@@ -58,7 +66,13 @@ export function ThemeSelector() {
             </div>
 
             {/* Nom du thème */}
-            <div className="p-2 text-center text-xs font-semibold bg-gray-50">
+            <div
+              className="p-2 text-xs font-semibold text-center"
+              style={{
+                backgroundColor: "var(--color-card-bg)",
+                color: "var(--color-text)",
+              }}
+            >
               {theme.name}
             </div>
           </div>
@@ -68,7 +82,11 @@ export function ThemeSelector() {
       {/* Bouton sauvegarder */}
       <button
         onClick={saveTheme}
-        className="col-span-full mt-2 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        className="px-4 py-2 mt-2 transition rounded-md col-span-full"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          color: "var(--color-text-on-primary)",
+        }}
       >
         Enregistrer le thème
       </button>

@@ -45,77 +45,90 @@ export function ProjectForm({
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Project Name *
+        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
+          Nom du projet *
         </label>
         <input
           type="text"
-          {...register("name", { required: "Project name is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          {...register("name", { required: "Nom du projet requis" })}
+          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          placeholder="Maison Dupont, Extension salon..."
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          <p className="mt-1 text-sm text-[color:var(--error)]">
+            {errors.name.message}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Client *
         </label>
         <input
           type="text"
-          {...register("client", { required: "Client name is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          {...register("client", { required: "Nom du client requis" })}
+          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          placeholder="Jean Dupont..."
         />
         {errors.client && (
-          <p className="mt-1 text-sm text-red-600">{errors.client.message}</p>
+          <p className="mt-1 text-sm text-[color:var(--error)]">
+            {errors.client.message}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Address *
+        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
+          Adresse *
         </label>
         <input
           type="text"
-          {...register("address", { required: "Address is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          {...register("address", { required: "Adresse requise" })}
+          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          placeholder="12 rue des Lilas, Rennes..."
         />
         {errors.address && (
-          <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
+          <p className="mt-1 text-sm text-[color:var(--error)]">
+            {errors.address.message}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Date *
         </label>
         <input
           type="date"
-          {...register("date", { required: "Date is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          {...register("date", { required: "Date requise" })}
+          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
         />
         {errors.date && (
-          <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
+          <p className="mt-1 text-sm text-[color:var(--error)]">
+            {errors.date.message}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Notes</label>
+        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
+          Notes
+        </label>
         <textarea
           rows={4}
           {...register("notes")}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="Optional project notes..."
+          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          placeholder="Notes optionnelles sur le projet..."
         />
       </div>
 
       <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {initialData ? "Update" : "Create"} Project
+          {initialData ? "Mettre à jour" : "Créer"} le projet
         </Button>
       </div>
     </form>

@@ -146,8 +146,18 @@ export default function LineDrawer({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const style = getComputedStyle(document.documentElement);
+    const primary = style.getPropertyValue("--color-primary") || "red";
+    const secondary = style.getPropertyValue("--color-secondary") || "#ccc";
+    const textColor = style.getPropertyValue("--color-text") || "black";
+    const lastPointColor = style.getPropertyValue("--color-accent") || "blue";
+
+    // Canvas background
+    ctx.fillStyle = style.getPropertyValue("--color-background") || "#f9fafb";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     // Existing segments
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = textColor;
     ctx.lineWidth = 2;
     segments.forEach((seg, i) => {
       ctx.beginPath();
@@ -157,7 +167,7 @@ export default function LineDrawer({
 
       const midX = (seg.x1 + seg.x2) / 2;
       const midY = (seg.y1 + seg.y2) / 2;
-      ctx.fillStyle = "red";
+      ctx.fillStyle = primary;
       ctx.font = "14px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -166,7 +176,7 @@ export default function LineDrawer({
 
     // Current segment
     if (lastPoint && hoverPoint) {
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = primary;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(lastPoint.x, lastPoint.y);
@@ -176,7 +186,7 @@ export default function LineDrawer({
 
     // Last point
     if (lastPoint) {
-      ctx.fillStyle = "blue";
+      ctx.fillStyle = lastPointColor;
       ctx.beginPath();
       ctx.arc(lastPoint.x, lastPoint.y, 4, 0, Math.PI * 2);
       ctx.fill();
@@ -199,24 +209,23 @@ export default function LineDrawer({
   }, [handleTouch, handleTouchMove]);
 
   // Update segment (external)
-  const updateSegment = (index: number, length: number, angleDeg: number) => {
-    setSegments((prev) => {
-      if (!prev[index]) return prev;
-      const updated = [...prev];
-      const seg = updated[index];
-      const rad = (angleDeg * Math.PI) / 180;
-      updated[index] = {
-        x1: seg.x1,
-        y1: seg.y1,
-        x2: seg.x1 + length * Math.cos(rad),
-        y2: seg.y1 + length * Math.sin(rad),
-      };
-      onSegmentsChange?.(updated);
-      return updated;
-    });
-  };
+  // const updateSegment = (index: number, length: number, angleDeg: number) => {
+  //   setSegments((prev) => {
+  //     if (!prev[index]) return prev;
+  //     const updated = [...prev];
+  //     const seg = updated[index];
+  //     const rad = (angleDeg * Math.PI) / 180;
+  //     updated[index] = {
+  //       x1: seg.x1,
+  //       y1: seg.y1,
+  //       x2: seg.x1 + length * Math.cos(rad),
+  //       y2: seg.y1 + length * Math.sin(rad),
+  //     };
+  //     onSegmentsChange?.(updated);
+  //     return updated;
+  //   });
+  // };
 
-  // ===== JSX =====
   return (
     <div>
       {/* Buttons */}
@@ -228,7 +237,7 @@ export default function LineDrawer({
           variant="outline"
           onClick={() => {
             if (segments.length === 0) return;
-            const newSegs = segments.slice(0, -1); // pop safely
+            const newSegs = segments.slice(0, -1);
             setSegments(newSegs);
             const last = newSegs[newSegs.length - 1];
             setLastPoint(last ? { x: last.x2, y: last.y2 } : null);
@@ -276,7 +285,7 @@ export default function LineDrawer({
         style={{
           width: "100%",
           height: "40vh",
-          border: "1.5px dashed #665ba5c0",
+          border: `1.5px dashed var(--color-secondary)`,
           position: "relative",
           borderRadius: "20px",
         }}
@@ -287,7 +296,12 @@ export default function LineDrawer({
         </p>
         <canvas
           ref={canvasRef}
-          style={{ touchAction: "none", cursor: "crosshair", display: "block" }}
+          style={{
+            touchAction: "none",
+            cursor: "crosshair",
+            display: "block",
+            backgroundColor: "var(--color-background)",
+          }}
           onMouseDown={(e) => {
             const coords = getCanvasCoords(e.clientX, e.clientY);
             handleStart(coords.x, coords.y);
