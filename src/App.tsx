@@ -23,7 +23,7 @@ function InnerApp() {
   return (
     <AuthProvider>
       <Router>
-        <div style={{ backgroundColor: theme.navbar, color: theme.text }} className="min-h-screen">
+        <div style={{ backgroundColor: "var(--color-navbar)", color: "var(--color-text-on-navbar)" }} className="min-h-screen">
           <Navbar />
           <main>
             <div className="p-0">
