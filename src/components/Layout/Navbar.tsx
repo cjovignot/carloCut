@@ -22,7 +22,7 @@ export function Navbar() {
   return (
     <nav
       className="fixed z-50 w-full transition-colors duration-300 shadow-md"
-      style={{ backgroundColor: "var(--color-navbar)" }}
+      style={{ backgroundColor: "var(--color-navbar-bg)" }}
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
@@ -71,7 +71,7 @@ export function Navbar() {
       {/* Mobile Navbar */}
       <div
         className="fixed bottom-0 left-0 w-full transition-colors duration-300 shadow-md md:hidden"
-        style={{ backgroundColor: "var(--color-navbar)" }}
+        style={{ backgroundColor: "var(--color-navbar-bg)" }}
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
