@@ -1,3 +1,4 @@
+// ProjectDetail.tsx
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail } from "lucide-react";
@@ -19,9 +20,7 @@ export function ProjectDetail() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (id) {
-      fetchProject();
-    }
+    if (id) fetchProject();
   }, [id]);
 
   const fetchProject = async () => {
@@ -71,9 +70,7 @@ export function ProjectDetail() {
     }
   };
 
-  const handleExportPDF = () => {
-    window.open(`/api/pdf/project/${id}`, "_blank");
-  };
+  const handleExportPDF = () => window.open(`/api/pdf/project/${id}`, "_blank");
 
   const handleSendEmail = async (emailData: any) => {
     try {
@@ -88,7 +85,10 @@ export function ProjectDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div
+        className="flex items-center justify-center min-h-screen"
+        style={{ backgroundColor: "var(--color-app-bg)" }}
+      >
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -96,14 +96,21 @@ export function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div
+        className="flex items-center justify-center min-h-screen"
+        style={{ backgroundColor: "var(--color-app-bg)" }}
+      >
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2
+            className="text-2xl font-bold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
             Aucun chantier trouvé
           </h2>
           <Link
             to="/projects"
-            className="inline-block mt-4 text-blue-600 hover:text-blue-800"
+            className="inline-block mt-4 underline"
+            style={{ color: "var(--color-primary)" }}
           >
             Retour aux chantiers
           </Link>
@@ -119,40 +126,51 @@ export function ProjectDetail() {
         <div className="flex items-center mb-4">
           <Link
             to="/projects"
-            className="mr-4 text-blue-600 hover:text-blue-800"
+            className="mr-4"
+            style={{ color: "var(--color-primary)" }}
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
-            <p className="text-gray-600">Client: {project.client}</p>
+            <h1
+              className="text-3xl font-bold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              {project.name}
+            </h1>
+            <p style={{ color: "var(--color-text-secondary)" }}>
+              Client: {project.client}
+            </p>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-4">
           <Button onClick={() => setShowJoineryModal(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Ajouter une menuiserie
+            <Plus className="w-4 h-4 mr-2" /> Ajouter une menuiserie
           </Button>
           <Button variant="outline" onClick={handleExportPDF}>
-            <FileText className="w-4 h-4 mr-2" />
-            Export PDF
+            <FileText className="w-4 h-4 mr-2" /> Export PDF
           </Button>
           <Button variant="outline" onClick={() => setShowEmailModal(true)}>
-            <Mail className="w-4 h-4 mr-2" />
-            Envoyer par mail
+            <Mail className="w-4 h-4 mr-2" /> Envoyer par mail
           </Button>
         </div>
       </div>
 
       {/* Project Info */}
-      <div className="p-6 mb-8 bg-white rounded-lg shadow-md">
+      <div
+        className="p-6 mb-8 rounded-lg shadow-md"
+        style={{ backgroundColor: "var(--color-card-bg)" }}
+      >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+            <h3
+              className="mb-4 text-lg font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
               Informations de chantier
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-2" style={{ color: "var(--color-text)" }}>
               <p>
                 <span className="font-medium">Client:</span> {project.client}
               </p>
@@ -171,10 +189,13 @@ export function ProjectDetail() {
           </div>
           {project.notes && (
             <div>
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              <h3
+                className="mb-4 text-lg font-semibold"
+                style={{ color: "var(--color-text-primary)" }}
+              >
                 Notes
               </h3>
-              <p className="text-gray-700 whitespace-pre-wrap">
+              <p style={{ color: "var(--color-text-secondary)", whiteSpace: "pre-wrap" }}>
                 {project.notes}
               </p>
             </div>
@@ -184,42 +205,58 @@ export function ProjectDetail() {
 
       {/* Joineries */}
       <div>
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">
+        <h2
+          className="mb-6 text-2xl font-bold"
+          style={{ color: "var(--color-text-primary)" }}
+        >
           Menuiseries ({project.joineries.length})
         </h2>
 
         {project.joineries.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-lg shadow-md">
-            <p className="text-lg text-gray-500">Encore aucune menuiserie</p>
-            <p className="mt-2 text-gray-400">
+          <div
+            className="p-12 text-center rounded-lg shadow-md"
+            style={{ backgroundColor: "var(--color-card-bg)" }}
+          >
+            <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
+              Encore aucune menuiserie
+            </p>
+            <p style={{ color: "var(--color-text-muted)" }} className="mt-2">
               Créer une menuiserie pour commencer
             </p>
             <Button className="mt-4" onClick={() => setShowJoineryModal(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Créer une menuiserie
+              <Plus className="w-4 h-4 mr-2" /> Créer une menuiserie
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {project.joineries.map((joinery: any, index: number) => (
+            {project.joineries.map((joinery: any) => (
               <div
                 key={joinery._id}
-                className="transition-shadow bg-white rounded-lg shadow-md hover:shadow-lg"
+                className="transition-shadow rounded-lg shadow-md hover:shadow-lg"
+                style={{ backgroundColor: "var(--color-card-bg)" }}
               >
                 <Link
                   to={`/projects/${id}/joineries/${joinery._id}`}
                   className="block p-6"
                 >
-                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                  <h3
+                    className="mb-2 text-lg font-semibold"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
                     {joinery.name}
                   </h3>
                   <div className="space-y-1">
-                    <p className="text-sm text-gray-600">
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--color-text-secondary)" }}
+                    >
                       Type: {joinery.type}
                     </p>
-                    <p className="text-sm font-medium text-blue-600">
-                      {joinery.sheets.length}
-                      {joinery.sheets.length == 1 ? "tôle" : "tôles"}
+                    <p
+                      className="text-sm font-medium"
+                      style={{ color: "var(--color-primary)" }}
+                    >
+                      {joinery.sheets.length} {joinery.sheets.length === 1 ? "tôle" : "tôles"}
                     </p>
                   </div>
                 </Link>
@@ -227,13 +264,15 @@ export function ProjectDetail() {
                 <div className="flex justify-end px-6 pb-4 space-x-2">
                   <button
                     onClick={() => setEditingJoinery(joinery)}
-                    className="p-2 text-gray-400 transition-colors hover:text-blue-600"
+                    style={{ color: "var(--color-text-muted)" }}
+                    className="p-2 transition-colors hover:text-blue-600"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteJoinery(joinery._id)}
-                    className="p-2 text-gray-400 transition-colors hover:text-red-600"
+                    style={{ color: "var(--color-text-muted)" }}
+                    className="p-2 transition-colors hover:text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

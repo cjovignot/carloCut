@@ -1,9 +1,8 @@
+// Login.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../services/useAuth";
 import { Button } from "../components/UI/Button";
-import { Settings } from "lucide-react";
 import logo from "../../public/pwa-512x512.png";
 
 export function Login() {
@@ -14,9 +13,7 @@ export function Login() {
 
   const { user, login } = useAuth();
 
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
+  if (user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,28 +23,38 @@ export function Login() {
     try {
       await login(email, password);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Connexion échouée");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gradient-to-br from-blue-50 to-indigo-100 sm:px-6 lg:px-8">
+    <div
+      className="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8"
+      style={{ backgroundColor: "var(--color-app-bg)" }}
+    >
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">
-            {/* <Settings className="w-12 h-12 mr-2 text-blue-600" /> */}
-            {/* <h2 className="text-3xl font-bold text-gray-900">MetalOrders</h2> */}
             <img src={logo} alt="Logo" className="rounded-2xl w-28 h-28" />
           </div>
-          {/* <p className="mt-2 text-sm text-gray-600">Sign in to your account</p> */}
         </div>
 
-        <div className="px-6 py-8 bg-white rounded-lg shadow-xl">
+        <div
+          className="px-6 py-8 rounded-lg shadow-xl"
+          style={{ backgroundColor: "var(--color-card-bg)" }}
+        >
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="px-4 py-3 text-red-700 border border-red-200 rounded bg-red-50">
+              <div
+                className="px-4 py-3 border rounded"
+                style={{
+                  color: "var(--color-error-text)",
+                  borderColor: "var(--color-error-border)",
+                  backgroundColor: "var(--color-error-bg)",
+                }}
+              >
                 {error}
               </div>
             )}
@@ -55,7 +62,8 @@ export function Login() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium"
+                style={{ color: "var(--color-text)" }}
               >
                 E-mail
               </label>
@@ -67,15 +75,22 @@ export function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="votre_email@exemple.com"
+                className="block w-full px-3 py-2 mt-1 rounded-md shadow-sm focus:outline-none"
+                style={{
+                  backgroundColor: "var(--color-input-bg)",
+                  color: "var(--color-text)",
+                  borderColor: "var(--color-border)",
+                  placeholderColor: "var(--color-text-muted)",
+                }}
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium"
+                style={{ color: "var(--color-text)" }}
               >
                 Mot de passe
               </label>
@@ -87,8 +102,14 @@ export function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Mot de passe"
+                className="block w-full px-3 py-2 mt-1 rounded-md shadow-sm focus:outline-none"
+                style={{
+                  backgroundColor: "var(--color-input-bg)",
+                  color: "var(--color-text)",
+                  borderColor: "var(--color-border)",
+                  placeholderColor: "var(--color-text-muted)",
+                }}
               />
             </div>
 
@@ -96,19 +117,13 @@ export function Login() {
               Connexion
             </Button>
 
-            <p className="mt-4 text-sm text-center">
+            <p className="mt-4 text-sm text-center" style={{ color: "var(--color-text-muted)" }}>
               Pas encore de compte?{" "}
-              <Link to="/register" className="text-blue-600 underline">
+              <Link to="/register" style={{ color: "var(--color-primary)" }} className="underline">
                 Inscription
               </Link>
             </p>
           </form>
-
-          {/* <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-              Demo: admin@example.com / admin123
-            </p>
-          </div> */}
         </div>
       </div>
     </div>

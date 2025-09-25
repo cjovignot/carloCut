@@ -9,15 +9,15 @@ export function LoadingSpinner({
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: "h-4 w-4",
-    md: "h-8 w-8",
-    lg: "h-12 w-12",
+    md: "h-6 w-6",
+    lg: "h-10 w-10",
   };
 
   return (
     <div
       className={`animate-spin rounded-full border-2 ${sizeClasses[size]} ${className}`}
       style={{
-        borderColor: "var(--color-card-bg)", // couleur neutre pour le contour
+        borderColor: "var(--color-card-bg)", // couleur neutre du contour
         borderTopColor: "var(--color-primary)", // couleur principale pour l'animation
       }}
     />

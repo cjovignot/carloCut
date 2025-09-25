@@ -20,12 +20,41 @@ export function Button({
   const baseClasses =
     "inline-flex items-center justify-center rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
-  const variantClasses = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
-    secondary: "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-    outline:
-      "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500",
+  // Styles dynamiques via CSS variables
+  const variantStyles: Record<string, React.CSSProperties> = {
+    primary: {
+      backgroundColor: "var(--color-action-bg)",
+      color: "var(--color-action-txt)",
+    },
+    secondary: {
+      backgroundColor: "var(--color-secondary)",
+      color: "var(--color-action-txt)",
+    },
+    danger: {
+      backgroundColor: "#DC2626",
+      color: "#FFFFFF",
+    },
+    outline: {
+      backgroundColor: "transparent",
+      color: "var(--color-navbar-text)",
+      border: "1px solid var(--color-neutral-dark)",
+    },
+  };
+
+  // Hover & focus via pseudo-classes CSS
+  const hoverFocusStyles: Record<string, React.CSSProperties> = {
+    primary: {
+      "--hover-bg": "var(--color-action-bg-hover)",
+    },
+    secondary: {
+      "--hover-bg": "var(--color-secondary)",
+    },
+    danger: {
+      "--hover-bg": "#B91C1C",
+    },
+    outline: {
+      "--hover-bg": "var(--color-neutral-light)",
+    },
   };
 
   const sizeClasses = {
@@ -36,7 +65,11 @@ export function Button({
 
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`${baseClasses} ${sizeClasses[size]} ${className}`}
+      style={{
+        ...variantStyles[variant],
+        ...hoverFocusStyles[variant],
+      }}
       disabled={disabled || loading}
       {...props}
     >

@@ -41,7 +41,7 @@ export function Modal({
         <div
           className="fixed inset-0 transition-opacity"
           style={{
-            backgroundColor: "var(--color-text)", // couleur neutre du thème
+            backgroundColor: "var(--color-text)", // overlay basé sur texte pour contraste
             opacity: 0.75,
           }}
           onClick={onClose}
@@ -69,7 +69,10 @@ export function Modal({
             <button
               onClick={onClose}
               className="transition-colors"
-              style={{ color: "var(--color-text-on-primary)" }}
+              style={{
+                color: "var(--color-text-on-primary)",
+                backgroundColor: "transparent",
+              }}
             >
               <X className="w-6 h-6" />
             </button>

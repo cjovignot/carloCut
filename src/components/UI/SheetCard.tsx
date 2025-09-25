@@ -17,7 +17,7 @@ export function SheetCard({
   unit,
   className = "",
 }: SheetCardProps) {
-  // Cherche la couleur dans les palettes
+  // Cherche la couleur dans les palettes RAL
   const allColors = [...RAL_CLASSIC, ...RAL_DESIGN];
   const color = allColors.find((c) => c.code === data);
 
@@ -26,7 +26,7 @@ export function SheetCard({
       className={`shadow rounded-xl p-3 flex flex-col h-22 transition-all hover:shadow-md ${className}`}
       style={{
         backgroundColor: "var(--color-card-bg)", // fond de la carte selon le thème
-        color: "var(--color-text)", // texte selon le thème
+        color: "var(--color-text)", // texte principal selon le thème
         borderColor: "var(--color-primary)",
         borderWidth: 1,
         borderStyle: "solid",
@@ -41,6 +41,7 @@ export function SheetCard({
           {unit ? ` (${unit})` : ""}
         </div>
       )}
+
       <div className="flex flex-col items-center justify-center h-full text-lg font-bold text-center">
         <div className="flex items-center gap-2">
           {color && (
@@ -48,7 +49,7 @@ export function SheetCard({
               className="w-4 h-4 border rounded-full"
               style={{
                 backgroundColor: color.hex,
-                borderColor: "var(--color-text)",
+                borderColor: "var(--color-text)", // contraste avec texte
               }}
             />
           )}

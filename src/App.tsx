@@ -17,69 +17,68 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function InnerApp() {
+  // applique le thème courant et met à jour les variables CSS
   useApplyTheme();
 
   return (
     <AuthProvider>
       <Router>
         <div
-          style={{
-            backgroundColor: "var(--color-app-background)",
-            color: "var(--color-text-on-navbar)",
-          }}
           className="min-h-screen"
+          style={{
+            backgroundColor: "var(--color-background)",
+            color: "var(--color-text-primary)",
+          }}
         >
           <Navbar />
-          <main>
-            <div className="p-0">
-              <Routes>
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/projects"
-                  element={
-                    <ProtectedRoute>
-                      <Projects />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/projects/:id"
-                  element={
-                    <ProtectedRoute>
-                      <ProjectDetail />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/projects/:projectId/joineries/:joineryId"
-                  element={
-                    <ProtectedRoute>
-                      <JoineryDetail />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <ProtectedRoute>
-                      <Settings />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </div>
+          <main className="min-h-screen">
+            <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <ProtectedRoute>
+                    <Projects />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projects/:id"
+                element={
+                  <ProtectedRoute>
+                    <ProjectDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projects/:projectId/joineries/:joineryId"
+                element={
+                  <ProtectedRoute>
+                    <JoineryDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
           </main>
 
-          {/* ✅ Toast notifications */}
+          {/* Toast notifications */}
           <ToastContainer
             position="top-right"
             autoClose={3000}
@@ -98,12 +97,10 @@ function InnerApp() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <SettingsProvider>
       <InnerApp />
     </SettingsProvider>
   );
 }
-
-export default App;

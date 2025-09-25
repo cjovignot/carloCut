@@ -2,7 +2,7 @@ import { useSettings } from "../../services/useSettings";
 import { THEMES } from "../../services/themes";
 
 export function ThemeSelector() {
-  const { tempTheme, setTempTheme, saveTheme } = useSettings();
+  const { tempTheme, setTempTheme, saveTheme, resetTheme } = useSettings();
 
   if (!tempTheme) return null;
 
@@ -25,18 +25,19 @@ export function ThemeSelector() {
             <div
               className="flex items-center justify-center h-6 text-xs font-bold"
               style={{
-                backgroundColor: "var(--color-navbar)",
-                color: "var(--color-text-on-navbar)",
+                backgroundColor: "var(--color-navbar-bg)",
+                color: "var(--color-navbar-text)",
               }}
             >
               Navbar
             </div>
 
+            {/* Contenu exemple */}
             <div
               className="p-3 space-y-2"
               style={{
-                backgroundColor: "var(--color-navbar)",
-                color: "var(--color-text)",
+                backgroundColor: "var(--color-card-bg)",
+                color: "var(--color-navbar-text)",
               }}
             >
               {/* Texte exemple */}
@@ -47,8 +48,8 @@ export function ThemeSelector() {
                 <button
                   className="flex-1 px-2 py-1 text-xs font-semibold rounded"
                   style={{
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-text-on-primary)",
+                    backgroundColor: "var(--color-action-bg)",
+                    color: "var(--color-action-txt)",
                   }}
                 >
                   Bouton
@@ -56,8 +57,8 @@ export function ThemeSelector() {
                 <button
                   className="flex-1 px-2 py-1 text-xs font-semibold rounded"
                   style={{
-                    backgroundColor: "var(--color-secondary)",
-                    color: "var(--color-text-on-secondary)",
+                    backgroundColor: "var(--color-action-bg-hover)",
+                    color: "var(--color-action-txt)",
                   }}
                 >
                   Action
@@ -70,7 +71,7 @@ export function ThemeSelector() {
               className="p-2 text-xs font-semibold text-center"
               style={{
                 backgroundColor: "var(--color-card-bg)",
-                color: "var(--color-text)",
+                color: "var(--color-navbar-text)",
               }}
             >
               {theme.name}
@@ -79,17 +80,30 @@ export function ThemeSelector() {
         );
       })}
 
-      {/* Bouton sauvegarder */}
-      <button
-        onClick={saveTheme}
-        className="px-4 py-2 mt-2 transition rounded-md col-span-full"
-        style={{
-          backgroundColor: "var(--color-primary)",
-          color: "var(--color-text-on-primary)",
-        }}
-      >
-        Enregistrer le thème
-      </button>
+      {/* Boutons d’action */}
+      <div className="col-span-full flex gap-3">
+        <button
+          onClick={saveTheme}
+          className="flex-1 px-4 py-2 transition rounded-md"
+          style={{
+            backgroundColor: "var(--color-primary)",
+            color: "var(--color-action-txt)",
+          }}
+        >
+          ✅ Enregistrer le thème
+        </button>
+
+        <button
+          onClick={resetTheme}
+          className="flex-1 px-4 py-2 transition rounded-md border"
+          style={{
+            backgroundColor: "var(--color-neutral-light)",
+            color: "var(--color-neutral-dark)",
+          }}
+        >
+          🔄 Réinitialiser
+        </button>
+      </div>
     </div>
   );
 }

@@ -30,36 +30,37 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="space-y-4 p-4 rounded-md shadow-md"
+      style={{ backgroundColor: "var(--color-card-bg)" }}
+    >
       {/* Destinataire */}
       <div>
         <label
           className="block text-sm font-medium"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
           Destinataire *
         </label>
         <input
           type="email"
-          // {...register("recipient", {
-          //   required: "Le destinataire est requis",
-          //   pattern: {
-          //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-          //     message: "Adresse email invalide",
-          //   },
-          // })}
+          // {...register("recipient", { ... })}
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
-            borderColor: "var(--color-border)",
-            color: "var(--color-text)",
-            backgroundColor: "var(--color-background)",
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
           placeholder="supplier@example.com"
           value="contact@carlo.fr"
         />
         {errors.recipient && (
-          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--color-error)" }}
+          >
             {errors.recipient.message}
           </p>
         )}
@@ -69,7 +70,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
       <div>
         <label
           className="block text-sm font-medium"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
           Objet *
         </label>
@@ -78,14 +79,17 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
           {...register("subject", { required: "L'objet du mail est requis" })}
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
-            borderColor: "var(--color-border)",
-            color: "var(--color-text)",
-            backgroundColor: "var(--color-background)",
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
         />
         {errors.subject && (
-          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--color-error)" }}
+          >
             {errors.subject.message}
           </p>
         )}
@@ -95,7 +99,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
       <div>
         <label
           className="block text-sm font-medium"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
           Message
         </label>
@@ -104,9 +108,9 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
           {...register("message")}
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
-            borderColor: "var(--color-border)",
-            color: "var(--color-text)",
-            backgroundColor: "var(--color-background)",
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
           placeholder="Vous trouverez ci-joint les différentes tôles à fabriquer..."

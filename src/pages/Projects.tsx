@@ -1,3 +1,4 @@
+// Projects.tsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Search, Calendar, MapPin, Trash2, Edit } from "lucide-react";
@@ -72,7 +73,10 @@ export function Projects() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div
+        className="flex items-center justify-center min-h-screen"
+        style={{ backgroundColor: "var(--color-app-bg)" }}
+      >
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -80,36 +84,51 @@ export function Projects() {
 
   return (
     <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Chantiers</h1>
-          {/* <p className="mt-2 text-gray-600">Manage your sheet metal projects</p> */}
+          <h1
+            className="text-3xl font-bold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            Chantiers
+          </h1>
         </div>
         <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nouveau chantier
+          <Plus className="w-4 h-4 mr-2" /> Nouveau chantier
         </Button>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-          <input
-            type="text"
-            placeholder="Rechercher un chantier..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+      <div className="mb-6 relative">
+        <Search
+          className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2"
+          style={{ color: "var(--color-text-muted)" }}
+        />
+        <input
+          type="text"
+          placeholder="Rechercher un chantier..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full py-2 pl-10 pr-4 border rounded-md focus:outline-none"
+          style={{
+            borderColor: "var(--color-border)",
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-text-primary)",
+          }}
+        />
       </div>
 
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-lg text-gray-500">Aucun chantier trouvé</p>
-          <p className="mt-2 text-gray-400">
+          <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
+            Aucun chantier trouvé
+          </p>
+          <p
+            className="mt-2"
+            style={{ color: "var(--color-text-muted)", fontSize: "0.875rem" }}
+          >
             Créer un nouveau chantier pour commencer
           </p>
         </div>
@@ -118,29 +137,45 @@ export function Projects() {
           {filteredProjects.map((project) => (
             <div
               key={project._id}
-              className="transition-shadow bg-white rounded-lg shadow-md hover:shadow-lg"
+              className="transition-shadow rounded-lg shadow-md hover:shadow-lg"
+              style={{ backgroundColor: "var(--color-card-bg)" }}
             >
               <Link to={`/projects/${project._id}`} className="block p-6">
-                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                <h3
+                  className="mb-2 text-lg font-semibold"
+                  style={{ color: "var(--color-text-primary)" }}
+                >
                   {project.name}
                 </h3>
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div
+                    className="flex items-center text-sm"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
                     <MapPin className="w-4 h-4 mr-2" />
                     <span className="truncate">{project.client}</span>
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div
+                    className="flex items-center text-sm"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{new Date(project.date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-sm font-medium text-blue-600">
+                    <span
+                      className="text-sm font-medium"
+                      style={{ color: "var(--color-primary)" }}
+                    >
                       {project.joineries.length}{" "}
-                      {project.joineries.length == 1
+                      {project.joineries.length === 1
                         ? "menuiserie"
                         : "menuiseries"}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
                       par {project.createdBy?.name}
                     </span>
                   </div>
@@ -150,14 +185,16 @@ export function Projects() {
               <div className="flex justify-end px-6 pb-4 space-x-2">
                 <button
                   onClick={() => setEditingProject(project)}
-                  className="p-2 text-gray-400 transition-colors hover:text-blue-600"
+                  style={{ color: "var(--color-text-muted)" }}
+                  className="p-2 transition-colors hover:text-blue-600"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 {user?.role === "admin" && (
                   <button
                     onClick={() => handleDeleteProject(project._id)}
-                    className="p-2 text-gray-400 transition-colors hover:text-red-600"
+                    style={{ color: "var(--color-text-muted)" }}
+                    className="p-2 transition-colors hover:text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

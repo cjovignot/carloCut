@@ -5,7 +5,7 @@ import { useSettings } from "../../services/useSettings";
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const { savedRAL, tempRAL } = useSettings();
+  const { tempTheme } = useSettings();
   const location = useLocation();
 
   if (!user || location.pathname === "/login") return null;
@@ -46,11 +46,12 @@ export function Navbar() {
               key={item.label}
               to={item.path}
               style={textColorStyle}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === item.path
-                  ? "bg-[var(--color-navbar-active)]"
-                  : "hover:bg-[var(--color-navbar-hover)]"
-              }`}
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
+                ${
+                  location.pathname === item.path
+                    ? "bg-[var(--color-navbar-active)]"
+                    : "hover:bg-[var(--color-navbar-hover)]"
+                }`}
             >
               <item.icon className="w-4 h-4 mr-2" style={textColorStyle} />
               {item.label}
@@ -79,11 +80,12 @@ export function Navbar() {
                 key={item.label}
                 to={item.path}
                 style={textColorStyle}
-                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
-                  location.pathname === item.path
-                    ? "bg-[var(--color-navbar-active)]"
-                    : "hover:bg-[var(--color-navbar-hover)]"
-                }`}
+                className={`flex-1 flex flex-col items-center justify-center transition-colors
+                  ${
+                    location.pathname === item.path
+                      ? "bg-[var(--color-navbar-active)]"
+                      : "hover:bg-[var(--color-navbar-hover)]"
+                  }`}
               >
                 <item.icon className="w-6 h-6" style={textColorStyle} />
               </Link>

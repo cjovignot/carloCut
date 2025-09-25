@@ -3,22 +3,11 @@ import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
 
 interface JoineryFormProps {
-  initialData?: any;
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
 }
 
-const joineryTypes = [
-  { value: "fenetre", label: "Fenêtre" },
-  { value: "porte", label: "Porte" },
-  { value: "baie", label: "Baie" },
-];
-
-export function JoineryForm({
-  initialData,
-  onSubmit,
-  onCancel,
-}: JoineryFormProps) {
+export function JoineryForm({ onSubmit, onCancel }: JoineryFormProps) {
   const [loading, setLoading] = useState(false);
 
   const {
@@ -26,12 +15,9 @@ export function JoineryForm({
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: initialData
-      ? {
-          name: initialData.name,
-          type: initialData.type,
-        }
-      : {},
+    defaultValues: {
+      subject: "Joinery Order",
+    },
   });
 
   const onFormSubmit = async (data: any) => {
@@ -44,64 +30,91 @@ export function JoineryForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-      {/* Nom */}
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="space-y-4 p-4 rounded-md shadow-md"
+      style={{ backgroundColor: "var(--color-card-bg)" }}
+    >
+      {/* Destinataire */}
       <div>
         <label
           className="block text-sm font-medium"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
-          Menuiserie *
+          Destinataire *
         </label>
         <input
-          type="text"
-          {...register("name", { required: "Nom de menuiserie requis" })}
+          type="email"
+          // {...register("recipient", { ... })}
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
-            borderColor: "var(--color-border)",
-            color: "var(--color-text)",
-            backgroundColor: "var(--color-background)",
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
-          placeholder="Fenêtre SDB, Porte d'entrée..."
+          placeholder="supplier@example.com"
+          value="contact@carlo.fr"
         />
-        {errors.name && (
-          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
-            {errors.name.message}
+        {errors.recipient && (
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--color-error)" }}
+          >
+            {errors.recipient.message}
           </p>
         )}
       </div>
 
-      {/* Type */}
+      {/* Objet */}
       <div>
         <label
           className="block text-sm font-medium"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
-          Type *
+          Objet *
         </label>
-        <select
-          {...register("type", { required: "Type is required" })}
+        <input
+          type="text"
+          {...register("subject", { required: "L'objet du mail est requis" })}
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
-            borderColor: "var(--color-border)",
-            color: "var(--color-text)",
-            backgroundColor: "var(--color-background)",
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
-        >
-          <option value="">Sélectionner un type</option>
-          {joineryTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
-        {errors.type && (
-          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
-            {errors.type.message}
+        />
+        {errors.subject && (
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--color-error)" }}
+          >
+            {errors.subject.message}
           </p>
         )}
+      </div>
+
+      {/* Message */}
+      <div>
+        <label
+          className="block text-sm font-medium"
+          style={{ color: "var(--color-navbar-text)" }}
+        >
+          Message
+        </label>
+        <textarea
+          rows={4}
+          {...register("message")}
+          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          style={{
+            borderColor: "var(--color-neutral-dark)",
+            color: "var(--color-navbar-text)",
+            backgroundColor: "var(--color-app-bg)",
+            outlineColor: "var(--color-primary)",
+          }}
+          placeholder="Détails des assemblages et finitions..."
+        />
       </div>
 
       {/* Boutons */}
@@ -110,7 +123,7 @@ export function JoineryForm({
           Annuler
         </Button>
         <Button type="submit" loading={loading}>
-          {initialData ? "Mettre à jour" : "Créer"} la menuiserie
+          Envoyer
         </Button>
       </div>
     </form>

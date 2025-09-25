@@ -1,15 +1,12 @@
 import { useEffect } from "react";
 import { useSettings } from "./useSettings";
+import { Theme } from "./themes";
 
-// 🔹 Détecter si couleur claire ou foncée
+// 🔹 Vérifie si une couleur est claire ou foncée
 function isColorLight(hex: string) {
   if (!hex) return true;
   let c = hex.replace("#", "");
-  if (c.length === 3)
-    c = c
-      .split("")
-      .map((ch) => ch + ch)
-      .join("");
+  if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
@@ -17,113 +14,117 @@ function isColorLight(hex: string) {
   return luminance > 180;
 }
 
-// 🔹 Couleur de texte lisible sur fond
-function getTextColorForBackground(
-  bgHex: string,
-  lightText = "#FFFFFF",
-  darkText = "#111827"
-) {
+// 🔹 Donne une couleur de texte lisible
+function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
   return isColorLight(bgHex) ? darkText : lightText;
 }
 
-// 🔹 Assombrir ou éclaircir une couleur
-export function shadeColor(hex: string, percent: number) {
+// 🔹 Éclaircit ou assombrit une couleur
+function shadeColor(hex: string, percent: number) {
   if (!hex) return "#000000";
-
   let c = hex.replace("#", "");
-  if (c.length === 3)
-    c = c
-      .split("")
-      .map((ch) => ch + ch)
-      .join("");
-
+  if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
   const num = parseInt(c, 16);
   let R = (num >> 16) & 0xff;
   let G = (num >> 8) & 0xff;
   let B = num & 0xff;
-
   if (percent < 0) {
-    // Assombrir : réduire chaque canal
-    R = Math.round(R * (1 + percent)); // percent négatif
+    R = Math.round(R * (1 + percent));
     G = Math.round(G * (1 + percent));
     B = Math.round(B * (1 + percent));
   } else {
-    // Éclaircir : augmenter chaque canal vers 255
     R = Math.round(R + (255 - R) * percent);
     G = Math.round(G + (255 - G) * percent);
     B = Math.round(B + (255 - B) * percent);
   }
-
   return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
 }
 
-export function hexToRgba(hex: string, alpha: number) {
+// 🔹 Hex → RGBA
+function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
-  if (c.length === 3) {
-    c = c
-      .split("")
-      .map((ch) => ch + ch)
-      .join("");
-  }
+  if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-// 🔹 Appliquer thème et log des variables CSS
+// 🔹 Type des variables dérivées (utile pour autocomplétion)
+export type DerivedTheme = {
+  "--color-app-bg": string;
+  "--color-primary": string;
+  "--color-secondary": string;
+  "--color-navbar-bg": string;
+  "--color-navbar-text": string;
+  "--color-card-bg": string;
+  "--color-action-bg": string;
+  "--color-action-bg-hover": string;
+  "--color-action-txt": string;
+  "--color-success": string;
+  "--color-error": string;
+  "--color-warning": string;
+  "--color-info": string;
+  "--color-neutral-light": string;
+  "--color-neutral-dark": string;
+};
+
+// 🔹 Génère les couleurs dérivées
+function generateThemeVars(primary: string, mode: "light" | "dark"): DerivedTheme {
+  const app_bg = mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.85);
+  const secondary = shadeColor(primary, 0.3);
+  const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
+  const navbar_text = getTextColorForBackground(navbar_bg);
+  const card_bg = mode === "light" ? hexToRgba(primary, 0.05) : hexToRgba(primary, 0.15);
+  const action_bg = primary;
+  const action_bg_hover = shadeColor(primary, -0.15);
+  const action_txt = getTextColorForBackground(primary);
+
+  // Couleurs fixes universelles
+  const success = "#16a34a";
+  const error = "#dc2626";
+  const warning = "#f59e0b";
+  const info = "#0ea5e9";
+  const neutral_light = "#f3f4f6";
+  const neutral_dark = "#1f2937";
+
+  return {
+    "--color-app-bg": app_bg,
+    "--color-primary": primary,
+    "--color-secondary": secondary,
+    "--color-navbar-bg": navbar_bg,
+    "--color-navbar-text": navbar_text,
+    "--color-card-bg": card_bg,
+    "--color-action-bg": action_bg,
+    "--color-action-bg-hover": action_bg_hover,
+    "--color-action-txt": action_txt,
+    "--color-success": success,
+    "--color-error": error,
+    "--color-warning": warning,
+    "--color-info": info,
+    "--color-neutral-light": neutral_light,
+    "--color-neutral-dark": neutral_dark,
+  };
+}
+
+// 🔹 Hook qui applique le thème
 export function useApplyTheme() {
   const { tempTheme } = useSettings();
 
   useEffect(() => {
     if (!tempTheme) return;
 
-    const themeWithDerived = {
-      ...tempTheme,
-      textOnPrimary: getTextColorForBackground(tempTheme.primary),
-      textOnSecondary: getTextColorForBackground(tempTheme.secondary),
-      textOnNavbar: getTextColorForBackground(tempTheme.navbar),
-      appBackground: shadeColor(tempTheme.primary, 0.5),
-      cardBg: hexToRgba(tempTheme.primary, 0.2), // 80% opacity
-    };
+    const cssVars = generateThemeVars(tempTheme.primary, tempTheme.mode);
 
     // Meta theme-color pour mobile
-    const metaTheme = document.querySelector<HTMLMetaElement>(
-      'meta[name="theme-color"]'
-    );
-    if (metaTheme) metaTheme.setAttribute("content", themeWithDerived.navbar);
+    const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute("content", cssVars["--color-navbar-bg"]);
 
-    // Variables CSS globales
+    // Application des variables CSS
     const root = document.documentElement;
-    const cssVarsMap: Record<string, string> = {
-      "--color-primary": themeWithDerived.primary,
-      "--color-secondary": themeWithDerived.secondary,
-      "--color-background": themeWithDerived.background,
-      "--color-text": themeWithDerived.text,
-      "--color-navbar": themeWithDerived.navbar,
-      "--color-text-on-primary": themeWithDerived.textOnPrimary,
-      "--color-text-on-secondary": themeWithDerived.textOnSecondary,
-      "--color-text-on-navbar": themeWithDerived.textOnNavbar,
-      "--color-app-background": themeWithDerived.appBackground,
-      "--color-card-bg": themeWithDerived.cardBg,
-    };
-
-    // 🔹 Appliquer les variables
-    Object.entries(cssVarsMap).forEach(([key, value]) => {
+    Object.entries(cssVars).forEach(([key, value]) => {
       root.style.setProperty(key, value);
-    });
-
-    // 🔹 Loguer après que le style soit appliqué
-    requestAnimationFrame(() => {
-      const computed = getComputedStyle(root);
-      const allCSSVars: Record<string, string> = {};
-      for (let i = 0; i < computed.length; i++) {
-        const name = computed[i];
-        if (name.startsWith("--color-")) {
-          allCSSVars[name] = computed.getPropertyValue(name).trim();
-        }
-      }
     });
   }, [tempTheme]);
 }

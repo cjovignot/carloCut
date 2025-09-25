@@ -59,25 +59,29 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div
+        className="flex items-center justify-center min-h-screen"
+        style={{ backgroundColor: "var(--color-app-bg)" }}
+      >
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div
+      className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8"
+      style={{ backgroundColor: "var(--color-app-bg)", color: "var(--color-text)" }}
+    >
       <div className="mb-8">
-        <h1
-          className="text-3xl font-bold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
+        <h1 className="text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
           Tableau de bord PREVIEW
         </h1>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+        {/* Total Projects */}
         <div
           className="p-6 border-l-4 rounded-lg shadow"
           style={{
@@ -88,31 +92,20 @@ export function Dashboard() {
           <div className="flex items-center">
             <FolderOpen
               className="w-8 h-8"
-              style={{
-                color: "var(--color-textOnNavbar)",
-              }}
+              style={{ color: "var(--color-text-on-navbar)" }}
             />
             <div className="ml-4">
-              <p
-                className="text-sm font-medium"
-                style={{
-                  color: "var(--color-text-secondary)",
-                }}
-              >
+              <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
                 Total Chantiers
               </p>
-              <p
-                className="text-2xl font-bold"
-                style={{
-                  color: "var(--color-text-primary)",
-                }}
-              >
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
                 {stats.totalProjects}
               </p>
             </div>
           </div>
         </div>
 
+        {/* Total Joineries */}
         <div
           className="p-6 border-l-4 rounded-lg shadow"
           style={{
@@ -121,27 +114,19 @@ export function Dashboard() {
           }}
         >
           <div className="flex items-center">
-            <Users
-              className="w-8 h-8"
-              style={{ color: "var(--color-accent)" }}
-            />
+            <Users className="w-8 h-8" style={{ color: "var(--color-accent)" }} />
             <div className="ml-4">
-              <p
-                className="text-sm font-medium"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
+              <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
                 Total menuiseries
               </p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: "var(--color-text-primary)" }}
-              >
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
                 {stats.totalJoineries}
               </p>
             </div>
           </div>
         </div>
 
+        {/* Total Sheets */}
         <div
           className="p-6 border-l-4 rounded-lg shadow"
           style={{
@@ -150,21 +135,12 @@ export function Dashboard() {
           }}
         >
           <div className="flex items-center">
-            <Package
-              className="w-8 h-8"
-              style={{ color: "var(--color-warning)" }}
-            />
+            <Package className="w-8 h-8" style={{ color: "var(--color-warning)" }} />
             <div className="ml-4">
-              <p
-                className="text-sm font-medium"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
+              <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
                 Total tôles
               </p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: "var(--color-text-primary)" }}
-              >
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
                 {stats.totalSheets}
               </p>
             </div>
@@ -178,10 +154,7 @@ export function Dashboard() {
           className="p-6 rounded-lg shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
         >
-          <h2
-            className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+          <h2 className="mb-4 text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
             Actions rapides
           </h2>
           <div className="flex justify-around gap-4">
@@ -205,17 +178,11 @@ export function Dashboard() {
           className="p-6 rounded-lg shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
         >
-          <h2
-            className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
+          <h2 className="mb-4 text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
             Chantiers récents
           </h2>
           {stats.recentProjects.length === 0 ? (
-            <p
-              className="py-4 text-center"
-              style={{ color: "var(--color-text-secondary)" }}
-            >
+            <p className="py-4 text-center" style={{ color: "var(--color-text-secondary)" }}>
               Pas encore de chantier
             </p>
           ) : (
@@ -232,33 +199,19 @@ export function Dashboard() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3
-                        className="font-medium"
-                        style={{ color: "var(--color-text-primary)" }}
-                      >
+                      <h3 className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                         {project.name}
                       </h3>
-                      <p
-                        className="text-sm"
-                        style={{ color: "var(--color-text-secondary)" }}
-                      >
+                      <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                         {project.client}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p
-                        className="text-sm font-medium"
-                        style={{ color: "var(--color-text-primary)" }}
-                      >
+                      <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
                         {project.joineries.length}{" "}
-                        {project.joineries.length === 1
-                          ? "menuiserie"
-                          : "menuiseries"}
+                        {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
                       </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: "var(--color-text-muted)" }}
-                      >
+                      <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                         {new Date(project.date).toLocaleDateString()}
                       </p>
                     </div>
