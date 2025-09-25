@@ -71,7 +71,7 @@ export type DerivedTheme = {
 };
 
 // 🔹 Génère les couleurs dérivées
-function generateThemeVars(primary: string, mode: "light" | "dark"): DerivedTheme {
+export function generateThemeVars(primary: string, mode: "light" | "dark"): DerivedTheme {
   const app_bg = mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.85);
   const secondary = shadeColor(primary, 0.3);
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);

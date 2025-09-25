@@ -1,5 +1,25 @@
 import { useSettings } from "../../services/useSettings";
-import { THEMES } from "../../services/themes";
+import { THEMES, Theme } from "../../services/themes";
+import { shadeColor, getTextColorForBackground, hexToRgba } from "../../services/useApplyTheme";
+
+function generatePreviewVars(theme: Theme) {
+  const { primary, mode } = theme;
+
+  const cardBg = mode === "light" ? hexToRgba(primary, 0.05) : hexToRgba(primary, 0.15);
+  const navbar = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
+  const secondary = shadeColor(primary, 0.3);
+
+  return {
+    ...theme,
+    cardBg,
+    navbar,
+    secondary,
+    text: getTextColorForBackground(cardBg),
+    textOnNavbar: getTextColorForBackground(navbar),
+    textOnPrimary: getTextColorForBackground(primary),
+    textOnSecondary: getTextColorForBackground(secondary),
+  };
+}
 
 export function ThemeSelector() {
   const { tempTheme, setTempTheme, saveTheme, resetTheme } = useSettings();
@@ -8,7 +28,8 @@ export function ThemeSelector() {
 
   return (
     <div className="grid grid-cols-1 gap-6 m-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {THEMES.map((theme) => {
+      {THEMES.map((t) => {
+        const theme = generatePreviewVars(t);
         const isSelected = tempTheme.name === theme.name;
 
         return (
@@ -18,10 +39,10 @@ export function ThemeSelector() {
             className="cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105"
             style={{
               borderColor: isSelected ? theme.primary : "#E5E7EB",
-              backgroundColor: theme.cardBg, // forcé : pas de var()
+              backgroundColor: theme.cardBg,
             }}
           >
-            {/* ✅ Tout est basé sur theme, jamais sur var(--color-...) */}
+            {/* ✅ tout basé sur les variables locales de preview */}
             <div style={{ backgroundColor: theme.cardBg, color: theme.text }}>
               {/* Navbar miniature */}
               <div
