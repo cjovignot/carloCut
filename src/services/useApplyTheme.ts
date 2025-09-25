@@ -41,7 +41,7 @@ function shadeColor(hex: string, percent: number) {
 }
 
 // 🔹 Hex → RGBA
-function hexToRgba(hex: string, alpha: number) {
+export function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
