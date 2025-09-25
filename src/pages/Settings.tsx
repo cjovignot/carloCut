@@ -11,6 +11,7 @@ export function Settings() {
     <div
       className="px-4 py-8 mx-auto pb-14 max-w-7xl"
       style={{
+        // ✅ toute la page suit le thème sélectionné via CSS variables
         backgroundColor: "var(--color-app-background)",
         color: "var(--color-text)",
       }}
@@ -29,7 +30,7 @@ export function Settings() {
                 isSelected ? "ring-2 ring-blue-500" : "border-gray-200"
               }`}
               style={{
-                // ✅ vignette indépendante → pas de var()
+                // ✅ vignette indépendante → couleurs depuis l’objet theme, pas var()
                 backgroundColor: theme.cardBg,
                 borderColor: isSelected ? theme.primary : "#E5E7EB",
               }}
@@ -66,7 +67,10 @@ export function Settings() {
               {/* Fond et texte */}
               <div
                 className="flex items-center justify-center h-16 text-sm font-medium"
-                style={{ backgroundColor: theme.background, color: theme.text }}
+                style={{
+                  backgroundColor: theme.background,
+                  color: theme.text,
+                }}
               >
                 Exemple texte
               </div>
@@ -84,7 +88,7 @@ export function Settings() {
       </div>
 
       <div className="mt-6">
-        {/* ✅ Ce bouton suit le thème actif */}
+        {/* ✅ ce bouton suit le thème global sélectionné */}
         <Button onClick={saveTheme}>Enregistrer le thème</Button>
       </div>
     </div>
