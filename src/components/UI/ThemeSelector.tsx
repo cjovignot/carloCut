@@ -36,7 +36,7 @@ export function ThemeSelector() {
           <div
             key={theme.name}
             onClick={() => setTempTheme(theme)}
-            className="w-2/3 cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105"
+            className="w-2/3 m-auto cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105"
             style={{
               borderColor: isSelected ? theme.primary : "#E5E7EB",
               backgroundColor: theme.cardBg,
