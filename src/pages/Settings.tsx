@@ -1,4 +1,3 @@
-// Settings.tsx
 import { useSettings } from "../services/useSettings";
 import { THEMES } from "../services/themes";
 import { Button } from "../components/UI/Button";
@@ -11,14 +10,12 @@ export function Settings() {
   return (
     <div
       className="px-4 py-8 mx-auto pb-14 max-w-7xl"
-      style={{ backgroundColor: "var(--color-app-bg)" }}
+      style={{
+        backgroundColor: "var(--color-app-background)",
+        color: "var(--color-text)",
+      }}
     >
-      <h1
-        className="mb-6 text-2xl font-bold"
-        style={{ color: "var(--color-text-primary)" }}
-      >
-        Sélection du thème
-      </h1>
+      <h1 className="mb-6 text-2xl font-bold">Sélection du thème</h1>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {THEMES.map((theme) => {
@@ -31,14 +28,18 @@ export function Settings() {
               className={`border rounded-md cursor-pointer overflow-hidden transition-transform hover:scale-105 ${
                 isSelected ? "ring-2 ring-blue-500" : "border-gray-200"
               }`}
-              style={{ backgroundColor: `var(--color-card-bg)` }}
+              style={{
+                // ✅ vignette indépendante → pas de var()
+                backgroundColor: theme.cardBg,
+                borderColor: isSelected ? theme.primary : "#E5E7EB",
+              }}
             >
               {/* Navbar miniature */}
               <div
                 className="flex items-center justify-center h-6 text-xs font-bold"
                 style={{
-                  backgroundColor: `var(--color-navbar)`,
-                  color: `var(--color-text-on-navbar)`,
+                  backgroundColor: theme.navbar,
+                  color: theme.textOnNavbar,
                 }}
               >
                 Navbar
@@ -49,15 +50,15 @@ export function Settings() {
                 <div
                   className="flex-1 h-6"
                   style={{
-                    backgroundColor: `var(--color-primary)`,
-                    color: `var(--color-text-on-primary)`,
+                    backgroundColor: theme.primary,
+                    color: theme.textOnPrimary,
                   }}
                 />
                 <div
                   className="flex-1 h-6"
                   style={{
-                    backgroundColor: `var(--color-secondary)`,
-                    color: `var(--color-text-on-secondary)`,
+                    backgroundColor: theme.secondary,
+                    color: theme.textOnSecondary,
                   }}
                 />
               </div>
@@ -65,18 +66,15 @@ export function Settings() {
               {/* Fond et texte */}
               <div
                 className="flex items-center justify-center h-16 text-sm font-medium"
-                style={{
-                  backgroundColor: `var(--color-background)`,
-                  color: `var(--color-text-primary)`,
-                }}
+                style={{ backgroundColor: theme.background, color: theme.text }}
               >
-                Texte
+                Exemple texte
               </div>
 
               {/* Nom du thème */}
               <div
                 className="p-1 text-xs font-semibold text-center"
-                style={{ color: `var(--color-text-primary)` }}
+                style={{ backgroundColor: theme.cardBg, color: theme.text }}
               >
                 {theme.name}
               </div>
@@ -86,6 +84,7 @@ export function Settings() {
       </div>
 
       <div className="mt-6">
+        {/* ✅ Ce bouton suit le thème actif */}
         <Button onClick={saveTheme}>Enregistrer le thème</Button>
       </div>
     </div>
