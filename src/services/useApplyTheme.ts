@@ -3,7 +3,7 @@ import { useSettings } from "./useSettings";
 import { Theme } from "./themes";
 
 // 🔹 Vérifie si une couleur est claire ou foncée
-function isColorLight(hex: string) {
+export function isColorLight(hex: string) {
   if (!hex) return true;
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
@@ -16,12 +16,12 @@ function isColorLight(hex: string) {
 }
 
 // 🔹 Donne une couleur de texte lisible
-function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
+export function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
   return isColorLight(bgHex) ? darkText : lightText;
 }
 
 // 🔹 Éclaircit ou assombrit une couleur
-function shadeColor(hex: string, percent: number) {
+export function shadeColor(hex: string, percent: number) {
   if (!hex) return "#000000";
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
@@ -42,7 +42,7 @@ function shadeColor(hex: string, percent: number) {
 }
 
 // 🔹 Hex → RGBA
-function hexToRgba(hex: string, alpha: number) {
+export function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
