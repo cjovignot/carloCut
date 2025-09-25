@@ -9,76 +9,76 @@ export function ThemeSelector() {
   return (
     <div className="grid grid-cols-1 gap-6 m-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {THEMES.map((theme) => {
-        const isSelected = tempTheme.name === theme.name;
+  const isSelected = tempTheme.name === theme.name;
 
-        return (
-          <div
-            key={theme.name}
-            className={`cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105`}
+  return (
+    <div
+      key={theme.name}
+      className={`cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105`}
+      style={{
+        backgroundColor: theme.cardBg,
+        borderColor: isSelected ? theme.primary : "#E5E7EB",
+      }}
+      onClick={() => setTempTheme(theme)}
+    >
+      {/* Navbar miniature */}
+      <div
+        className="flex items-center justify-center h-6 text-xs font-bold"
+        style={{
+          backgroundColor: theme.navbar,
+          color: theme.textOnNavbar,
+        }}
+      >
+        Navbar
+      </div>
+
+      {/* Contenu exemple */}
+      <div
+        className="p-3 space-y-2"
+        style={{
+          backgroundColor: theme.cardBg,
+          color: theme.text,
+        }}
+      >
+        {/* Texte exemple */}
+        <div className="text-sm font-medium">Exemple texte</div>
+
+        {/* Boutons */}
+        <div className="flex gap-2">
+          <button
+            className="flex-1 px-2 py-1 text-xs font-semibold rounded"
             style={{
-              backgroundColor: "var(--color-card-bg)",
-              borderColor: isSelected ? "var(--color-primary)" : "#E5E7EB",
+              backgroundColor: theme.primary,
+              color: theme.textOnPrimary,
             }}
-            onClick={() => setTempTheme(theme)}
           >
-            {/* Aperçu miniature */}
-            <div
-              className="flex items-center justify-center h-6 text-xs font-bold"
-              style={{
-                backgroundColor: "var(--color-navbar-bg)",
-                color: "var(--color-navbar-text)",
-              }}
-            >
-              Navbar
-            </div>
+            Bouton
+          </button>
+          <button
+            className="flex-1 px-2 py-1 text-xs font-semibold rounded"
+            style={{
+              backgroundColor: theme.secondary,
+              color: theme.textOnSecondary,
+            }}
+          >
+            Action
+          </button>
+        </div>
+      </div>
 
-            {/* Contenu exemple */}
-            <div
-              className="p-3 space-y-2"
-              style={{
-                backgroundColor: "var(--color-card-bg)",
-                color: "var(--color-navbar-text)",
-              }}
-            >
-              {/* Texte exemple */}
-              <div className="text-sm font-medium">Exemple texte</div>
-
-              {/* Boutons */}
-              <div className="flex gap-2">
-                <button
-                  className="flex-1 px-2 py-1 text-xs font-semibold rounded"
-                  style={{
-                    backgroundColor: "var(--color-action-bg)",
-                    color: "var(--color-action-txt)",
-                  }}
-                >
-                  Bouton
-                </button>
-                <button
-                  className="flex-1 px-2 py-1 text-xs font-semibold rounded"
-                  style={{
-                    backgroundColor: "var(--color-action-bg-hover)",
-                    color: "var(--color-action-txt)",
-                  }}
-                >
-                  Action
-                </button>
-              </div>
-            </div>
-
-            {/* Nom du thème */}
-            <div
-              className="p-2 text-xs font-semibold text-center"
-              style={{
-                backgroundColor: "var(--color-card-bg)",
-                color: "var(--color-navbar-text)",
-              }}
-            >
-              {theme.name}
-            </div>
-          </div>
-        );
-      })}
+      {/* Nom du thème */}
+      <div
+        className="p-2 text-xs font-semibold text-center"
+        style={{
+          backgroundColor: theme.cardBg,
+          color: theme.text,
+        }}
+      >
+        {theme.name}
+      </div>
+    </div>
+  );
+})}
 
       {/* Boutons d’action */}
       <div className="col-span-full flex gap-3">
