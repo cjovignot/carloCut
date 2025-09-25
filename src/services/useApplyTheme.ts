@@ -3,24 +3,25 @@ import { useSettings } from "./useSettings";
 import { Theme } from "./themes";
 
 // 🔹 Vérifie si une couleur est claire ou foncée
-export function isColorLight(hex: string) {
+function isColorLight(hex: string) {
   if (!hex) return true;
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
+  // formule luminance standard BT.709
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 180;
+  return luminance > 186; // seuil réaliste
 }
 
 // 🔹 Donne une couleur de texte lisible
-export function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
+function getTextColorForBackground(bgHex: string, lightText = "#FFFFFF", darkText = "#111827") {
   return isColorLight(bgHex) ? darkText : lightText;
 }
 
 // 🔹 Éclaircit ou assombrit une couleur
-export function shadeColor(hex: string, percent: number) {
+function shadeColor(hex: string, percent: number) {
   if (!hex) return "#000000";
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
@@ -41,7 +42,7 @@ export function shadeColor(hex: string, percent: number) {
 }
 
 // 🔹 Hex → RGBA
-export function hexToRgba(hex: string, alpha: number) {
+function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
   if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
@@ -51,7 +52,7 @@ export function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-// 🔹 Type des variables dérivées (utile pour autocomplétion)
+// 🔹 Type des variables dérivées
 export type DerivedTheme = {
   "--color-app-bg": string;
   "--color-primary": string;
@@ -72,14 +73,17 @@ export type DerivedTheme = {
 
 // 🔹 Génère les couleurs dérivées
 export function generateThemeVars(primary: string, mode: "light" | "dark"): DerivedTheme {
+  // Fonds principaux
   const app_bg = mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.85);
   const secondary = shadeColor(primary, 0.3);
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
   const navbar_text = getTextColorForBackground(navbar_bg);
+
+  // Cartes et boutons
   const card_bg = mode === "light" ? hexToRgba(primary, 0.05) : hexToRgba(primary, 0.15);
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
-  const action_txt = getTextColorForBackground(primary);
+  const action_txt = getTextColorForBackground(action_bg);
 
   // Couleurs fixes universelles
   const success = "#16a34a";
