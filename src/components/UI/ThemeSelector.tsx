@@ -18,9 +18,10 @@ export function ThemeSelector() {
             className="cursor-pointer rounded-lg shadow-md overflow-hidden border transition-transform hover:scale-105"
             style={{
               borderColor: isSelected ? theme.primary : "#E5E7EB",
+              backgroundColor: theme.cardBg, // forcé : pas de var()
             }}
           >
-            {/* ✅ Wrapper isolant, pas de var(--color-...) */}
+            {/* ✅ Tout est basé sur theme, jamais sur var(--color-...) */}
             <div style={{ backgroundColor: theme.cardBg, color: theme.text }}>
               {/* Navbar miniature */}
               <div
@@ -34,8 +35,10 @@ export function ThemeSelector() {
               </div>
 
               {/* Contenu exemple */}
-              <div className="p-3 space-y-2">
-                <div className="text-sm font-medium">Exemple texte</div>
+              <div className="p-3 space-y-2" style={{ backgroundColor: theme.cardBg }}>
+                <div className="text-sm font-medium" style={{ color: theme.text }}>
+                  Exemple texte
+                </div>
 
                 <div className="flex gap-2">
                   <button
@@ -74,7 +77,7 @@ export function ThemeSelector() {
         );
       })}
 
-      {/* Boutons d’action (thème actif seulement) */}
+      {/* Boutons d’action (eux suivent le thème actif global) */}
       <div className="col-span-full flex gap-3">
         <button
           onClick={saveTheme}
