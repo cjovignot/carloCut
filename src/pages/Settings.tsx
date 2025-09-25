@@ -1,5 +1,5 @@
 import { useSettings } from "../services/useSettings";
-import { ThemeSelector } from "../components/ThemeSelector";
+import { ThemeSelector } from "../components/UI/ThemeSelector";
 
 export function Settings() {
   const { tempTheme } = useSettings();
