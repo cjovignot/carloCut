@@ -81,21 +81,21 @@ export function Dashboard() {
     backgroundColor: "var(--color-card-bg)"
   }}
 >
+<div>
     <FolderOpen
       className="w-6 h-6"
       style={{ color: "var(--color-action-txt)" }}
     />
-
-  {/* Texte centré */}
-  <div className="text-center">
+    <div className="text-center">
     <p
       className="text-sm font-medium"
       style={{ color: "var(--color-action-txt)" }}
     >
       Total Chantiers
     </p>
-    <p
-      className="text-2xl font-bold"
+    </div>
+        <p
+      className="text-center text-2xl font-bold"
       style={{ color: "var(--color-action-txt)" }}
     >
       {stats.totalProjects}
