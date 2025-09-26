@@ -76,30 +76,34 @@ export function Dashboard() {
       <div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
         {/* Total Projects */}
         <div
-  className="p-3 rounded-md shadow aspect-square"
+  className="p-4 rounded-md shadow aspect-square flex flex-col items-center justify-between"
   style={{
     backgroundColor: "var(--color-card-bg)"
   }}
 >
-  <div className="flex items-center h-full">
+  {/* Icône dans un cercle */}
+  <div className="flex items-center justify-center w-12 h-12 rounded-full"
+       style={{ backgroundColor: "var(--color-action-txt)", opacity: 0.1 }}>
     <FolderOpen
-      className="w-8 h-8"
+      className="w-6 h-6"
       style={{ color: "var(--color-action-txt)" }}
     />
-    <div className="ml-4">
-      <p
-        className="text-sm font-medium"
-        style={{ color: "var(--color-action-txt)" }}
-      >
-        Total Chantiers
-      </p>
-      <p
-        className="text-2xl font-bold"
-        style={{ color: "var(--color-action-txt)" }}
-      >
-        {stats.totalProjects}
-      </p>
-    </div>
+  </div>
+
+  {/* Texte centré */}
+  <div className="text-center">
+    <p
+      className="text-sm font-medium"
+      style={{ color: "var(--color-action-txt)" }}
+    >
+      Total Chantiers
+    </p>
+    <p
+      className="text-2xl font-bold"
+      style={{ color: "var(--color-action-txt)" }}
+    >
+      {stats.totalProjects}
+    </p>
   </div>
 </div>
 
