@@ -30,10 +30,7 @@ export function Login() {
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8"
-      style={{ backgroundColor: "var(--color-app-bg)" }}
-    >
+    <div className="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">
@@ -117,9 +114,16 @@ export function Login() {
               Connexion
             </Button>
 
-            <p className="mt-4 text-sm text-center" style={{ color: "var(--color-text-muted)" }}>
+            <p
+              className="mt-4 text-sm text-center"
+              style={{ color: "var(--color-text-muted)" }}
+            >
               Pas encore de compte?{" "}
-              <Link to="/register" style={{ color: "var(--color-primary)" }} className="underline">
+              <Link
+                to="/register"
+                style={{ color: "var(--color-primary)" }}
+                className="underline"
+              >
                 Inscription
               </Link>
             </p>

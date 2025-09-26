@@ -51,10 +51,7 @@ export function Register() {
         >
           Utilisateur créé avec succès !
         </h2>
-        <p
-          className="mt-2"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
+        <p className="mt-2" style={{ color: "var(--color-text-secondary)" }}>
           Vous pouvez maintenant{" "}
           <a href="/login" style={{ color: "var(--color-primary)" }}>
             vous connecter
@@ -65,10 +62,7 @@ export function Register() {
     );
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8"
-      style={{ backgroundColor: "var(--color-app-bg)" }}
-    >
+    <div className="flex items-center justify-center min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex items-center justify-center">

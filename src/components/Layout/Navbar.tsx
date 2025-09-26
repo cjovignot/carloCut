@@ -71,7 +71,10 @@ export function Navbar() {
       {/* Mobile Navbar */}
       <div
         className="fixed bottom-0 left-0 w-full transition-colors duration-300 shadow-md md:hidden"
-        style={{ backgroundColor: "var(--color-navbar-bg)" }}
+        style={{
+          backgroundColor: "var(--color-navbar-bg)",
+          color: "var(--color-navbar-text)",
+        }}
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
@@ -79,13 +82,11 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                style={textColorStyle}
-                className={`flex-1 flex flex-col items-center justify-center transition-colors
-                  ${
-                    location.pathname === item.path
-                      ? "bg-[var(--color-navbar-active)]"
-                      : "hover:bg-[var(--color-navbar-hover)]"
-                  }`}
+                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
+                  location.pathname === item.path
+                    ? "bg-[var(--color-navbar-active)]"
+                    : "hover:bg-[var(--color-navbar-hover)]"
+                }`}
               >
                 <item.icon className="w-6 h-6" style={textColorStyle} />
               </Link>

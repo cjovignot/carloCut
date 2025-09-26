@@ -37,7 +37,7 @@ export function Button({
     outline: {
       backgroundColor: "transparent",
       color: "var(--color-navbar-text)",
-      border: "1px solid var(--color-neutral-dark)",
+      border: "1px solid var(--color-secondary)",
     },
   };
 

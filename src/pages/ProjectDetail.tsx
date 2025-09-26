@@ -84,22 +84,12 @@ export function ProjectDetail() {
   };
 
   if (loading) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: "var(--color-app-bg)" }}
-      >
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return <LoadingSpinner size="lg" />;
   }
 
   if (!project) {
     return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: "var(--color-app-bg)" }}
-      >
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2
             className="text-2xl font-bold"
@@ -195,7 +185,12 @@ export function ProjectDetail() {
               >
                 Notes
               </h3>
-              <p style={{ color: "var(--color-text-secondary)", whiteSpace: "pre-wrap" }}>
+              <p
+                style={{
+                  color: "var(--color-text-secondary)",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {project.notes}
               </p>
             </div>
@@ -217,7 +212,9 @@ export function ProjectDetail() {
             className="p-12 text-center rounded-lg shadow-md"
             style={{ backgroundColor: "var(--color-card-bg)" }}
           >
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
+            <p
+              style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}
+            >
               Encore aucune menuiserie
             </p>
             <p style={{ color: "var(--color-text-muted)" }} className="mt-2">
@@ -256,7 +253,8 @@ export function ProjectDetail() {
                       className="text-sm font-medium"
                       style={{ color: "var(--color-primary)" }}
                     >
-                      {joinery.sheets.length} {joinery.sheets.length === 1 ? "tôle" : "tôles"}
+                      {joinery.sheets.length}{" "}
+                      {joinery.sheets.length === 1 ? "tôle" : "tôles"}
                     </p>
                   </div>
                 </Link>

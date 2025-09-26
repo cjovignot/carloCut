@@ -40,7 +40,10 @@ export function JoineryDetail() {
   };
 
   const handleCreateSheet = async (sheetData: any) => {
-    await api.post(`/sheets/${projectId}/joineries/${joineryId}/sheets`, sheetData);
+    await api.post(
+      `/sheets/${projectId}/joineries/${joineryId}/sheets`,
+      sheetData
+    );
     setShowSheetModal(false);
     fetchProject();
   };
@@ -56,7 +59,9 @@ export function JoineryDetail() {
 
   const handleDeleteSheet = async (sheetId: string) => {
     if (!confirm("Are you sure?")) return;
-    await api.delete(`/sheets/${projectId}/joineries/${joineryId}/sheets/${sheetId}`);
+    await api.delete(
+      `/sheets/${projectId}/joineries/${joineryId}/sheets/${sheetId}`
+    );
     fetchProject();
   };
 
@@ -69,36 +74,31 @@ export function JoineryDetail() {
     alert("Email sent!");
   };
 
-  if (loading)
-    return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: "var(--color-app-bg)" }}
-      >
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+  if (loading) return <LoadingSpinner size="lg" />;
 
   if (!project || !joinery)
     return (
       <div
         className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: "var(--color-app-bg)", color: "var(--color-text-primary)" }}
+        // style={{ backgroundColor: "var(--color-app-bg)", color: "var(--color-text-primary)" }}
       >
         Aucune menuiserie trouvée
       </div>
     );
 
   return (
-    <div
-      className="px-4 py-8 pb-16 mx-auto space-y-6 max-w-7xl"
-      style={{ backgroundColor: "var(--color-app-bg)", color: "var(--color-text)" }}
-    >
+    <div className="px-4 py-8 pb-16 mx-auto space-y-6 max-w-7xl">
       <div className="flex items-center space-x-4">
         <Link to={`/projects/${projectId}`}>
-          <ArrowLeft className="w-5 h-5" style={{ color: "var(--color-text-primary)" }} />
+          <ArrowLeft
+            className="w-5 h-5"
+            style={{ color: "var(--color-text-primary)" }}
+          />
         </Link>
-        <h1 className="text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+        <h1
+          className="text-3xl font-bold"
+          style={{ color: "var(--color-text-primary)" }}
+        >
           {joinery.name}
         </h1>
       </div>
@@ -120,18 +120,32 @@ export function JoineryDetail() {
           <div
             key={sheet._id}
             className="p-4 rounded-lg shadow-md h-fit"
-            style={{ backgroundColor: "var(--color-card-bg)", border: "1px solid var(--color-border)" }}
+            style={{
+              backgroundColor: "var(--color-card-bg)",
+              border: "1px solid var(--color-border)",
+            }}
           >
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              <h2
+                className="font-semibold"
+                style={{ color: "var(--color-text-primary)" }}
+              >
                 Tôle {i + 1}
               </h2>
               <div className="flex space-x-2">
                 <button>
-                  <Edit className="w-5 h-5" style={{ color: "var(--color-accent)" }} onClick={() => setEditingSheet(sheet)} />
+                  <Edit
+                    className="w-5 h-5"
+                    style={{ color: "var(--color-accent)" }}
+                    onClick={() => setEditingSheet(sheet)}
+                  />
                 </button>
                 <button>
-                  <Trash2 className="w-5 h-5" style={{ color: "var(--color-danger)" }} onClick={() => handleDeleteSheet(sheet._id)} />
+                  <Trash2
+                    className="w-5 h-5"
+                    style={{ color: "var(--color-danger)" }}
+                    onClick={() => handleDeleteSheet(sheet._id)}
+                  />
                 </button>
               </div>
             </div>
@@ -142,8 +156,17 @@ export function JoineryDetail() {
                 data={sheet.profileType.toUpperCase()}
                 textured={false}
               />
-              <SheetCard title="RAL" data={sheet.color} textured={sheet.textured} />
-              <SheetCard title="Longueur" data={sheet.length} unit="mm" textured={false} />
+              <SheetCard
+                title="RAL"
+                data={sheet.color}
+                textured={sheet.textured}
+              />
+              <SheetCard
+                title="Longueur"
+                data={sheet.length}
+                unit="mm"
+                textured={false}
+              />
               <SheetCard title="QTE" data={sheet.quantity} textured={false} />
             </div>
 
@@ -191,7 +214,10 @@ export function JoineryDetail() {
         title="Envoyer par email"
         size="md"
       >
-        <EmailForm onSubmit={handleSendEmail} onCancel={() => setShowEmailModal(false)} />
+        <EmailForm
+          onSubmit={handleSendEmail}
+          onCancel={() => setShowEmailModal(false)}
+        />
       </Modal>
     </div>
   );

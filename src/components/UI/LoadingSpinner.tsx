@@ -15,11 +15,16 @@ export function LoadingSpinner({
 
   return (
     <div
-      className={`animate-spin rounded-full border-2 ${sizeClasses[size]} ${className}`}
-      style={{
-        borderColor: "var(--color-card-bg)", // couleur neutre du contour
-        borderTopColor: "var(--color-primary)", // couleur principale pour l'animation
-      }}
-    />
+      className="flex items-center justify-center min-h-screen"
+      style={{ backgroundColor: "var(--color-app-bg)" }}
+    >
+      <div
+        className={`animate-spin rounded-full border-2 ${sizeClasses[size]} ${className}`}
+        style={{
+          borderColor: "var(--color-card-bg)", // couleur neutre du contour
+          borderTopColor: "var(--color-info)", // couleur principale pour l'animation
+        }}
+      />
+    </div>
   );
 }

@@ -72,14 +72,7 @@ export function Projects() {
   );
 
   if (loading) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: "var(--color-app-bg)" }}
-      >
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return <LoadingSpinner size="lg" />;
   }
 
   return (
@@ -89,7 +82,7 @@ export function Projects() {
         <div>
           <h1
             className="text-3xl font-bold"
-            style={{ color: "var(--color-text-primary)" }}
+            style={{ color: "var(--color-page-title)" }}
           >
             Chantiers
           </h1>
@@ -100,7 +93,7 @@ export function Projects() {
       </div>
 
       {/* Search */}
-      <div className="mb-6 relative">
+      <div className="relative mb-6">
         <Search
           className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2"
           style={{ color: "var(--color-text-muted)" }}
