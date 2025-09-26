@@ -73,10 +73,10 @@ export function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
         {/* Total Projects */}
         <div
-          className="p-6 rounded-lg shadow"
+          className="p-3 rounded-md shadow"
           style={{
             backgroundColor: "var(--color-card-bg)"
           }}
@@ -105,7 +105,7 @@ export function Dashboard() {
 
         {/* Total Joineries */}
         <div
-          className="p-6 rounded-lg shadow"
+          className="p-3 rounded-md shadow"
           style={{
             backgroundColor: "var(--color-card-bg)"
           }}
@@ -134,7 +134,7 @@ export function Dashboard() {
 
         {/* Total Sheets */}
         <div
-          className="p-6 rounded-lg shadow"
+          className="p-3 rounded-md shadow"
           style={{
             backgroundColor: "var(--color-card-bg)"
           }}
@@ -165,7 +165,7 @@ export function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div
-          className="p-6 rounded-lg shadow-md"
+          className="p-3 rounded-md shadow-md"
           style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <h2
@@ -192,7 +192,7 @@ export function Dashboard() {
 
         {/* Recent Projects */}
         <div
-          className="p-6 rounded-lg shadow-md"
+          className="p-3 rounded-md shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
         >
           <h2
