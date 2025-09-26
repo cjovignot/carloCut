@@ -222,8 +222,8 @@ export function generateThemeVars(
     "--color-navbar-text": navbar_text,
     
     // Inputs
-    "--color-input-bg": input_bg,
-    "--color-input-txt": input_txt,
+    // "--color-input-bg": input_bg,
+    // "--color-input-txt": input_txt,
     
     // Cards
     "--color-card-bg": card_bg,
