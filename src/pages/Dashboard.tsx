@@ -76,10 +76,9 @@ export function Dashboard() {
       <div className="grid grid-cols-2 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
         {/* Total Projects */}
         <div
-          className="p-6 border-l-4 rounded-lg shadow"
+          className="p-6 rounded-lg shadow"
           style={{
-            backgroundColor: "var(--color-card-bg)",
-            borderColor: "var(--color-action-txt)",
+            backgroundColor: "var(--color-card-bg)"
           }}
         >
           <div className="flex items-center">
@@ -106,10 +105,9 @@ export function Dashboard() {
 
         {/* Total Joineries */}
         <div
-          className="p-6 border-l-4 rounded-lg shadow"
+          className="p-6 rounded-lg shadow"
           style={{
-            backgroundColor: "var(--color-card-bg)",
-            borderColor: "var(--color-action-txt)",
+            backgroundColor: "var(--color-card-bg)"
           }}
         >
           <div className="flex items-center">
@@ -136,10 +134,9 @@ export function Dashboard() {
 
         {/* Total Sheets */}
         <div
-          className="p-6 border-l-4 rounded-lg shadow"
+          className="p-6 rounded-lg shadow"
           style={{
-            backgroundColor: "var(--color-card-bg)",
-            borderColor: "var(--color-action-txt)",
+            backgroundColor: "var(--color-card-bg)"
           }}
         >
           <div className="flex items-center">
