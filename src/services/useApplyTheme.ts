@@ -150,19 +150,23 @@ function getAccentColor(primary: string): string {
 export type DerivedTheme = {
   "--color-app-bg": string;
   "--color-accent": string;
-  "--color-page-title": string;
   "--color-primary": string;
   "--color-secondary": string;
+  
+  "--color-page-title": string;
   "--color-navbar-bg": string;
   "--color-navbar-text": string;
   "--color-card-bg": string;
+  "--color-input-bg": string;
   "--color-action-bg": string;
   "--color-action-bg-hover": string;
   "--color-action-txt": string;
+  
   "--color-success": string;
   "--color-error": string;
   "--color-warning": string;
   "--color-info": string;
+  
   "--color-neutral-mode": string;
 };
 
@@ -171,47 +175,68 @@ export function generateThemeVars(
   primary: string,
   mode: "light" | "dark"
 ): DerivedTheme {
-  // Fonds principaux
+  // Globals
   const app_bg =
     mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
+  
+  // Titles
+  pconst page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
+  
+  // Navbar
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
   const navbar_text = getTextColorForBackground(navbar_bg);
+  
   const neutral_mode =
     mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
-  const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
+
   const accent = getAccentColor(primary);
 
-  // Cartes et boutons
+  // Cards
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_txt = getTextColorForBackground(action_bg);
 
-  // Couleurs fixes universelles
+  // Importants
   const success = "#16a34a";
   const error = "#dc2626";
   const warning = "#f59e0b";
   const info = "#0ea5e9";
 
   return {
+    // Globals
     "--color-app-bg": app_bg,
     "--color-accent": accent,
-    "--color-page-title": page_title,
     "--color-primary": primary,
     "--color-secondary": secondary,
+    "--color-neutral-mode": neutral_mode,
+
+    // Titles
+    "--color-page-title": page_title,
+    
+    // Navbar
     "--color-navbar-bg": navbar_bg,
     "--color-navbar-text": navbar_text,
+    
+    // Inputs
+    "--color-input-bg": input_bg,
+    "--color-input-txt": input_txt,
+    
+    // Cards
     "--color-card-bg": card_bg,
+
+    // Buttons
+    "--color-action-txt": action_txt,
     "--color-action-bg": action_bg,
     "--color-action-bg-hover": action_bg_hover,
-    "--color-action-txt": action_txt,
+
+    // Importants
     "--color-success": success,
     "--color-error": error,
     "--color-warning": warning,
     "--color-info": info,
-    "--color-neutral-mode": neutral_mode,
   };
 }
 
