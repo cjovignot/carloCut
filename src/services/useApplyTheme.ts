@@ -158,6 +158,7 @@ export type DerivedTheme = {
   "--color-navbar-text": string;
   "--color-card-bg": string;
   "--color-input-bg": string;
+  "--color-input-txt": string;
   "--color-action-bg": string;
   "--color-action-bg-hover": string;
   "--color-action-txt": string;
