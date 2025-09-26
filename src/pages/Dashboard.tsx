@@ -76,32 +76,32 @@ export function Dashboard() {
       <div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
         {/* Total Projects */}
         <div
-  className="p-4 rounded-md shadow aspect-square flex flex-col items-center justify-between"
-  style={{
-    backgroundColor: "var(--color-card-bg)"
-  }}
->
-<div>
-    <FolderOpen
-      className="w-6 h-6"
-      style={{ color: "var(--color-action-txt)" }}
-    />
-    <div className="text-center">
-    <p
-      className="text-sm font-medium"
-      style={{ color: "var(--color-action-txt)" }}
-    >
-      Total Chantiers
-    </p>
-    </div>
-        <p
-      className="text-center text-2xl font-bold"
-      style={{ color: "var(--color-action-txt)" }}
-    >
-      {stats.totalProjects}
-    </p>
-  </div>
-</div>
+          className="p-3 rounded-md shadow"
+          style={{
+            backgroundColor: "var(--color-card-bg)"
+          }}
+        >
+          <div className="flex items-center">
+            <FolderOpen
+              className="w-8 h-8"
+              style={{ color: "var(--color-action-txt)" }}
+            />
+            <div className="ml-4">
+              <p
+                className="text-sm font-medium"
+                style={{ color: "var(--color-action-txt)" }}
+              >
+                Projets
+              </p>
+              <p
+                className="text-2xl font-bold"
+                style={{ color: "var(--color-action-txt)" }}
+              >
+                {stats.totalProjects}
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Total Joineries */}
         <div
@@ -120,7 +120,7 @@ export function Dashboard() {
                 className="text-sm font-medium"
                 style={{ color: "var(--color-action-txt)" }}
               >
-                Total menuiseries
+                Menuiseries
               </p>
               <p
                 className="text-2xl font-bold"
@@ -149,7 +149,7 @@ export function Dashboard() {
                 className="text-sm font-medium"
                 style={{ color: "var(--color-action-txt)" }}
               >
-                Total tôles
+                Tôles
               </p>
               <p
                 className="text-2xl font-bold"
