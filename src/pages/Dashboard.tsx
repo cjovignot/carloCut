@@ -62,13 +62,16 @@ export function Dashboard() {
   }
 
   return (
-    <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div
+      className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8"
+      style={{ backgroundColor: "var(--color-app-bg)" }}
+    >
       <div className="mb-8">
         <h1
           className="text-3xl font-bold"
-          style={{ color: "var(--color-page-title)" }}
+          style={{ color: "var(--color-navbar-text)" }}
         >
-          Tableau de bord PREVIEW
+          Tableau de bord
         </h1>
       </div>
 
@@ -77,9 +80,7 @@ export function Dashboard() {
         {/* Total Projects */}
         <div
           className="p-3 rounded-md shadow"
-          style={{
-            backgroundColor: "var(--color-card-bg)"
-          }}
+          style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
             <FolderOpen
@@ -89,7 +90,7 @@ export function Dashboard() {
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-navbar-text)" }}
               >
                 Projets
               </p>
@@ -106,9 +107,7 @@ export function Dashboard() {
         {/* Total Joineries */}
         <div
           className="p-3 rounded-md shadow"
-          style={{
-            backgroundColor: "var(--color-card-bg)"
-          }}
+          style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
             <Users
@@ -118,7 +117,7 @@ export function Dashboard() {
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-navbar-text)" }}
               >
                 Menuiseries
               </p>
@@ -135,9 +134,7 @@ export function Dashboard() {
         {/* Total Sheets */}
         <div
           className="p-3 rounded-md shadow"
-          style={{
-            backgroundColor: "var(--color-card-bg)"
-          }}
+          style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
             <Package
@@ -147,7 +144,7 @@ export function Dashboard() {
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-navbar-text)" }}
               >
                 Tôles
               </p>
@@ -170,7 +167,7 @@ export function Dashboard() {
         >
           <h2
             className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-action-txt)" }}
+            style={{ color: "var(--color-navbar-text)" }}
           >
             Actions rapides
           </h2>
@@ -193,18 +190,18 @@ export function Dashboard() {
         {/* Recent Projects */}
         <div
           className="p-3 rounded-md shadow-md"
-          style={{ backgroundColor: "var(--color-surface)" }}
+          style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <h2
             className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
+            style={{ color: "var(--color-navbar-text)" }}
           >
             Chantiers récents
           </h2>
           {stats.recentProjects.length === 0 ? (
             <p
               className="py-4 text-center"
-              style={{ color: "var(--color-text-action-txt)" }}
+              style={{ color: "var(--color-warning)" }}
             >
               Pas encore de chantier
             </p>
@@ -216,21 +213,21 @@ export function Dashboard() {
                   to={`/projects/${project._id}`}
                   className="block p-3 transition-colors border rounded-md"
                   style={{
-                    borderColor: "var(--color-border)",
-                    color: "var(--color-text-primary)",
+                    borderColor: "var(--color-primary)",
+                    color: "var(--color-navbar-text)",
                   }}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <h3
                         className="font-medium"
-                        style={{ color: "var(--color-text-primary)" }}
+                        style={{ color: "var(--color-navbar-text)" }}
                       >
                         {project.name}
                       </h3>
                       <p
                         className="text-sm"
-                        style={{ color: "var(--color-text-secondary)" }}
+                        style={{ color: "var(--color-secondary)" }}
                       >
                         {project.client}
                       </p>
@@ -238,7 +235,7 @@ export function Dashboard() {
                     <div className="text-right">
                       <p
                         className="text-sm font-medium"
-                        style={{ color: "var(--color-text-primary)" }}
+                        style={{ color: "var(--color-warning)" }}
                       >
                         {project.joineries.length}{" "}
                         {project.joineries.length === 1
@@ -247,7 +244,7 @@ export function Dashboard() {
                       </p>
                       <p
                         className="text-xs"
-                        style={{ color: "var(--color-text-muted)" }}
+                        style={{ color: "var(--color-secondary)" }}
                       >
                         {new Date(project.date).toLocaleDateString()}
                       </p>

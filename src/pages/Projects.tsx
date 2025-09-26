@@ -55,7 +55,7 @@ export function Projects() {
   };
 
   const handleDeleteProject = async (projectId: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce chantier ?")) return;
 
     try {
       await api.delete(`/projects/${projectId}`);
@@ -79,14 +79,12 @@ export function Projects() {
     <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1
-            className="text-3xl font-bold"
-            style={{ color: "var(--color-page-title)" }}
-          >
-            Chantiers
-          </h1>
-        </div>
+        <h1
+          className="text-3xl font-bold"
+          style={{ color: "var(--color-page-title)" }}
+        >
+          Chantiers
+        </h1>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="w-4 h-4 mr-2" /> Nouveau chantier
         </Button>
@@ -96,7 +94,9 @@ export function Projects() {
       <div className="relative mb-6">
         <Search
           className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2"
-          style={{ color: "var(--color-text-muted)" }}
+          style={{
+            color: "var(--color-text-muted)",
+          }}
         />
         <input
           type="text"
@@ -106,7 +106,7 @@ export function Projects() {
           className="w-full py-2 pl-10 pr-4 border rounded-md focus:outline-none"
           style={{
             borderColor: "var(--color-border)",
-            backgroundColor: "var(--color-input-bg)",
+            backgroundColor: "var(--color-primary)",
             color: "var(--color-text-primary)",
           }}
         />
@@ -122,7 +122,7 @@ export function Projects() {
             className="mt-2"
             style={{ color: "var(--color-text-muted)", fontSize: "0.875rem" }}
           >
-            Créer un nouveau chantier pour commencer
+            Créez un nouveau chantier pour commencer
           </p>
         </div>
       ) : (
@@ -131,26 +131,29 @@ export function Projects() {
             <div
               key={project._id}
               className="transition-shadow rounded-lg shadow-md hover:shadow-lg"
-              style={{ backgroundColor: "var(--color-card-bg)" }}
+              style={{
+                backgroundColor: "var(--color-card-bg)",
+                borderColor: "var(--color-border)",
+              }}
             >
               <Link to={`/projects/${project._id}`} className="block p-6">
                 <h3
                   className="mb-2 text-lg font-semibold"
-                  style={{ color: "var(--color-text-primary)" }}
+                  style={{ color: "var(--color-navbar-text)" }}
                 >
                   {project.name}
                 </h3>
                 <div className="space-y-2">
                   <div
                     className="flex items-center text-sm"
-                    style={{ color: "var(--color-text-secondary)" }}
+                    style={{ color: "var(--color-secondary)" }}
                   >
                     <MapPin className="w-4 h-4 mr-2" />
                     <span className="truncate">{project.client}</span>
                   </div>
                   <div
                     className="flex items-center text-sm"
-                    style={{ color: "var(--color-text-secondary)" }}
+                    style={{ color: "var(--color-secondary)" }}
                   >
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{new Date(project.date).toLocaleDateString()}</span>
@@ -158,7 +161,7 @@ export function Projects() {
                   <div className="flex items-center justify-between mt-4">
                     <span
                       className="text-sm font-medium"
-                      style={{ color: "var(--color-primary)" }}
+                      style={{ color: "var(--color-info)" }}
                     >
                       {project.joineries.length}{" "}
                       {project.joineries.length === 1
@@ -167,7 +170,7 @@ export function Projects() {
                     </span>
                     <span
                       className="text-xs"
-                      style={{ color: "var(--color-text-muted)" }}
+                      style={{ color: "var(--color-warning)" }}
                     >
                       par {project.createdBy?.name}
                     </span>
@@ -175,19 +178,24 @@ export function Projects() {
                 </div>
               </Link>
 
+              {/* Actions */}
               <div className="flex justify-end px-6 pb-4 space-x-2">
                 <button
                   onClick={() => setEditingProject(project)}
-                  style={{ color: "var(--color-text-muted)" }}
-                  className="p-2 transition-colors hover:text-blue-600"
+                  className="p-2 transition-colors rounded-md"
+                  style={{
+                    color: "var(--color-navbar-text)",
+                  }}
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 {user?.role === "admin" && (
                   <button
                     onClick={() => handleDeleteProject(project._id)}
-                    style={{ color: "var(--color-text-muted)" }}
-                    className="p-2 transition-colors hover:text-red-600"
+                    className="p-2 transition-colors rounded-md"
+                    style={{
+                      color: "var(--color-warning)",
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

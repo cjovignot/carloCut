@@ -124,11 +124,11 @@ export function ProjectDetail() {
           <div>
             <h1
               className="text-3xl font-bold"
-              style={{ color: "var(--color-text-primary)" }}
+              style={{ color: "var(--color-page-title)" }}
             >
               {project.name}
             </h1>
-            <p style={{ color: "var(--color-text-secondary)" }}>
+            <p style={{ color: "var(--color-secondary)" }}>
               Client: {project.client}
             </p>
           </div>
@@ -156,11 +156,14 @@ export function ProjectDetail() {
           <div>
             <h3
               className="mb-4 text-lg font-semibold"
-              style={{ color: "var(--color-text-primary)" }}
+              style={{ color: "var(--color-page-title)" }}
             >
               Informations de chantier
             </h3>
-            <div className="space-y-2" style={{ color: "var(--color-text)" }}>
+            <div
+              className="space-y-2"
+              style={{ color: "var(--color-secondary)" }}
+            >
               <p>
                 <span className="font-medium">Client:</span> {project.client}
               </p>
@@ -181,7 +184,7 @@ export function ProjectDetail() {
             <div>
               <h3
                 className="mb-4 text-lg font-semibold"
-                style={{ color: "var(--color-text-primary)" }}
+                style={{ color: "var(--color-info)" }}
               >
                 Notes
               </h3>
@@ -202,7 +205,7 @@ export function ProjectDetail() {
       <div>
         <h2
           className="mb-6 text-2xl font-bold"
-          style={{ color: "var(--color-text-primary)" }}
+          style={{ color: "var(--color-page-title)" }}
         >
           Menuiseries ({project.joineries.length})
         </h2>
@@ -212,12 +215,10 @@ export function ProjectDetail() {
             className="p-12 text-center rounded-lg shadow-md"
             style={{ backgroundColor: "var(--color-card-bg)" }}
           >
-            <p
-              style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}
-            >
+            <p style={{ color: "var(--color-secondary)", fontSize: "1rem" }}>
               Encore aucune menuiserie
             </p>
-            <p style={{ color: "var(--color-text-muted)" }} className="mt-2">
+            <p style={{ color: "var(--color-secondary)" }} className="mt-2">
               Créer une menuiserie pour commencer
             </p>
             <Button className="mt-4" onClick={() => setShowJoineryModal(true)}>
@@ -238,20 +239,20 @@ export function ProjectDetail() {
                 >
                   <h3
                     className="mb-2 text-lg font-semibold"
-                    style={{ color: "var(--color-text-primary)" }}
+                    style={{ color: "var(--color-page-title)" }}
                   >
                     {joinery.name}
                   </h3>
                   <div className="space-y-1">
                     <p
                       className="text-sm"
-                      style={{ color: "var(--color-text-secondary)" }}
+                      style={{ color: "var(--color-secondary)" }}
                     >
                       Type: {joinery.type}
                     </p>
                     <p
                       className="text-sm font-medium"
-                      style={{ color: "var(--color-primary)" }}
+                      style={{ color: "var(--color-info)" }}
                     >
                       {joinery.sheets.length}{" "}
                       {joinery.sheets.length === 1 ? "tôle" : "tôles"}
@@ -262,15 +263,15 @@ export function ProjectDetail() {
                 <div className="flex justify-end px-6 pb-4 space-x-2">
                   <button
                     onClick={() => setEditingJoinery(joinery)}
-                    style={{ color: "var(--color-text-muted)" }}
-                    className="p-2 transition-colors hover:text-blue-600"
+                    style={{ color: "var(--color-navbar-text)" }}
+                    className="p-2 transition-colors rounded-md"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteJoinery(joinery._id)}
-                    style={{ color: "var(--color-text-muted)" }}
-                    className="p-2 transition-colors hover:text-red-600"
+                    style={{ color: "var(--color-warning)" }}
+                    className="p-2 transition-colors rounded-md"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

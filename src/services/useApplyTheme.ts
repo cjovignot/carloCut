@@ -71,6 +71,7 @@ export function hexToRgba(hex: string, alpha: number) {
 // 🔹 Type des variables dérivées
 export type DerivedTheme = {
   "--color-app-bg": string;
+  "--color-page-title": string;
   "--color-primary": string;
   "--color-secondary": string;
   "--color-navbar-bg": string;
@@ -93,7 +94,7 @@ export function generateThemeVars(
 ): DerivedTheme {
   // Fonds principaux
   const app_bg =
-    mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.2);
+    mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
   const navbar_text = getTextColorForBackground(navbar_bg);
@@ -103,7 +104,7 @@ export function generateThemeVars(
 
   // Cartes et boutons
   const card_bg =
-    mode === "light" ? hexToRgba(primary, 0.05) : hexToRgba(primary, 0.15);
+    mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_txt = getTextColorForBackground(action_bg);

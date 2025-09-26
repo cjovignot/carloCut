@@ -1,28 +1,20 @@
 import { useSettings } from "../../services/useSettings";
 import { THEMES, Theme } from "../../services/themes";
 import {
-  shadeColor,
   getTextColorForBackground,
-  hexToRgba,
+  generateThemeVars,
+  DerivedTheme,
 } from "../../services/useApplyTheme";
 
 function generatePreviewVars(theme: Theme) {
   const { primary, mode } = theme;
-
-  const cardBg =
-    mode === "light" ? hexToRgba(primary, 0.2) : hexToRgba(primary, 0.15);
-  const navbar = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
-  const secondary = shadeColor(primary, 0.3);
+  const cssVars: DerivedTheme = generateThemeVars(primary, mode);
 
   return {
     ...theme,
-    cardBg,
-    navbar,
-    secondary,
-    text: getTextColorForBackground(cardBg),
-    textOnNavbar: getTextColorForBackground(navbar),
+    ...cssVars,
     textOnPrimary: getTextColorForBackground(primary),
-    textOnSecondary: getTextColorForBackground(secondary),
+    textOnSecondary: getTextColorForBackground(cssVars["--color-secondary"]),
   };
 }
 
@@ -43,75 +35,73 @@ export function ThemeSelector() {
             onClick={() => setTempTheme(theme)}
             className="m-auto overflow-hidden transition-transform border rounded-lg shadow-md cursor-pointer hover:scale-105"
             style={{
-              borderColor: isSelected ? theme.primary : "#E5E7EB",
-              backgroundColor: theme.cardBg,
+              borderColor: isSelected ? theme["--color-primary"] : "#E5E7EB",
+              backgroundColor: theme["--color-app-bg"],
             }}
           >
-            {/* ✅ tout basé sur les variables locales de preview */}
-            <div className="bg-white">
-              <div style={{ backgroundColor: theme.cardBg, color: theme.text }}>
-                {/* Navbar miniature */}
-                <div
-                  className="flex items-center justify-center h-6 text-xs font-bold"
-                  style={{
-                    backgroundColor: theme.navbar,
-                    color: theme.textOnNavbar,
-                  }}
-                >
-                  Navbar
-                </div>
+            {/* Navbar miniature */}
+            <div
+              className="flex items-center justify-center h-6 text-xs font-bold"
+              style={{
+                backgroundColor: theme["--color-navbar-bg"],
+                color: theme["--color-navbar-text"],
+              }}
+            >
+              Navbar
+            </div>
 
-                {/* Contenu exemple */}
-                <div
-                  className="p-3 space-y-2"
-                  style={{ backgroundColor: theme.cardBg }}
+            {/* Contenu miniature */}
+            <div className="p-3 space-y-2">
+              {/* Card */}
+              <div
+                className="p-2 rounded-md shadow-sm"
+                style={{ backgroundColor: theme["--color-card-bg"] }}
+              >
+                <p
+                  className="text-xs"
+                  style={{ color: theme["--color-navbar-text"] }}
                 >
-                  <div
-                    className="text-sm font-medium"
-                    style={{ color: theme.text }}
+                  Exemple texte
+                </p>
+
+                <div className="flex gap-2 mt-2">
+                  <button
+                    className="flex-1 px-2 py-1 text-xs font-semibold rounded"
+                    style={{
+                      backgroundColor: theme["--color-primary"],
+                      color: theme.textOnPrimary,
+                    }}
                   >
-                    Exemple texte
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      className="flex-1 px-2 py-1 text-xs font-semibold rounded"
-                      style={{
-                        backgroundColor: theme.primary,
-                        color: theme.textOnPrimary,
-                      }}
-                    >
-                      Bouton
-                    </button>
-                    <button
-                      className="flex-1 px-2 py-1 text-xs font-semibold rounded"
-                      style={{
-                        backgroundColor: theme.secondary,
-                        color: theme.textOnSecondary,
-                      }}
-                    >
-                      Action
-                    </button>
-                  </div>
-                </div>
-
-                {/* Nom du thème */}
-                <div
-                  className="p-2 text-xs font-semibold text-center"
-                  style={{
-                    backgroundColor: theme.cardBg,
-                    color: theme.text,
-                  }}
-                >
-                  {theme.name}
+                    Bouton
+                  </button>
+                  <button
+                    className="flex-1 px-2 py-1 text-xs font-semibold rounded"
+                    style={{
+                      backgroundColor: theme["--color-secondary"],
+                      color: theme.textOnSecondary,
+                    }}
+                  >
+                    Action
+                  </button>
                 </div>
               </div>
+            </div>
+
+            {/* Nom du thème */}
+            <div
+              className="p-2 text-xs font-semibold text-center"
+              style={{
+                backgroundColor: theme["--color-card-bg"],
+                color: theme["--color-navbar-text"],
+              }}
+            >
+              {theme.name}
             </div>
           </div>
         );
       })}
 
-      {/* Boutons d’action (eux suivent le thème actif global) */}
+      {/* Boutons d’action globaux */}
       <div className="flex gap-3 col-span-full">
         <button
           onClick={saveTheme}
@@ -128,8 +118,8 @@ export function ThemeSelector() {
           onClick={resetTheme}
           className="flex-1 px-4 py-2 transition border rounded-md"
           style={{
-            backgroundColor: "var(--color-neutral-light)",
-            color: "var(--color-neutral-dark)",
+            backgroundColor: "var(--color-neutral-mode)",
+            color: "var(--color-navbar-text)",
           }}
         >
           🔄 Réinitialiser
