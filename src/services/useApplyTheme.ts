@@ -68,9 +68,88 @@ export function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// Convertit hex → HSL
+function hexToHsl(hex: string): { h: number; s: number; l: number } {
+  let c = hex.replace("#", "");
+  if (c.length === 3) {
+    c = c
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
+  }
+  const r = parseInt(c.substr(0, 2), 16) / 255;
+  const g = parseInt(c.substr(2, 2), 16) / 255;
+  const b = parseInt(c.substr(4, 2), 16) / 255;
+
+  const max = Math.max(r, g, b),
+    min = Math.min(r, g, b);
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+// Convertit HSL → hex
+function hslToHex(h: number, s: number, l: number): string {
+  s /= 100;
+  l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0,
+    g = 0,
+    b = 0;
+
+  if (0 <= h && h < 60) [r, g, b] = [c, x, 0];
+  else if (60 <= h && h < 120) [r, g, b] = [x, c, 0];
+  else if (120 <= h && h < 180) [r, g, b] = [0, c, x];
+  else if (180 <= h && h < 240) [r, g, b] = [0, x, c];
+  else if (240 <= h && h < 300) [r, g, b] = [x, 0, c];
+  else if (300 <= h && h < 360) [r, g, b] = [c, 0, x];
+
+  const toHex = (n: number) =>
+    Math.round((n + m) * 255)
+      .toString(16)
+      .padStart(2, "0");
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// Accent basé sur un décalage fixe de teinte
+function getAccentColor(primary: string): string {
+  const { h, s, l } = hexToHsl(primary);
+
+  // Décalage fixe : anthracite (220°) → orange vif (~30°)
+  const accentHue = (22 + (h % 15) - 5 + 360) % 360;
+
+  // Accent toujours saturé et lumineux pour contraster
+  const accentS = 90; // saturation haute
+  const accentL = 50; // luminosité équilibrée, vif
+
+  return hslToHex(accentHue, accentS, accentL);
+}
+
 // 🔹 Type des variables dérivées
 export type DerivedTheme = {
   "--color-app-bg": string;
+  "--color-accent": string;
   "--color-page-title": string;
   "--color-primary": string;
   "--color-secondary": string;
@@ -101,6 +180,7 @@ export function generateThemeVars(
   const neutral_mode =
     mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
   const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
+  const accent = getAccentColor(primary);
 
   // Cartes et boutons
   const card_bg =
@@ -117,6 +197,7 @@ export function generateThemeVars(
 
   return {
     "--color-app-bg": app_bg,
+    "--color-accent": accent,
     "--color-page-title": page_title,
     "--color-primary": primary,
     "--color-secondary": secondary,

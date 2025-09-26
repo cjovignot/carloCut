@@ -26,17 +26,14 @@ export function SheetCard({
       className={`shadow rounded-xl p-3 flex flex-col h-22 transition-all hover:shadow-md ${className}`}
       style={{
         backgroundColor: "var(--color-card-bg)", // fond de la carte selon le thème
-        color: "var(--color-text)", // texte principal selon le thème
+        // color: "var(--color-info)", // texte principal selon le thème
         borderColor: "var(--color-primary)",
         borderWidth: 1,
         borderStyle: "solid",
       }}
     >
       {title && data !== undefined && (
-        <div
-          className="mb-1 text-xs"
-          style={{ color: "var(--color-text-on-secondary)" }}
-        >
+        <div className="mb-1 text-xs" style={{ color: "var(--color-info)" }}>
           {title.toUpperCase()}
           {unit ? ` (${unit})` : ""}
         </div>
@@ -49,16 +46,13 @@ export function SheetCard({
               className="w-4 h-4 border rounded-full"
               style={{
                 backgroundColor: color.hex,
-                borderColor: "var(--color-text)", // contraste avec texte
+                borderColor: "var(--color-page-title)", // contraste avec texte
               }}
             />
           )}
-          <span>{data}</span>
+          <span style={{ color: "var(--color-secondary" }}>{data}</span>
         </div>
-        <span
-          className="text-xs"
-          style={{ color: "var(--color-text-on-secondary)" }}
-        >
+        <span className="text-xs" style={{ color: "var(--color-accent)" }}>
           {textured ? "Texturé" : ""}
         </span>
       </div>

@@ -92,12 +92,12 @@ export function JoineryDetail() {
         <Link to={`/projects/${projectId}`}>
           <ArrowLeft
             className="w-5 h-5"
-            style={{ color: "var(--color-text-primary)" }}
+            style={{ color: "var(--color-secondary)" }}
           />
         </Link>
         <h1
           className="text-3xl font-bold"
-          style={{ color: "var(--color-text-primary)" }}
+          style={{ color: "var(--color-page-title)" }}
         >
           {joinery.name}
         </h1>
@@ -128,22 +128,22 @@ export function JoineryDetail() {
             <div className="flex items-center justify-between mb-2">
               <h2
                 className="font-semibold"
-                style={{ color: "var(--color-text-primary)" }}
+                style={{ color: "var(--color-page-title)" }}
               >
                 Tôle {i + 1}
               </h2>
               <div className="flex space-x-2">
-                <button>
+                <button className="p-2 transition-colors rounded-md">
                   <Edit
-                    className="w-5 h-5"
-                    style={{ color: "var(--color-accent)" }}
+                    className="w-4 h-4"
+                    style={{ color: "var(--color-page-title)" }}
                     onClick={() => setEditingSheet(sheet)}
                   />
                 </button>
-                <button>
+                <button className="p-2 transition-colors rounded-md">
                   <Trash2
-                    className="w-5 h-5"
-                    style={{ color: "var(--color-danger)" }}
+                    className="w-4 h-4"
+                    style={{ color: "var(--color-error)" }}
                     onClick={() => handleDeleteSheet(sheet._id)}
                   />
                 </button>

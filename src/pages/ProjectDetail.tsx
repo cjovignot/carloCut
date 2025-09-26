@@ -270,7 +270,7 @@ export function ProjectDetail() {
                   </button>
                   <button
                     onClick={() => handleDeleteJoinery(joinery._id)}
-                    style={{ color: "var(--color-warning)" }}
+                    style={{ color: "var(--color-error)" }}
                     className="p-2 transition-colors rounded-md"
                   >
                     <Trash2 className="w-4 h-4" />

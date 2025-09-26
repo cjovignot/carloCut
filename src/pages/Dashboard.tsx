@@ -235,7 +235,7 @@ export function Dashboard() {
                     <div className="text-right">
                       <p
                         className="text-sm font-medium"
-                        style={{ color: "var(--color-warning)" }}
+                        style={{ color: "var(--color-accent)" }}
                       >
                         {project.joineries.length}{" "}
                         {project.joineries.length === 1

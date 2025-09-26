@@ -170,7 +170,7 @@ export function Projects() {
                     </span>
                     <span
                       className="text-xs"
-                      style={{ color: "var(--color-warning)" }}
+                      style={{ color: "var(--color-accent)" }}
                     >
                       par {project.createdBy?.name}
                     </span>
@@ -194,7 +194,7 @@ export function Projects() {
                     onClick={() => handleDeleteProject(project._id)}
                     className="p-2 transition-colors rounded-md"
                     style={{
-                      color: "var(--color-warning)",
+                      color: "var(--color-error)",
                     }}
                   >
                     <Trash2 className="w-4 h-4" />
