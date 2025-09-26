@@ -24,7 +24,7 @@ export function ThemeSelector() {
   if (!tempTheme) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-6 m-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 m-1 md:grid-cols-3 lg:grid-cols-4">
       {THEMES.map((t) => {
         const theme = generatePreviewVars(t);
         const isSelected = tempTheme.name === theme.name;
