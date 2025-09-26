@@ -263,15 +263,21 @@ export function ProjectDetail() {
                 <div className="flex justify-end px-6 pb-4 space-x-2">
                   <button
                     onClick={() => setEditingJoinery(joinery)}
-                    style={{ color: "var(--color-navbar-text)" }}
                     className="p-2 transition-colors rounded-md"
+                    style={{
+                      color: "var(--color-navbar-text)",
+                      backgroundColor: "var(--color-app-bg)",
+                    }}
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteJoinery(joinery._id)}
-                    style={{ color: "var(--color-error)" }}
                     className="p-2 transition-colors rounded-md"
+                    style={{
+                      color: "var(--color-error)",
+                      backgroundColor: "var(--color-app-bg)",
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

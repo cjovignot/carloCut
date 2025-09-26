@@ -185,6 +185,7 @@ export function Projects() {
                   className="p-2 transition-colors rounded-md"
                   style={{
                     color: "var(--color-navbar-text)",
+                    backgroundColor: "var(--color-app-bg",
                   }}
                 >
                   <Edit className="w-4 h-4" />
@@ -195,6 +196,7 @@ export function Projects() {
                     className="p-2 transition-colors rounded-md"
                     style={{
                       color: "var(--color-error)",
+                      backgroundColor: "var(--color-app-bg)",
                     }}
                   >
                     <Trash2 className="w-4 h-4" />
