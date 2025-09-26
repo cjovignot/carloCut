@@ -182,7 +182,7 @@ export function generateThemeVars(
   const secondary = shadeColor(primary, 0.3);
   
   // Titles
-  pconst page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
+  const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
   
   // Navbar
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
