@@ -81,14 +81,10 @@ export function Dashboard() {
     backgroundColor: "var(--color-card-bg)"
   }}
 >
-  {/* Icône dans un cercle */}
-  <div className="flex items-center justify-center w-12 h-12 rounded-full"
-       style={{ backgroundColor: "var(--color-action-txt)", opacity: 0.1 }}>
     <FolderOpen
       className="w-6 h-6"
       style={{ color: "var(--color-action-txt)" }}
     />
-  </div>
 
   {/* Texte centré */}
   <div className="text-center">
