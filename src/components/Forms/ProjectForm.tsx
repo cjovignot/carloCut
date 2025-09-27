@@ -43,10 +43,7 @@ export function ProjectForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onFormSubmit)}
-      className="space-y-2 w-full mx-3 sm:mx-0"
-    >
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
       <div>
         <label className="block text-sm font-medium">Nom du projet *</label>
         <input
@@ -90,7 +87,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div>
+      <div className="flex">
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Date *
         </label>
@@ -106,7 +103,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div>
+      <div className="">
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Notes
         </label>
