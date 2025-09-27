@@ -85,7 +85,7 @@ export function Dashboard() {
           <div className="flex items-center">
             <FolderOpen
               className="w-8 h-8"
-              style={{ color: "var(--color-action-txt)" }}
+              style={{ color: "var(--color-action-text)" }}
             />
             <div className="ml-4">
               <p
@@ -96,7 +96,7 @@ export function Dashboard() {
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-action-text)" }}
               >
                 {stats.totalProjects}
               </p>
@@ -112,7 +112,7 @@ export function Dashboard() {
           <div className="flex items-center">
             <Users
               className="w-8 h-8"
-              style={{ color: "var(--color-action-txt)" }}
+              style={{ color: "var(--color-action-text)" }}
             />
             <div className="ml-4">
               <p
@@ -123,7 +123,7 @@ export function Dashboard() {
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-action-text)" }}
               >
                 {stats.totalJoineries}
               </p>
@@ -139,7 +139,7 @@ export function Dashboard() {
           <div className="flex items-center">
             <Package
               className="w-8 h-8"
-              style={{ color: "var(--color-action-txt)" }}
+              style={{ color: "var(--color-action-text)" }}
             />
             <div className="ml-4">
               <p
@@ -150,7 +150,7 @@ export function Dashboard() {
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-txt)" }}
+                style={{ color: "var(--color-action-text)" }}
               >
                 {stats.totalSheets}
               </p>
