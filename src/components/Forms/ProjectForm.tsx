@@ -87,7 +87,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div className="flex">
+      <div className="flex flex-col w-full">
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Date *
         </label>
