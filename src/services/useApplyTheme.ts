@@ -199,6 +199,9 @@ export function generateThemeVars(
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_txt = getTextColorForBackground(action_bg);
+  
+  const input_bg = secondary;
+  const input_txt = navbar_text
 
   // Importants
   const success = "#16a34a";
@@ -222,8 +225,8 @@ export function generateThemeVars(
     "--color-navbar-text": navbar_text,
     
     // Inputs
-    // "--color-input-bg": input_bg,
-    // "--color-input-txt": input_txt,
+    "--color-input-bg": input_bg,
+    "--color-input-txt": input_txt,
     
     // Cards
     "--color-card-bg": card_bg,
