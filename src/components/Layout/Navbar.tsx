@@ -82,22 +82,18 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex-1 flex flex-col items-center justify-center transition-colors ${
-                  location.pathname === item.path
-                    ? "bg-[var(--color-navbar-active)]"
-                    : "hover:bg-[var(--color-navbar-hover)]"
-                }`}
+                className={`flex-1 flex flex-col items-center justify-center transition-colors`}
               >
-                <item.icon className="w-6 h-6" style={textColorStyle} />
+                <item.icon className="w-6 h-6" style={{ color: "var(--color-text-on-navbar)" }} />
               </Link>
             ) : (
               <button
                 key={item.label}
-              style={{ color: textColorStyle}}
+              style={{ color: "var(--color-text-on-navbar)" }}
                 onClick={item.action}
                 className="flex-1 flex flex-col items-center justify-center hover:bg-[var(--color-navbar-hover)] transition-colors"
               >
-                <item.icon className="w-6 h-6" style={{ color: textColorStyle}} />
+                <item.icon className="w-6 h-6" style={{ color: "var(--color-text-on-navbar)" }} />
               </button>
             )
           )}
