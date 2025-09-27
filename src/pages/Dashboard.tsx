@@ -172,7 +172,7 @@ export function Dashboard() {
             Actions rapides
           </h2>
           <div className="flex justify-around gap-4">
-            <Link to="/projects">
+            <Link to="/projects?create=true">
               <Button variant="outline" className="w-full">
                 <Plus className="w-4 h-4 mr-2" />
                 Créer un chantier

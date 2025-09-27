@@ -43,32 +43,24 @@ export function ProjectForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
       <div>
-        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
-          Nom du projet *
-        </label>
+        <label className="block text-sm font-medium">Nom du projet *</label>
         <input
           type="text"
           {...register("name", { required: "Nom du projet requis" })}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
           placeholder="Maison Dupont, Extension salon..."
         />
-        {errors.name && (
-          <p className="mt-1 text-sm text-[color:var(--error)]">
-            {errors.name.message}
-          </p>
-        )}
+        {errors.name && <p className="mt-1 text-sm">{errors.name.message}</p>}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
-          Client *
-        </label>
+        <label className="block text-sm font-medium">Client *</label>
         <input
           type="text"
           {...register("client", { required: "Nom du client requis" })}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
           placeholder="Jean Dupont..."
         />
         {errors.client && (
@@ -85,7 +77,7 @@ export function ProjectForm({
         <input
           type="text"
           {...register("address", { required: "Adresse requise" })}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
           placeholder="12 rue des Lilas, Rennes..."
         />
         {errors.address && (
@@ -102,7 +94,7 @@ export function ProjectForm({
         <input
           type="date"
           {...register("date", { required: "Date requise" })}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
         />
         {errors.date && (
           <p className="mt-1 text-sm text-[color:var(--error)]">
@@ -118,7 +110,7 @@ export function ProjectForm({
         <textarea
           rows={4}
           {...register("notes")}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
           placeholder="Notes optionnelles sur le projet..."
         />
       </div>

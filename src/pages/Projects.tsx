@@ -1,6 +1,6 @@
 // Projects.tsx
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Plus, Search, Calendar, MapPin, Trash2, Edit } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
@@ -16,10 +16,19 @@ export function Projects() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
   const { user } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // ✅ Ouvre le modal si l’URL contient ?create=true
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("create") === "true") {
+      setShowCreateModal(true);
+    }
+  }, [location]);
 
   const fetchProjects = async () => {
     try {
@@ -95,7 +104,7 @@ export function Projects() {
         <Search
           className="absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2"
           style={{
-            color: "var(--color-text-muted)",
+            color: "var(--color-input-text)",
           }}
         />
         <input
@@ -105,9 +114,9 @@ export function Projects() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full py-2 pl-10 pr-4 border rounded-md focus:outline-none"
           style={{
-            borderColor: "var(--color-border)",
-            backgroundColor: "var(--color-primary)",
-            color: "var(--color-text-primary)",
+            border: "none",
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-input-text)",
           }}
         />
       </div>
@@ -213,7 +222,7 @@ export function Projects() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         title="Créer un chantier"
-        size="lg"
+        size="xl"
       >
         <ProjectForm
           onSubmit={handleCreateProject}

@@ -41,7 +41,7 @@ export function Modal({
         <div
           className="fixed inset-0 transition-opacity"
           style={{
-            backgroundColor: "var(--color-text)", // overlay basé sur texte pour contraste
+            backgroundColor: "var(--color-app-bg)", // overlay basé sur texte pour contraste
             opacity: 0.75,
           }}
           onClick={onClose}
@@ -55,14 +55,14 @@ export function Modal({
         <div
           className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizeClasses[size]} sm:p-6`}
           style={{
-            backgroundColor: "var(--color-background)",
-            color: "var(--color-text)",
+            backgroundColor: "var(--color-secondary)",
+            color: "var(--color-input-text)",
           }}
         >
           <div className="flex items-center justify-between mb-4">
             <h3
               className="text-lg font-medium"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-page-title)" }}
             >
               {title}
             </h3>
@@ -70,8 +70,9 @@ export function Modal({
               onClick={onClose}
               className="transition-colors"
               style={{
-                color: "var(--color-text-on-primary)",
+                color: "var(--color-error)",
                 backgroundColor: "transparent",
+                opacity: 0.75,
               }}
             >
               <X className="w-6 h-6" />

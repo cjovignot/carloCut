@@ -152,22 +152,22 @@ export type DerivedTheme = {
   "--color-accent": string;
   "--color-primary": string;
   "--color-secondary": string;
-  
+
   "--color-page-title": string;
   "--color-navbar-bg": string;
   "--color-navbar-text": string;
   "--color-card-bg": string;
   "--color-input-bg": string;
-  "--color-input-txt": string;
+  "--color-input-text": string;
   "--color-action-bg": string;
   "--color-action-bg-hover": string;
-  "--color-action-txt": string;
-  
+  "--color-action-text": string;
+
   "--color-success": string;
   "--color-error": string;
   "--color-warning": string;
   "--color-info": string;
-  
+
   "--color-neutral-mode": string;
 };
 
@@ -180,28 +180,27 @@ export function generateThemeVars(
   const app_bg =
     mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
-  
-  // Titles
-  const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
-  
-  // Navbar
-  const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
-  const navbar_text = getTextColorForBackground(navbar_bg);
-  
+  const accent = getAccentColor(primary);
   const neutral_mode =
     mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
 
-  const accent = getAccentColor(primary);
+  // Titles
+  const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
+
+  // Navbar
+  const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
+  const navbar_text = getTextColorForBackground(navbar_bg);
 
   // Cards
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
-  const action_txt = getTextColorForBackground(action_bg);
-  
-  const input_bg = secondary;
-  const input_txt = navbar_text
+  const action_text = getTextColorForBackground(action_bg);
+
+  // Inputs
+  const input_bg = shadeColor(app_bg, 0.5);
+  const input_text = navbar_text;
 
   // Importants
   const success = "#16a34a";
@@ -219,20 +218,20 @@ export function generateThemeVars(
 
     // Titles
     "--color-page-title": page_title,
-    
+
     // Navbar
     "--color-navbar-bg": navbar_bg,
     "--color-navbar-text": navbar_text,
-    
+
     // Inputs
     "--color-input-bg": input_bg,
-    "--color-input-txt": input_txt,
-    
+    "--color-input-text": input_text,
+
     // Cards
     "--color-card-bg": card_bg,
 
     // Buttons
-    "--color-action-txt": action_txt,
+    "--color-action-text": action_text,
     "--color-action-bg": action_bg,
     "--color-action-bg-hover": action_bg_hover,
 
