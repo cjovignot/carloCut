@@ -87,7 +87,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div>
+      <div className="w-full">
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Date *
         </label>
