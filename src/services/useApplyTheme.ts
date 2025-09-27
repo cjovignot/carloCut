@@ -198,6 +198,8 @@ export function generateThemeVars(
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
   const card_text =  getTextColorForBackground(card_bg);
+  
+  // Actions
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_text = getTextColorForBackground(action_bg);
