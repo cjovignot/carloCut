@@ -43,7 +43,10 @@ export function ProjectForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="space-y-2 w-full mx-3 sm:mx-0"
+    >
       <div>
         <label className="block text-sm font-medium">Nom du projet *</label>
         <input
@@ -87,14 +90,14 @@ export function ProjectForm({
         )}
       </div>
 
-      <div className="w-full">
+      <div>
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Date *
         </label>
         <input
           type="date"
           {...register("date", { required: "Date requise" })}
-          className="block w-inherit p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
         />
         {errors.date && (
           <p className="mt-1 text-sm text-[color:var(--error)]">
@@ -103,7 +106,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div className="">
+      <div>
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Notes
         </label>
