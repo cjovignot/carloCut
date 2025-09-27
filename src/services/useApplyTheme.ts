@@ -2,30 +2,75 @@ import { useEffect } from "react";
 import { useSettings } from "./useSettings";
 import { Theme } from "./themes";
 
-// 🔹 Vérifie si une couleur est claire ou foncée
-export function isColorLight(hex: string) {
-  if (!hex) return true;
-  let c = hex.replace("#", "");
-  if (c.length === 3)
-    c = c
-      .split("")
-      .map((ch) => ch + ch)
-      .join("");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  // formule luminance standard BT.709
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance > 186; // seuil réaliste
+// 🔹 Parse rgba(...) or rgb(...) strings
+function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
+  const match = input.match(/rgba?\(([^)]+)\)/i);
+  if (!match) return null;
+
+  const parts = match[1].split(",").map((v) => parseFloat(v.trim()));
+  const [r, g, b, a = 1] = parts;
+
+  return { r, g, b, a };
 }
 
-// 🔹 Donne une couleur de texte lisible
+// 🔹 Blends a semi-transparent color over a solid background
+function blendWithBackground(
+  fg: { r: number; g: number; b: number; a: number },
+  bg: { r: number; g: number; b: number }
+): { r: number; g: number; b: number } {
+  return {
+    r: Math.round(fg.r * fg.a + bg.r * (1 - fg.a)),
+    g: Math.round(fg.g * fg.a + bg.g * (1 - fg.a)),
+    b: Math.round(fg.b * fg.a + bg.b * (1 - fg.a)),
+  };
+}
+
+// 🔹 Luminance threshold logic
+function luminanceIsLight(r: number, g: number, b: number): boolean {
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 186;
+}
+
+// ✅ Main function: determine if a color (hex or rgba) is light
+export function isColorLight(color: string, background: string = "#ffffff"): boolean {
+  if (!color) return true;
+
+  // Hex format
+  if (color.startsWith("#")) {
+    let c = color.slice(1);
+    if (c.length === 3) {
+      c = c.split("").map((ch) => ch + ch).join("");
+    }
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    return luminanceIsLight(r, g, b);
+  }
+
+  // rgba / rgb format
+  const fg = parseRgbaString(color);
+  if (!fg) return true;
+
+  if (fg.a < 1) {
+    const bg =
+      parseRgbaString(background) ??
+      parseRgbaString(hexToRgba(background, 1))!;
+
+    const { r, g, b } = blendWithBackground(fg, bg);
+    return luminanceIsLight(r, g, b);
+  }
+
+  return luminanceIsLight(fg.r, fg.g, fg.b);
+}
+
+// 🔹 Retourne une couleur de texte lisible selon la couleur de fond
 export function getTextColorForBackground(
-  bgHex: string,
+  bgColor: string,
   lightText = "#FFFFFF",
-  darkText = "#111827"
-) {
-  return isColorLight(bgHex) ? darkText : lightText;
+  darkText = "#111827",
+  backgroundBehind: string = "#FFFFFF"
+): string {
+  return isColorLight(bgColor, backgroundBehind) ? darkText : lightText;
 }
 
 // 🔹 Éclaircit ou assombrit une couleur
@@ -53,7 +98,7 @@ export function shadeColor(hex: string, percent: number) {
   return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
 }
 
-// 🔹 Hex → RGBA
+// 🔹 Convertit hex en rgba()
 export function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
@@ -135,14 +180,9 @@ function hslToHex(h: number, s: number, l: number): string {
 // Accent basé sur un décalage fixe de teinte
 function getAccentColor(primary: string): string {
   const { h, s, l } = hexToHsl(primary);
-
-  // Décalage fixe : anthracite (220°) → orange vif (~30°)
   const accentHue = (22 + (h % 15) - 5 + 360) % 360;
-
-  // Accent toujours saturé et lumineux pour contraster
-  const accentS = 90; // saturation haute
-  const accentL = 50; // luminosité équilibrée, vif
-
+  const accentS = 90;
+  const accentL = 50;
   return hslToHex(accentHue, accentS, accentL);
 }
 
@@ -156,10 +196,10 @@ export type DerivedTheme = {
   "--color-page-title": string;
   "--color-navbar-bg": string;
   "--color-navbar-text": string;
-  
+
   "--color-card-bg": string;
   "--color-card-text": string;
-  
+
   "--color-input-bg": string;
   "--color-input-text": string;
   "--color-action-bg": string;
@@ -179,7 +219,6 @@ export function generateThemeVars(
   primary: string,
   mode: "light" | "dark"
 ): DerivedTheme {
-  // Globals
   const app_bg =
     mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
@@ -187,62 +226,48 @@ export function generateThemeVars(
   const neutral_mode =
     mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
 
-  // Titles
   const page_title = shadeColor(getTextColorForBackground(neutral_mode), 0.1);
 
-  // Navbar
   const navbar_bg = mode === "light" ? "#FFFFFF" : shadeColor(primary, -0.5);
   const navbar_text = getTextColorForBackground(navbar_bg);
 
-  // Cards
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
-  const card_text =  getTextColorForBackground(card_bg);
-  
-  // Actions
+  const card_text = getTextColorForBackground(card_bg, "#fff", "#111827", app_bg);
+
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_text = getTextColorForBackground(action_bg);
 
-  // Inputs
   const input_bg = shadeColor(app_bg, 0.5);
   const input_text = navbar_text;
 
-  // Importants
   const success = "#16a34a";
   const error = "#dc2626";
   const warning = "#f59e0b";
   const info = "#0ea5e9";
 
   return {
-    // Globals
     "--color-app-bg": app_bg,
     "--color-accent": accent,
     "--color-primary": primary,
     "--color-secondary": secondary,
     "--color-neutral-mode": neutral_mode,
 
-    // Titles
     "--color-page-title": page_title,
-
-    // Navbar
     "--color-navbar-bg": navbar_bg,
     "--color-navbar-text": navbar_text,
 
-    // Inputs
-    "--color-input-bg": input_bg,
-    "--color-input-text": input_text,
-
-    // Cards
     "--color-card-bg": card_bg,
     "--color-card-text": card_text,
 
-    // Buttons
+    "--color-input-bg": input_bg,
+    "--color-input-text": input_text,
+
     "--color-action-text": action_text,
     "--color-action-bg": action_bg,
     "--color-action-bg-hover": action_bg_hover,
 
-    // Importants
     "--color-success": success,
     "--color-error": error,
     "--color-warning": warning,
@@ -265,14 +290,12 @@ export function useApplyTheme() {
     });
     console.groupEnd();
 
-    // Meta theme-color pour mobile
     const metaTheme = document.querySelector<HTMLMetaElement>(
       'meta[name="theme-color"]'
     );
     if (metaTheme)
       metaTheme.setAttribute("content", cssVars["--color-navbar-bg"]);
 
-    // Application des variables CSS
     const root = document.documentElement;
     Object.entries(cssVars).forEach(([key, value]) => {
       root.style.setProperty(key, value);
