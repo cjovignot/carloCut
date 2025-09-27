@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSettings } from "./useSettings";
 import { Theme } from "./themes";
+// test
 
 // 🔹 Parse rgba(...) or rgb(...) strings
 function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
