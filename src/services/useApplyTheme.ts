@@ -295,7 +295,7 @@ export function useApplyTheme() {
       'meta[name="theme-color"]'
     );
     if (metaTheme)
-      metaTheme.setAttribute("content", cssVars["--color-navbar-bg"]);
+      metaTheme.setAttribute("content", cssVars["--color-app-bg"]);
 
     const root = document.documentElement;
     Object.entries(cssVars).forEach(([key, value]) => {
