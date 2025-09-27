@@ -93,11 +93,11 @@ export function Navbar() {
             ) : (
               <button
                 key={item.label}
-                style={textColorStyle}
+              style={{ color: textColorStyle}}
                 onClick={item.action}
                 className="flex-1 flex flex-col items-center justify-center hover:bg-[var(--color-navbar-hover)] transition-colors"
               >
-                <item.icon className="w-6 h-6" style={textColorStyle} />
+                <item.icon className="w-6 h-6" style={{ color: textColorStyle}} />
               </button>
             )
           )}
