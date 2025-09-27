@@ -28,7 +28,7 @@ export function Modal({
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: "max-w-md",
+    sm: "max-w-full",
     md: "max-w-lg",
     lg: "max-w-2xl",
     xl: "max-w-4xl",
@@ -53,7 +53,7 @@ export function Modal({
 
         {/* Modal content */}
         <div
-          className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizeClasses[size]} sm:py-6 sm:px-2`}
+          className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizeClasses[size]}`}
           style={{
             backgroundColor: "var(--color-secondary)",
             color: "var(--color-input-text)",
