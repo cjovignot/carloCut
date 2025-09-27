@@ -94,7 +94,7 @@ export function ProjectForm({
         <input
           type="date"
           {...register("date", { required: "Date requise" })}
-          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-inherit p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
         />
         {errors.date && (
           <p className="mt-1 text-sm text-[color:var(--error)]">
@@ -103,7 +103,7 @@ export function ProjectForm({
         )}
       </div>
 
-      <div>
+      <div className="">
         <label className="block text-sm font-medium text-[color:var(--text-secondary)]">
           Notes
         </label>
