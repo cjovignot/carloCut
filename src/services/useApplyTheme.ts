@@ -156,7 +156,10 @@ export type DerivedTheme = {
   "--color-page-title": string;
   "--color-navbar-bg": string;
   "--color-navbar-text": string;
+  
   "--color-card-bg": string;
+  "--color-card-text": string;
+  
   "--color-input-bg": string;
   "--color-input-text": string;
   "--color-action-bg": string;
@@ -194,6 +197,7 @@ export function generateThemeVars(
   // Cards
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
+  const card_text =  getTextColorForBackground(card_bg);
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
   const action_text = getTextColorForBackground(action_bg);
@@ -229,6 +233,7 @@ export function generateThemeVars(
 
     // Cards
     "--color-card-bg": card_bg,
+    "--color-card-text": card_text,
 
     // Buttons
     "--color-action-text": action_text,

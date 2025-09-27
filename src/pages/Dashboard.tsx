@@ -85,18 +85,18 @@ export function Dashboard() {
           <div className="flex items-center">
             <FolderOpen
               className="w-8 h-8"
-              style={{ color: "var(--color-action-text)" }}
+              style={{ color: "var(--color-card-text)" }}
             />
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-navbar-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 Projets
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 {stats.totalProjects}
               </p>
@@ -112,18 +112,18 @@ export function Dashboard() {
           <div className="flex items-center">
             <Users
               className="w-8 h-8"
-              style={{ color: "var(--color-action-text)" }}
+              style={{ color: "var(--color-card-text)" }}
             />
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-navbar-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 Menuiseries
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 {stats.totalJoineries}
               </p>
@@ -139,18 +139,18 @@ export function Dashboard() {
           <div className="flex items-center">
             <Package
               className="w-8 h-8"
-              style={{ color: "var(--color-action-text)" }}
+              style={{ color: "var(--color-card-text)" }}
             />
             <div className="ml-4">
               <p
                 className="text-sm font-medium"
-                style={{ color: "var(--color-navbar-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 Tôles
               </p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: "var(--color-action-text)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 {stats.totalSheets}
               </p>

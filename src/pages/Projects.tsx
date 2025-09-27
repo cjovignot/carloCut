@@ -148,7 +148,7 @@ export function Projects() {
               <Link to={`/projects/${project._id}`} className="block p-6">
                 <h3
                   className="mb-2 text-lg font-semibold"
-                  style={{ color: "var(--color-navbar-text)" }}
+                  style={{ color: "var(--color-card-text)" }}
                 >
                   {project.name}
                 </h3>
@@ -162,7 +162,7 @@ export function Projects() {
                   </div>
                   <div
                     className="flex items-center text-sm"
-                    style={{ color: "var(--color-secondary)" }}
+                    style={{ color: "var(--color-card-text)" }}
                   >
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{new Date(project.date).toLocaleDateString()}</span>
