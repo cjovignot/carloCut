@@ -108,7 +108,7 @@ export function ThemeSelector() {
           className="flex-1 px-4 py-2 transition rounded-md"
           style={{
             backgroundColor: "var(--color-primary)",
-            color: "var(--color-action-txt)",
+            color: "var(--color-action-text)",
           }}
         >
           ✅ Enregistrer le thème
