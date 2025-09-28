@@ -32,7 +32,7 @@ export function JoineryForm({ onSubmit, onCancel }: JoineryFormProps) {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="space-y-4 p-4 rounded-md shadow-md"
+      className="space-y-2"
       style={{ backgroundColor: "var(--color-card-bg)" }}
     >
       {/* Destinataire */}
@@ -57,10 +57,7 @@ export function JoineryForm({ onSubmit, onCancel }: JoineryFormProps) {
           value="contact@carlo.fr"
         />
         {errors.recipient && (
-          <p
-            className="mt-1 text-sm"
-            style={{ color: "var(--color-error)" }}
-          >
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
             {errors.recipient.message}
           </p>
         )}
@@ -86,10 +83,7 @@ export function JoineryForm({ onSubmit, onCancel }: JoineryFormProps) {
           }}
         />
         {errors.subject && (
-          <p
-            className="mt-1 text-sm"
-            style={{ color: "var(--color-error)" }}
-          >
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
             {errors.subject.message}
           </p>
         )}

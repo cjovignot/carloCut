@@ -87,7 +87,7 @@ export function JoineryDetail() {
     );
 
   return (
-    <div className="px-4 py-8 pb-16 mx-auto space-y-6 max-w-7xl">
+    <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       <div className="flex items-center space-x-4">
         <Link to={`/projects/${projectId}`}>
           <ArrowLeft
@@ -103,14 +103,14 @@ export function JoineryDetail() {
         </h1>
       </div>
 
-      <div className="flex space-x-2">
-        <Button onClick={() => setShowSheetModal(true)}>
+      <div className="flex pb-3 mt-6 mb-4 space-x-2 border-b border-black/70">
+        <Button onClick={() => setShowSheetModal(true)} variant="secondary">
           <Plus className="w-4 h-4 mr-1" /> Ajouter une tôle
         </Button>
-        <Button variant="outline" onClick={handleExportPDF}>
+        <Button variant="secondary" onClick={handleExportPDF}>
           <FileText className="w-4 h-4 mr-1" /> PDF
         </Button>
-        <Button variant="outline" onClick={() => setShowEmailModal(true)}>
+        <Button variant="secondary" onClick={() => setShowEmailModal(true)}>
           <Mail className="w-4 h-4 mr-1" /> Email
         </Button>
       </div>
@@ -133,20 +133,15 @@ export function JoineryDetail() {
                 Tôle {i + 1}
               </h2>
               <div className="flex space-x-2">
-                <button className="p-2 transition-colors rounded-md">
-                  <Edit
-                    className="w-4 h-4"
-                    style={{ color: "var(--color-page-title)" }}
-                    onClick={() => setEditingSheet(sheet)}
-                  />
-                </button>
-                <button className="p-2 transition-colors rounded-md">
-                  <Trash2
-                    className="w-4 h-4"
-                    style={{ color: "var(--color-error)" }}
-                    onClick={() => handleDeleteSheet(sheet._id)}
-                  />
-                </button>
+                <Button variant="toggle" onClick={() => setEditingSheet(sheet)}>
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteSheet(sheet._id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             </div>
 
@@ -185,7 +180,7 @@ export function JoineryDetail() {
         isOpen={showSheetModal}
         onClose={() => setShowSheetModal(false)}
         title="Ajouter une tôle"
-        size="lg"
+        size="xl"
       >
         <SheetForm
           onSubmit={handleCreateSheet}
@@ -197,7 +192,7 @@ export function JoineryDetail() {
         isOpen={!!editingSheet}
         onClose={() => setEditingSheet(null)}
         title="Éditer la tôle"
-        size="lg"
+        size="xl"
       >
         {editingSheet && (
           <SheetForm

@@ -3,7 +3,13 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "danger" | "outline";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "danger"
+    | "outline"
+    | "toggle"
+    | "success";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
 }
@@ -18,7 +24,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseClasses =
-    "inline-flex items-center justify-center rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed";
 
   // Styles dynamiques via CSS variables
   const variantStyles: Record<string, React.CSSProperties> = {
@@ -28,16 +34,24 @@ export function Button({
     },
     secondary: {
       backgroundColor: "var(--color-secondary)",
-      color: "var(--color-action-txt)",
+      color: "var(--color-neutral-mode)",
     },
     danger: {
-      backgroundColor: "#DC2626",
+      backgroundColor: "#b01c1cff",
       color: "#FFFFFF",
     },
     outline: {
       backgroundColor: "transparent",
-      color: "var(--color-navbar-text)",
-      border: "1px solid var(--color-secondary)",
+      color: "var(--color-neutral-mode)",
+      border: "1px solid var(--color-neutral-mode)",
+    },
+    toggle: {
+      backgroundColor: "var(--color-input-bg)",
+      color: "var(--color-input-text)",
+    },
+    success: {
+      backgroundColor: "var(--color-success)",
+      color: "var(--color-neutral-mode)",
     },
   };
 

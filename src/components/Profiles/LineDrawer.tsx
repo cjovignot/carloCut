@@ -227,11 +227,11 @@ export default function LineDrawer({
   // };
 
   return (
-    <div>
+    <div className="">
       {/* Buttons */}
       <div className="flex justify-end h-10 my-3 space-x-3">
         <Button
-          className="!p-3 !bg-green-700 text-white"
+          className="!p-3 !bg-green-700 !text-white"
           disabled={!drawing}
           type="button"
           variant="outline"
@@ -250,7 +250,7 @@ export default function LineDrawer({
 
         <Button
           type="button"
-          className="!p-3 text-white !bg-blue-600"
+          className="!p-3 !text-white !bg-blue-600"
           disabled={!drawing}
           variant="outline"
           onClick={() => {
@@ -264,7 +264,7 @@ export default function LineDrawer({
         </Button>
 
         <Button
-          className={`!p-3 text-white ${
+          className={`!p-3 !text-white ${
             !drawing ? "!bg-green-600" : "!bg-red-700"
           }`}
           type="button"
@@ -284,13 +284,16 @@ export default function LineDrawer({
         ref={containerRef}
         style={{
           width: "100%",
+          marginBottom: "20px",
           height: "40vh",
-          border: `1.5px dashed var(--color-secondary)`,
           position: "relative",
           borderRadius: "20px",
         }}
       >
-        <p className="flex items-center pt-1 pl-2 text-sm italic text-gray-700">
+        <p
+          className="absolute flex items-center pt-2 pl-3 text-sm italic text-gray-700"
+          style={{ color: "var(--color-info)" }}
+        >
           <Info className="w-4 h-4 mr-1" />
           Dessiner le profilé point par point
         </p>
@@ -300,7 +303,8 @@ export default function LineDrawer({
             touchAction: "none",
             cursor: "crosshair",
             display: "block",
-            backgroundColor: "var(--color-background)",
+            border: `2px dashed var(--color-info)`,
+            borderRadius: "20px",
           }}
           onMouseDown={(e) => {
             const coords = getCanvasCoords(e.clientX, e.clientY);

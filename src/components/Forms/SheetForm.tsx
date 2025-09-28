@@ -81,17 +81,21 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
       {/* Profile Type */}
       <div>
-        <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+        <label
+          className="block mb-2 text-sm font-medium"
+          style={{ color: "var(--color-neutral-mode)" }}
+        >
           Élément *
         </label>
         <select
           {...register("profileType", {
             required: "Le type de profil est obligatoire",
           })}
-          className="block w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)] bg-[color:var(--background)] text-[color:var(--text-primary)]"
+          style={{ backgroundColor: "var(--color-input-bg)" }}
+          className="block p-1 w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm"
         >
           <option value="" disabled>
             Sélection de l'élément...
@@ -111,26 +115,40 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
 
       {/* Color */}
       <div>
-        <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
-          RAL *
-        </label>
-
         {/* RAL Type Buttons */}
-        <div className="flex my-2 space-x-2">
-          <Button
-            type="button"
-            variant={ralType === "classic" ? "primary" : "outline"}
-            onClick={() => setRalType("classic")}
+        <div className="flex items-center justify-between w-full my-2 mt-8">
+          <label
+            className="block mb-2 text-sm font-medium"
+            style={{ color: "var(--color-neutral-mode)" }}
           >
-            Classic
-          </Button>
-          <Button
-            type="button"
-            variant={ralType === "design" ? "primary" : "outline"}
-            onClick={() => setRalType("design")}
+            RAL *
+          </label>
+          <div
+            style={{
+              backgroundColor: "var(--color-input-bg)",
+              border: "1.5px var(--color-input-bg) solid",
+            }}
+            className="rounded-md"
           >
-            Design
-          </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="rounded-r-none rounded-l-md"
+              variant={ralType === "classic" ? "toggle" : "secondary"}
+              onClick={() => setRalType("classic")}
+            >
+              Classic
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="rounded-l-none rounded-r-md"
+              variant={ralType === "design" ? "toggle" : "secondary"}
+              onClick={() => setRalType("design")}
+            >
+              Design
+            </Button>
+          </div>
         </div>
 
         {/* Listbox RAL */}
@@ -142,7 +160,13 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
             const selectedColor = colors.find((c) => c.code === watch("color"));
             return (
               <>
-                <Listbox.Button className="flex items-center w-full gap-2 p-2 text-left border rounded-md border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--text-primary)]">
+                <Listbox.Button
+                  style={{
+                    backgroundColor: "var(--color-input-bg)",
+                    color: "var(--color-input-text",
+                  }}
+                  className="flex items-center w-full gap-2 p-1 text-left border rounded-md border-[color:var(--border)]"
+                >
                   {selectedColor && (
                     <span
                       className="w-3 h-3 rounded-full"
@@ -153,7 +177,13 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
                     ? `${selectedColor.code} - ${selectedColor.name}`
                     : "Sélectionner un RAL"}
                 </Listbox.Button>
-                <Listbox.Options className="z-10 mt-1 overflow-auto border rounded-md max-h-60 bg-[color:var(--background)] border-[color:var(--border)] text-[color:var(--text-primary)]">
+                <Listbox.Options
+                  style={{
+                    backgroundColor: "var(--color-input-bg)",
+                    color: "var(--color-input-text)",
+                  }}
+                  className="z-10 mt-1 overflow-auto border rounded-md max-h-60 border-[color:var(--border)]"
+                >
                   {colors.map((color) => (
                     <Listbox.Option
                       key={color.code}
@@ -183,7 +213,10 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       {/* Length & Quantity */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+          <label
+            className="block mb-2 text-sm font-medium"
+            style={{ color: "var(--color-neutral-mode)" }}
+          >
             {selectedProfileType?.toLowerCase().includes("tableau")
               ? "Hauteur (mm)"
               : "Longueur (mm)"}{" "}
@@ -191,18 +224,29 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           </label>
           <input
             type="number"
+            style={{
+              backgroundColor: "var(--color-input-bg)",
+              color: "var(--color-input-text",
+            }}
             {...register("length", { required: true, min: 1 })}
-            className="block w-full border rounded-md border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--text-primary)] focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+            className="block p-1 w-full border rounded-md border-[color:var(--border)]"
           />
         </div>
-        <div>
-          <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+        <div className="mb-2">
+          <label
+            className="block mb-2 text-sm font-medium"
+            style={{ color: "var(--color-neutral-mode)" }}
+          >
             QTE *
           </label>
           <input
             type="number"
             {...register("quantity", { required: true, min: 1 })}
-            className="block w-full border rounded-md border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--text-primary)] focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+            className="block p-1 w-full border rounded-md border-[color:var(--border)]"
+            style={{
+              backgroundColor: "var(--color-input-bg)",
+              color: "var(--color-input-text)",
+            }}
           />
         </div>
       </div>
@@ -210,16 +254,23 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       {/* Profondeur Appui */}
       {selectedProfileType === "appui" && (
         <div>
-          <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+          <label
+            className="block text-sm font-medium"
+            style={{ color: "var(--color-neutral-mode)" }}
+          >
             Côte menuiserie ➡️ arase mur *
           </label>
           <input
             type="number"
+            style={{
+              backgroundColor: "var(--color-input-bg)",
+              color: "var(--color-input-text)",
+            }}
             {...register("widthAppui", { required: true, min: 1 })}
-            className="flex-1 mt-2 border rounded-md border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--text-primary)] focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+            className="flex-1 p-1 mt-2 border rounded-md border-[color:var(--border)]"
           />
           {errors.widthAppui && (
-            <p className="mt-1 text-sm text-[color:var(--error)]">
+            <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
               Saisir une côte valide
             </p>
           )}
@@ -241,31 +292,53 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       />
 
       {/* Dimensions */}
-      <div>
-        <label className="block mb-2 text-sm font-medium text-[color:var(--text-secondary)]">
+      <div className="">
+        <label
+          className="block mb-2 text-sm font-medium"
+          style={{ color: "var(--color-neutral-mode)" }}
+        >
           Côtes (mm) *
         </label>
-        <div className="mt-2 space-y-2">
+        <div className="space-y-2">
           {fields.map((field, i) => (
-            <div key={field.id} className="grid items-center grid-cols-6 gap-2">
-              <b className="col-span-1">{i + 1} :</b>
+            <div key={field.id} className="grid items-center grid-cols-7 gap-0">
+              <b
+                className="col-span-0"
+                style={{
+                  color: "var(--color-neutral-mode)",
+                }}
+              >
+                {i + 1} :
+              </b>
               <input
                 type="number"
                 {...register(`dimensions.${i}.value`, {
                   required: true,
                   min: 1,
                 })}
-                className="w-full col-span-3 border rounded-md text-end border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--text-primary)] focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+                style={{
+                  backgroundColor: "var(--color-input-bg)",
+                  color: "var(--color-input-text)",
+                }}
+                className="-ml-4 p-1 col-span-4 border rounded-md text-end border-[color:var(--border)]"
               />
-              <p className="col-span-1">mm</p>
+              <p
+                className="ml-2 col-span-0"
+                style={{ color: "var(--color-neutral-mode)" }}
+              >
+                mm
+              </p>
               {fields.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => remove(i)}
-                  className="col-span-1 p-2 text-[color:var(--error)] hover:opacity-80"
+                <div
+                  className="flex items-center justify-center w-3/4 h-full col-span-1 ml-1 rounded-lg"
+                  style={{
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-neutral-mode)",
+                    opacity: 0.95,
+                  }}
                 >
-                  <X className="w-4 h-4" />
-                </button>
+                  <X onClick={() => remove(i)} className="p-0.5" />
+                </div>
               )}
             </div>
           ))}
@@ -273,11 +346,11 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end space-x-2">
+      <div className="space-x-2 space-y-6 text-end">
         <Button type="button" variant="outline" onClick={onCancel}>
           Annuler
         </Button>
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={loading} variant="success">
           {initialData ? "Mettre à jour" : "Créer"} la tôle
         </Button>
       </div>

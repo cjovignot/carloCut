@@ -85,7 +85,7 @@ export function Projects() {
   }
 
   return (
-    <div className="px-4 py-8 pb-14 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1
@@ -135,7 +135,7 @@ export function Projects() {
           </p>
         </div>
       ) : (
-        <div className="grid py-3 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
             <div
               key={project._id}

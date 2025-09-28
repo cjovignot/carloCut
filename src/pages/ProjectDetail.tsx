@@ -110,7 +110,7 @@ export function ProjectDetail() {
   }
 
   return (
-    <div className="px-4 py-8 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center mb-4">
@@ -293,6 +293,7 @@ export function ProjectDetail() {
         isOpen={showJoineryModal}
         onClose={() => setShowJoineryModal(false)}
         title="Créer une menuiserie"
+        size="xl"
       >
         <JoineryForm
           onSubmit={handleCreateJoinery}
