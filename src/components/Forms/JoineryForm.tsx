@@ -46,13 +46,14 @@ export function JoineryForm({
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium" style={{color: "var(--color-neutral-mode)"}}>
           Menuiserie *
         </label>
         <input
           type="text"
           {...register("name", { required: "Nom de menuiserie requis" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          style={{backgroundColor: "var(--color-input-bg)", color: "var(--color-input-text)"}}
+          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
           placeholder="Fenêtre SDB, Porte d'entrée..."
         />
         {errors.name && (
