@@ -87,7 +87,7 @@ export function Projects() {
   // ---------------- Swipeable Card Component ----------------
   const ProjectCard = ({ project }: { project: any }) => {
     const [translateX, setTranslateX] = useState(0);
-    const maxSwipe = 80; // largeur du panneau d'actions
+    const maxSwipe = 150; // largeur du panneau d'actions
 
     const handlers = useSwipeable({
       onSwipedLeft: () => setTranslateX(-maxSwipe),
@@ -102,7 +102,7 @@ export function Projects() {
     return (
       <div className="relative w-full">
         {/* Actions derrière */}
-        <div className="absolute top-0 right-0 h-full flex flex-col">
+        <div className="absolute top-0 right-0 h-full flex">
           <button
             className="p-2 bg-gray-200 flex-1"
             onClick={() => setEditingProject(project)}
@@ -128,23 +128,6 @@ export function Projects() {
             backgroundColor: "var(--color-card-bg)",
           }}
         >
-          {project.photo ? (
-            <img
-              src={project.photo}
-              alt={project.name}
-              className="h-48 w-full object-cover"
-            />
-          ) : (
-            <div
-              className="h-48 flex items-center justify-center text-sm italic"
-              style={{
-                backgroundColor: "var(--color-app-bg)",
-                color: "var(--color-secondary)",
-              }}
-            >
-              Pas de photo
-            </div>
-          )}
           <div className="p-4">
             <h3
               style={{ color: "var(--color-card-text)" }}
