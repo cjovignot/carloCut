@@ -295,11 +295,8 @@ export function ProjectDetail() {
                     </div>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Footer actions */}
+                
+                {/* Footer actions */}
                   <div className="flex justify-end mt-4 space-x-2">
                     <button
                       onClick={() => setEditingJoinery(joinery)}
@@ -325,6 +322,11 @@ export function ProjectDetail() {
                 </div>
         )}
       </div>
+              </div>
+            ))}
+          </div>
+          
+          
       
 
       {/* Modals */}
