@@ -1,7 +1,7 @@
 // ProjectDetail.tsx
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail, MapPin, Calendar, Grid2x2} from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -263,7 +263,7 @@ export function ProjectDetail() {
                       className="flex items-center w-full text-sm"
                       style={{ color: "var(--color-secondary)" }}
                     >
-                      <MapPin className="w-4 h-4 mr-2" />
+                      <Grid2x2 className="w-4 h-4 mr-2" />
                       <span className="truncate">{joinery.type}</span>
                     </div>
                     <div className="w-full mt-2 text-sm">
