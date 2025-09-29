@@ -83,9 +83,7 @@ export default function ProjectDetail() {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner size="lg" />;
-  }
+  if (loading) return <LoadingSpinner size="lg" />;
 
   if (!project) {
     return (
