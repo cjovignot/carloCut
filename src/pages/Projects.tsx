@@ -137,113 +137,97 @@ export function Projects() {
       ) : (
         <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
-            <div
-              key={project._id}
-              className="grid grid-cols-3 transition-shadow rounded-lg shadow-md hover:shadow-lg"
-              style={{
-                backgroundColor: "var(--color-card-bg)",
-                borderColor: "var(--color-border)",
-              }}
-            >
-              {/* Partie gauche = infos (2/3) */}
-              <Link
-                to={`/projects/${project._id}`}
-                className="block col-span-2 p-6"
-              >
-                <h3
-                  className="mb-2 text-lg font-semibold"
-                  style={{ color: "var(--color-card-text)" }}
-                >
-                  {project.name}
-                </h3>
-                <div className="flex flex-col w-full space-y-4">
-                  {/* Client */}
-                  <div
-                    className="flex items-center w-full text-sm"
-                    style={{ color: "var(--color-secondary)" }}
-                  >
-                    <MapPin className="w-4 h-4 mr-2" />
-                    <span className="truncate">{project.client}</span>
-                  </div>
-                  <div className="w-full mt-2 text-sm">
-                    <span
-                      className="font-medium"
-                      style={{ color: "var(--color-info)" }}
-                    >
-                      {project.joineries.length}{" "}
-                      {project.joineries.length === 1
-                        ? "menuiserie"
-                        : "menuiseries"}
-                    </span>
-                  </div>
+  <div
+    key={project._id}
+    className="flex transition-shadow rounded-lg shadow-md hover:shadow-lg overflow-hidden"
+    style={{
+      backgroundColor: "var(--color-card-bg)",
+      borderColor: "var(--color-border)",
+    }}
+  >
+    {/* Contenu principal (photo + infos) */}
+    <div className="flex-1 flex flex-col">
+      {/* Photo */}
+      {project.photo ? (
+        <img
+          src={project.photo}
+          alt={project.name}
+          className="object-cover w-full h-48"
+        />
+      ) : (
+        <div
+          className="flex items-center justify-center w-full h-48 text-sm italic"
+          style={{
+            backgroundColor: "var(--color-app-bg)",
+            color: "var(--color-secondary)",
+          }}
+        >
+          Pas de photo
+        </div>
+      )}
 
-                  {/* Date */}
-                  <div
-                    className="flex items-center w-full text-sm"
-                    style={{ color: "var(--color-card-text)" }}
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{new Date(project.date).toLocaleDateString()}</span>
-                  </div>
+      {/* Détails */}
+      <div className="p-4">
+        <h3
+          className="mb-2 text-lg font-semibold"
+          style={{ color: "var(--color-card-text)" }}
+        >
+          {project.name}
+        </h3>
 
-                  <div className="w-full mt-4 text-sm">
-                    <span
-                      className="text-xs"
-                      style={{ color: "var(--color-accent)" }}
-                    >
-                      par {project.createdBy?.name}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+        <div className="flex flex-col w-full space-y-2">
+          <div
+            className="flex items-center text-sm"
+            style={{ color: "var(--color-secondary)" }}
+          >
+            <MapPin className="w-4 h-4 mr-2" />
+            <span className="truncate">{project.client}</span>
+          </div>
 
-              {/* Partie droite = encart photo */}
-              <div className="col-span-1">
-                {project.photo ? (
-                  <img
-                    src={project.photo}
-                    alt={project.name}
-                    className="object-cover w-full h-full rounded-r-lg"
-                  />
-                ) : (
-                  <div
-                    className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
-                    style={{
-                      backgroundColor: "var(--color-app-bg)",
-                      color: "var(--color-secondary)",
-                      minHeight: "140px",
-                    }}
-                  >
-                    Pas de photo
-                  </div>
-                )}
-              </div>
+          <div className="text-sm">
+            <span style={{ color: "var(--color-info)" }}>
+              {project.joineries.length}{" "}
+              {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
+            </span>
+          </div>
 
-              {/* Actions (pied de card, toute la largeur) */}
-              <div className="flex w-full col-span-3">
-                <Button
-                  onClick={() => setEditingProject(project)}
-                  className="flex-1 w-full p-2 transition-colors !rounded-none !rounded-bl-md"
-                  style={{
-                    color: "var(--color-navbar-text)",
-                    backgroundColor: "var(--color-app-bg)",
-                  }}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
+          <div className="flex items-center text-sm" style={{ color: "var(--color-card-text)" }}>
+            <Calendar className="w-4 h-4 mr-2" />
+            <span>{new Date(project.date).toLocaleDateString()}</span>
+          </div>
 
-                {user?.role === "admin" && (
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDeleteProject(project._id)}
-                    className="flex-1 w-full p-2 transition-colors  !rounded-none !rounded-br-md"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
+          <div className="text-xs mt-2" style={{ color: "var(--color-accent)" }}>
+            par {project.createdBy?.name}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Actions à droite */}
+    <div className="flex flex-col border-l border-gray-200">
+      <Button
+        onClick={() => setEditingProject(project)}
+        className="p-2 flex-1 !rounded-none"
+        style={{
+          color: "var(--color-navbar-text)",
+          backgroundColor: "var(--color-app-bg)",
+        }}
+      >
+        <Edit className="w-4 h-4" />
+      </Button>
+
+      {user?.role === "admin" && (
+        <Button
+          variant="danger"
+          onClick={() => handleDeleteProject(project._id)}
+          className="p-2 flex-1 !rounded-none"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      )}
+    </div>
+  </div>
+))}
         </div>
       )}
 
