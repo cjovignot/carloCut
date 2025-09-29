@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { getTextColorForBackground } from "../../services/useApplyTheme";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -26,50 +27,25 @@ export function Button({
   const baseClasses =
     "inline-flex items-center justify-center rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed";
 
-  // Styles dynamiques via CSS variables
-  const variantStyles: Record<string, React.CSSProperties> = {
-    primary: {
-      backgroundColor: "var(--color-action-bg)",
-      color: "var(--color-action-txt)",
-    },
-    secondary: {
-      backgroundColor: "var(--color-secondary)",
-      color: "var(--color-neutral-mode)",
-    },
-    danger: {
-      backgroundColor: "#b01c1cff",
-      color: "#FFFFFF",
-    },
-    outline: {
-      backgroundColor: "transparent",
-      color: "var(--color-neutral-mode)",
-      border: "1px solid var(--color-neutral-mode)",
-    },
-    toggle: {
-      backgroundColor: "var(--color-input-bg)",
-      color: "var(--color-input-text)",
-    },
-    success: {
-      backgroundColor: "var(--color-success)",
-      color: "#FFFFFF",
-    },
+  // Récupère la couleur de fond selon le variant
+  const variantBg: Record<string, string> = {
+    primary: "var(--color-action-bg)",
+    secondary: "var(--color-secondary)",
+    danger: "#b01c1cff",
+    outline: "transparent",
+    toggle: "var(--color-input-bg)",
+    success: "var(--color-success)",
   };
 
-  // Hover & focus via pseudo-classes CSS
-  const hoverFocusStyles: Record<string, React.CSSProperties> = {
-    primary: {
-      "--hover-bg": "var(--color-action-bg-hover)",
-    },
-    secondary: {
-      "--hover-bg": "var(--color-secondary)",
-    },
-    danger: {
-      "--hover-bg": "#B91C1C",
-    },
-    outline: {
-      "--hover-bg": "var(--color-neutral-light)",
-    },
-  };
+  const bgColor = variantBg[variant];
+
+  // Utilise getTextColorForBackground pour déterminer la couleur du texte
+  const textColor =
+    variant === "outline"
+      ? "var(--color-neutral-mode)" // pour outline on garde mode neutre
+      : getTextColorForBackground(
+          bgColor.startsWith("var(") ? "#FFFFFF" : bgColor
+        );
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-sm",
@@ -77,13 +53,16 @@ export function Button({
     lg: "px-6 py-3 text-base",
   };
 
+  // Styles dynamiques via CSS variables
+  const style: React.CSSProperties = {
+    backgroundColor: bgColor,
+    color: textColor,
+  };
+
   return (
     <button
       className={`${baseClasses} ${sizeClasses[size]} ${className}`}
-      style={{
-        ...variantStyles[variant],
-        ...hoverFocusStyles[variant],
-      }}
+      style={style}
       disabled={disabled || loading}
       {...props}
     >
