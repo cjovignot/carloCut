@@ -244,7 +244,7 @@ export function ProjectDetail() {
                 className="flex transition-shadow rounded-lg shadow-md hover:shadow-lg"
                 style={{ backgroundColor: "var(--color-card-bg)" }}
               >
-                {/* Partie gauche : contenu */}
+                {/* Partie gauche */}
                 <div className="flex flex-col flex-1 p-6">
                   <Link
                     to={`/projects/${id}/joineries/${joinery._id}`}
@@ -273,30 +273,7 @@ export function ProjectDetail() {
                     </div>
                   </Link>
 
-
-                {/* Partie droite : photo (1/3) */}
-                <div className="w-1/3">
-                  {joinery.photo ? (
-                    <img
-                      src={joinery.photo}
-                      alt={joinery.name}
-                      className="object-cover w-full h-full rounded-r-lg"
-                    />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
-                      style={{
-                        backgroundColor: "var(--color-app-bg)",
-                        color: "var(--color-secondary)",
-                        minHeight: "140px",
-                      }}
-                    >
-                      Pas de photo
-                    </div>
-                  )}
-                </div>
-                
-                {/* Footer actions */}
+                  {/* Footer actions */}
                   <div className="flex justify-end mt-4 space-x-2">
                     <button
                       onClick={() => setEditingJoinery(joinery)}
@@ -320,14 +297,33 @@ export function ProjectDetail() {
                     </button>
                   </div>
                 </div>
-        )}
-      </div>
+
+                {/* Partie droite : photo */}
+                <div className="w-1/3">
+                  {joinery.photo ? (
+                    <img
+                      src={joinery.photo}
+                      alt={joinery.name}
+                      className="object-cover w-full h-full rounded-r-lg"
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
+                      style={{
+                        backgroundColor: "var(--color-app-bg)",
+                        color: "var(--color-secondary)",
+                        minHeight: "140px",
+                      }}
+                    >
+                      Pas de photo
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
-          
-          
-      
+        )}
+      </div>
 
       {/* Modals */}
       <Modal
