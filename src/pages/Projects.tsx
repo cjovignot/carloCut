@@ -1,6 +1,6 @@
 // Projects.tsx
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Plus, Search, Calendar, MapPin, Trash2, Edit } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
@@ -102,49 +102,42 @@ export function Projects() {
 
     return (
       <div className="relative w-full">
-        {/* Actions derrière */}
-        <div className="absolute top-0 right-0 h-full flex overflow-hidden">
+        {/* Actions derrière (fixes) */}
+        <div
+          className="absolute top-0 right-0 h-full flex"
+          style={{ width: maxSwipe }}
+        >
           {/* Edit Button */}
-          <div
+          <button
+            className="flex items-center justify-center h-full text-white"
             style={{
               width: buttonWidth,
-              transform: `translateX(${Math.min(translateX + buttonWidth, 0)}px)`,
-              transition: "transform 0.1s linear",
+              backgroundColor: "var(--color-edit-btn, #6B7280)",
             }}
+            onClick={() => setEditingProject(project)}
           >
-            <button
-              className="flex items-center justify-center h-full w-full text-white"
-              style={{ backgroundColor: "var(--color-edit-btn, #6B7280)" }}
-              onClick={() => setEditingProject(project)}
-            >
-              <Edit className="w-4 h-4" />
-            </button>
-          </div>
+            <Edit className="w-4 h-4" />
+          </button>
 
           {/* Delete Button */}
           {user?.role === "admin" && (
-            <div
+            <button
+              className="flex items-center justify-center h-full text-white"
               style={{
                 width: buttonWidth,
-                transform: `translateX(${Math.min(translateX + maxSwipe, 0)}px)`,
-                transition: "transform 0.1s linear",
+                backgroundColor: "var(--color-delete-btn, #EF4444)",
               }}
+              onClick={() => handleDeleteProject(project._id)}
             >
-              <button
-                className="flex items-center justify-center h-full w-full text-white"
-                style={{ backgroundColor: "var(--color-delete-btn, #EF4444)" }}
-                onClick={() => handleDeleteProject(project._id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
+              <Trash2 className="w-4 h-4" />
+            </button>
           )}
         </div>
 
-        {/* Contenu de la card */}
+        {/* Contenu de la card (swipe) */}
         <div
           {...handlers}
-          className="flex z-9999 flex-col transition-transform duration-200 rounded-l-lg shadow-md overflow-hidden"
+          className="flex flex-col transition-transform duration-200 rounded-lg shadow-md overflow-hidden relative z-10"
           style={{
             transform: `translateX(${translateX}px)`,
             backgroundColor: "var(--color-card-bg)",
