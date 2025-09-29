@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSettings } from "./useSettings";
 
 // 🔹 Parse rgba(...) ou rgb(...)
-function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
+export function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
   const match = input.match(/rgba?\(([^)]+)\)/i);
   if (!match) return null;
   const parts = match[1].split(",").map((v) => parseFloat(v.trim()));
@@ -11,7 +11,7 @@ function parseRgbaString(input: string): { r: number; g: number; b: number; a: n
 }
 
 // 🔹 Blend d'une couleur semi-transparente sur un fond solide
-function blendWithBackground(
+export function blendWithBackground(
   fg: { r: number; g: number; b: number; a: number },
   bg: { r: number; g: number; b: number }
 ): { r: number; g: number; b: number } {
@@ -60,7 +60,7 @@ export function shadeColor(hex: string, percent: number) {
 }
 
 // 🔹 Convertit var CSS ou valeur brute en couleur exploitable
-function resolveColor(color: string): string {
+export function resolveColor(color: string): string {
   if (!color) return "#000000";
   if (color.startsWith("var(")) {
     const varName = color.slice(4, -1).trim();
@@ -101,6 +101,16 @@ export function getBestTextColor(
   const contrastDark = getContrastRatio(bgRgb, darkRgb);
 
   return contrastLight > contrastDark ? lightText : darkText;
+}
+
+// 🔹 Alias pour compatibilité avec l'ancien code
+export function getTextColorForBackground(
+  bgColor: string,
+  lightText = "#ffffff",
+  darkText = "#111827"
+): string {
+  // Appelle le nouveau système robuste
+  return getBestTextColor(bgColor, lightText, darkText);
 }
 
 // 🔹 Type des variables dérivées
