@@ -232,7 +232,7 @@ export function ProjectDetail() {
             <p style={{ color: "var(--color-secondary)" }} className="mt-2">
               Créez une menuiserie pour commencer
             </p>
-            <Button className="mt-4" onClick={() => setShowJoineryModal(true)}>
+            <Button variant="success" className="mt-4" onClick={() => setShowJoineryModal(true)}>
               <Plus className="w-4 h-4 mr-2" /> Créer une menuiserie
             </Button>
           </div>

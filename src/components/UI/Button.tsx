@@ -51,7 +51,7 @@ export function Button({
     },
     success: {
       backgroundColor: "var(--color-success)",
-      color: "var(--color-neutral-mode)",
+      color: "#FFFFFF",
     },
   };
 
