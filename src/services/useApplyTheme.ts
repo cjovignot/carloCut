@@ -4,7 +4,9 @@ import { Theme } from "./themes";
 // test
 
 // 🔹 Parse rgba(...) or rgb(...) strings
-function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
+function parseRgbaString(
+  input: string
+): { r: number; g: number; b: number; a: number } | null {
   const match = input.match(/rgba?\(([^)]+)\)/i);
   if (!match) return null;
 
@@ -33,14 +35,20 @@ function luminanceIsLight(r: number, g: number, b: number): boolean {
 }
 
 // ✅ Main function: determine if a color (hex or rgba) is light
-export function isColorLight(color: string, background: string = "#ffffff"): boolean {
+export function isColorLight(
+  color: string,
+  background: string = "#ffffff"
+): boolean {
   if (!color) return true;
 
   // Hex format
   if (color.startsWith("#")) {
     let c = color.slice(1);
     if (c.length === 3) {
-      c = c.split("").map((ch) => ch + ch).join("");
+      c = c
+        .split("")
+        .map((ch) => ch + ch)
+        .join("");
     }
     const r = parseInt(c.substring(0, 2), 16);
     const g = parseInt(c.substring(2, 4), 16);
@@ -54,8 +62,7 @@ export function isColorLight(color: string, background: string = "#ffffff"): boo
 
   if (fg.a < 1) {
     const bg =
-      parseRgbaString(background) ??
-      parseRgbaString(hexToRgba(background, 1))!;
+      parseRgbaString(background) ?? parseRgbaString(hexToRgba(background, 1))!;
 
     const { r, g, b } = blendWithBackground(fg, bg);
     return luminanceIsLight(r, g, b);
@@ -77,6 +84,13 @@ export function getTextColorForBackground(
   const isLight = isColorLight(bgColor, backgroundBehind);
 
   return isLight ? darkText : lightText;
+}
+
+// 🔹 Récupère la couleur derrière l'élément
+export function getCssVarValue(varName: string): string {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
 }
 
 // 🔹 Éclaircit ou assombrit une couleur
@@ -239,7 +253,12 @@ export function generateThemeVars(
 
   const card_bg =
     mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
-  const card_text = getTextColorForBackground(card_bg, "#fff", "#111827", app_bg);
+  const card_text = getTextColorForBackground(
+    card_bg,
+    "#fff",
+    "#111827",
+    app_bg
+  );
 
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
@@ -299,8 +318,7 @@ export function useApplyTheme() {
     const metaTheme = document.querySelector<HTMLMetaElement>(
       'meta[name="theme-color"]'
     );
-    if (metaTheme)
-      metaTheme.setAttribute("content", cssVars["--color-app-bg"]);
+    if (metaTheme) metaTheme.setAttribute("content", cssVars["--color-app-bg"]);
 
     const root = document.documentElement;
     Object.entries(cssVars).forEach(([key, value]) => {

@@ -1,6 +1,9 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { getTextColorForBackground } from "../../services/useApplyTheme";
+import {
+  getTextColorForBackground,
+  getCssVarValue,
+} from "../../services/useApplyTheme";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -39,17 +42,35 @@ export function Button({
 
   const bgColor = variantBg[variant];
 
-  // Couleur du texte calculée automatiquement selon le fond et le fond derrière
+  // Résoudre la vraie valeur de bgColor si c’est une var(...)
+  const resolvedBgColor = bgColor.startsWith("var(")
+    ? getCssVarValue(bgColor.replace(/var\(|\)/g, ""))
+    : bgColor;
+
+  // Détermine le fond derrière le bouton (utile pour le blending si bgColor est translucide)
+  const backgroundBehind =
+    variant === "outline"
+      ? getCssVarValue("--color-neutral-mode")
+      : getCssVarValue("--color-app-bg");
+
+  // Couleur du texte calculée automatiquement selon la couleur réelle
   const textColor =
     variant === "outline"
       ? "var(--color-neutral-mode)"
-      : getTextColorForBackground(bgColor, "#FFFFFF", "#111827", "var(--color-app-bg)");
+      : getTextColorForBackground(
+          resolvedBgColor,
+          "#FFFFFF",
+          "#111827",
+          backgroundBehind
+        );
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-6 py-3 text-base",
   };
+
+  console.log("Button →", { bgColor, backgroundBehind, textColor });
 
   return (
     <button
