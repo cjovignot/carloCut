@@ -10,7 +10,7 @@ import { JoineryForm } from "../components/Forms/JoineryForm";
 import { EmailForm } from "../components/Forms/EmailForm";
 import { useAuth } from "../services/useAuth";
 
-export default function ProjectDetail() {
+export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
