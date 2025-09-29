@@ -8,6 +8,7 @@ import { Modal } from "../components/UI/Modal";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { ProjectForm } from "../components/Forms/ProjectForm";
 import { useAuth } from "../services/useAuth";
+import { useSwipeable } from "react-swipeable";
 
 export function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -22,7 +23,6 @@ export function Projects() {
     fetchProjects();
   }, []);
 
-  // ✅ Ouvre le modal si l’URL contient ?create=true
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("create") === "true") {
@@ -84,6 +84,115 @@ export function Projects() {
     return <LoadingSpinner size="lg" />;
   }
 
+  // ---------------- Swipeable Card Component ----------------
+  const ProjectCard = ({ project }: { project: any }) => {
+    const [translateX, setTranslateX] = useState(0);
+    const maxSwipe = 80; // largeur du panneau d'actions
+
+    const handlers = useSwipeable({
+      onSwipedLeft: () => setTranslateX(-maxSwipe),
+      onSwipedRight: () => setTranslateX(0),
+      onSwiping: (eventData) => {
+        let x = Math.max(Math.min(-eventData.deltaX, maxSwipe), 0);
+        setTranslateX(-x);
+      },
+      trackMouse: true, // permet swipe avec la souris
+    });
+
+    return (
+      <div className="relative w-full">
+        {/* Actions derrière */}
+        <div className="absolute top-0 right-0 h-full flex flex-col">
+          <button
+            className="p-2 bg-gray-200 flex-1"
+            onClick={() => setEditingProject(project)}
+          >
+            <Edit className="w-4 h-4" />
+          </button>
+          {user?.role === "admin" && (
+            <button
+              className="p-2 bg-red-500 flex-1 text-white"
+              onClick={() => handleDeleteProject(project._id)}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Contenu de la card */}
+        <div
+          {...handlers}
+          className="flex flex-col transition-transform duration-200 rounded-lg shadow-md overflow-hidden"
+          style={{
+            transform: `translateX(${translateX}px)`,
+            backgroundColor: "var(--color-card-bg)",
+          }}
+        >
+          {project.photo ? (
+            <img
+              src={project.photo}
+              alt={project.name}
+              className="h-48 w-full object-cover"
+            />
+          ) : (
+            <div
+              className="h-48 flex items-center justify-center text-sm italic"
+              style={{
+                backgroundColor: "var(--color-app-bg)",
+                color: "var(--color-secondary)",
+              }}
+            >
+              Pas de photo
+            </div>
+          )}
+          <div className="p-4">
+            <h3
+              style={{ color: "var(--color-card-text)" }}
+              className="mb-2 text-lg font-semibold"
+            >
+              {project.name}
+            </h3>
+
+            <div className="flex flex-col w-full space-y-2">
+              <div
+                className="flex items-center text-sm"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                <span className="truncate">{project.client}</span>
+              </div>
+
+              <div className="text-sm">
+                <span style={{ color: "var(--color-info)" }}>
+                  {project.joineries.length}{" "}
+                  {project.joineries.length === 1
+                    ? "menuiserie"
+                    : "menuiseries"}
+                </span>
+              </div>
+
+              <div
+                className="flex items-center text-sm"
+                style={{ color: "var(--color-card-text)" }}
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                <span>{new Date(project.date).toLocaleDateString()}</span>
+              </div>
+
+              <div
+                className="text-xs mt-2"
+                style={{ color: "var(--color-accent)" }}
+              >
+                par {project.createdBy?.name}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ---------------- Render ----------------
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
@@ -124,7 +233,9 @@ export function Projects() {
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
+          <p
+            style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}
+          >
             Aucun chantier trouvé
           </p>
           <p
@@ -137,97 +248,8 @@ export function Projects() {
       ) : (
         <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
-  <div
-    key={project._id}
-    className="flex transition-shadow rounded-lg shadow-md hover:shadow-lg overflow-hidden"
-    style={{
-      backgroundColor: "var(--color-card-bg)",
-      borderColor: "var(--color-border)",
-    }}
-  >
-    {/* Contenu principal (photo + infos) */}
-    <div className="flex-1 flex flex-col">
-      {/* Photo */}
-      {project.photo ? (
-        <img
-          src={project.photo}
-          alt={project.name}
-          className="object-cover w-full h-48"
-        />
-      ) : (
-        <div
-          className="flex items-center justify-center w-full h-48 text-sm italic"
-          style={{
-            backgroundColor: "var(--color-app-bg)",
-            color: "var(--color-secondary)",
-          }}
-        >
-          Pas de photo
-        </div>
-      )}
-
-      {/* Détails */}
-      <div className="p-4">
-        <h3
-          className="mb-2 text-lg font-semibold"
-          style={{ color: "var(--color-card-text)" }}
-        >
-          {project.name}
-        </h3>
-
-        <div className="flex flex-col w-full space-y-2">
-          <div
-            className="flex items-center text-sm"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            <span className="truncate">{project.client}</span>
-          </div>
-
-          <div className="text-sm">
-            <span style={{ color: "var(--color-info)" }}>
-              {project.joineries.length}{" "}
-              {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm" style={{ color: "var(--color-card-text)" }}>
-            <Calendar className="w-4 h-4 mr-2" />
-            <span>{new Date(project.date).toLocaleDateString()}</span>
-          </div>
-
-          <div className="text-xs mt-2" style={{ color: "var(--color-accent)" }}>
-            par {project.createdBy?.name}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Actions à droite */}
-    <div className="flex flex-col border-l border-gray-200">
-      <Button
-        onClick={() => setEditingProject(project)}
-        className="p-2 flex-1 !rounded-none"
-        style={{
-          color: "var(--color-navbar-text)",
-          backgroundColor: "var(--color-app-bg)",
-        }}
-      >
-        <Edit className="w-4 h-4" />
-      </Button>
-
-      {user?.role === "admin" && (
-        <Button
-          variant="danger"
-          onClick={() => handleDeleteProject(project._id)}
-          className="p-2 flex-1 !rounded-none"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
-      )}
-    </div>
-  </div>
-))}
+            <ProjectCard key={project._id} project={project} />
+          ))}
         </div>
       )}
 
