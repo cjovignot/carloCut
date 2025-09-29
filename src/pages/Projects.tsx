@@ -144,7 +144,7 @@ export function Projects() {
         {/* Contenu de la card */}
         <div
           {...handlers}
-          className="flex flex-col transition-transform duration-200 rounded-lg shadow-md overflow-hidden"
+          className="flex z-9999 flex-col transition-transform duration-200 rounded-l-lg shadow-md overflow-hidden"
           style={{
             transform: `translateX(${translateX}px)`,
             backgroundColor: "var(--color-card-bg)",
