@@ -49,7 +49,7 @@ export function ProjectForm({
         <input
           type="text"
           {...register("name", { required: "Nom du projet requis" })}
-          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm focus:border-[color:var(--primary)] focus:ring-[color:var(--primary)]"
+          className="block w-full p-1 mt-1 border border-[color:var(--border)] rounded-md shadow-sm"
           placeholder="Maison Dupont, Extension salon..."
         />
         {errors.name && <p className="mt-1 text-sm">{errors.name.message}</p>}

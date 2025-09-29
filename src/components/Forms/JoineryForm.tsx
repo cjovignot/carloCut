@@ -46,7 +46,7 @@ export function JoineryForm({
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium" style={{color: "var(--color-neutral-mode)"}}>
+        <label className="block text-sm font-medium">
           Menuiserie *
         </label>
         <input
