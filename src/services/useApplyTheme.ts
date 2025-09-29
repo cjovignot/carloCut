@@ -64,14 +64,19 @@ export function isColorLight(color: string, background: string = "#ffffff"): boo
   return luminanceIsLight(fg.r, fg.g, fg.b);
 }
 
-// 🔹 Retourne une couleur de texte lisible selon la couleur de fond
+// 🔹 Retourne une couleur de texte lisible selon la couleur de fond (opaque ou translucide)
 export function getTextColorForBackground(
   bgColor: string,
   lightText = "#FFFFFF",
   darkText = "#111827",
   backgroundBehind: string = "#FFFFFF"
 ): string {
-  return isColorLight(bgColor, backgroundBehind) ? darkText : lightText;
+  if (!bgColor) return darkText;
+
+  // On utilise la fonction isColorLight existante qui gère le blending si nécessaire
+  const isLight = isColorLight(bgColor, backgroundBehind);
+
+  return isLight ? darkText : lightText;
 }
 
 // 🔹 Éclaircit ou assombrit une couleur

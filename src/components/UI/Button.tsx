@@ -40,10 +40,12 @@ export function Button({
   const bgColor = variantBg[variant];
 
   // Utilisation de la fonction existante pour calculer automatiquement une couleur de texte lisible
-  const textColor =
-    variant === "outline"
-      ? "var(--color-neutral-mode)"
-      : getTextColorForBackground(bgColor, "#ffffff", "#111827", "var(--color-app-bg)");
+  const textColor = getTextColorForBackground(
+  bgColor,
+  "#FFFFFF",
+  "#111827",
+  "var(--color-app-bg)"
+);
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-sm",
