@@ -53,7 +53,7 @@ export function JoineryForm({
           type="text"
           {...register("name", { required: "Nom de menuiserie requis" })}
           style={{backgroundColor: "var(--color-input-bg)", color: "var(--color-input-text)"}}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
+          className="p-1 block w-full mt-1 border-gray-300 rounded-md shadow-sm"
           placeholder="Fenêtre SDB, Porte d'entrée..."
         />
         {errors.name && (
@@ -62,12 +62,13 @@ export function JoineryForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium">
           Type *
         </label>
         <select
           {...register("type", { required: "Type is required" })}
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          style={{backgroundColor: "var(--color-input-bg)", color: "var(--color-input-text)"}}
+          className="block p-1 w-full mt-1 border-gray-300 rounded-md shadow-sm"
         >
           <option value="">Sélectionner un type</option>
           {joineryTypes.map((type) => (
@@ -82,10 +83,10 @@ export function JoineryForm({
       </div>
 
       <div className="flex justify-end pt-4 space-x-3">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="secondary" onClick={onCancel}>
           Annuler
         </Button>
-        <Button type="submit" loading={loading}>
+        <Button type="submit" variant="success" loading={loading}>
           {initialData ? "Mettre à jour" : "Créer"} la menuiserie
         </Button>
       </div>
