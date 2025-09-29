@@ -156,6 +156,24 @@ export default function LineDrawer({
     ctx.fillStyle = style.getPropertyValue("--color-background") || "#f9fafb";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // 🔹 Draw grid
+    const gridSize = 30;
+    ctx.strokeStyle = secondary;
+    ctx.lineWidth = 0.5;
+
+    for (let x = 0; x <= canvas.width; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= canvas.height; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+
     // Existing segments
     ctx.strokeStyle = textColor;
     ctx.lineWidth = 2;
@@ -208,26 +226,8 @@ export default function LineDrawer({
     };
   }, [handleTouch, handleTouchMove]);
 
-  // Update segment (external)
-  // const updateSegment = (index: number, length: number, angleDeg: number) => {
-  //   setSegments((prev) => {
-  //     if (!prev[index]) return prev;
-  //     const updated = [...prev];
-  //     const seg = updated[index];
-  //     const rad = (angleDeg * Math.PI) / 180;
-  //     updated[index] = {
-  //       x1: seg.x1,
-  //       y1: seg.y1,
-  //       x2: seg.x1 + length * Math.cos(rad),
-  //       y2: seg.y1 + length * Math.sin(rad),
-  //     };
-  //     onSegmentsChange?.(updated);
-  //     return updated;
-  //   });
-  // };
-
   return (
-    <div className="">
+    <div>
       {/* Buttons */}
       <div className="flex justify-end h-10 my-3 space-x-3">
         <Button
@@ -284,7 +284,6 @@ export default function LineDrawer({
         ref={containerRef}
         style={{
           width: "100%",
-          marginBottom: "20px",
           height: "40vh",
           position: "relative",
           borderRadius: "20px",

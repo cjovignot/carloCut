@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Plus, FolderOpen, Users, Package } from "lucide-react";
+import {
+  Plus,
+  FolderOpen,
+  FolderClosed,
+  Grid2x2,
+  FileSpreadsheet,
+} from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
@@ -83,7 +89,7 @@ export function Dashboard() {
           style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
-            <FolderOpen
+            <FolderClosed
               className="w-8 h-8"
               style={{ color: "var(--color-card-text)" }}
             />
@@ -110,7 +116,7 @@ export function Dashboard() {
           style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
-            <Users
+            <Grid2x2
               className="w-8 h-8"
               style={{ color: "var(--color-card-text)" }}
             />
@@ -137,7 +143,7 @@ export function Dashboard() {
           style={{ backgroundColor: "var(--color-card-bg)" }}
         >
           <div className="flex items-center">
-            <Package
+            <FileSpreadsheet
               className="w-8 h-8"
               style={{ color: "var(--color-card-text)" }}
             />
@@ -173,15 +179,15 @@ export function Dashboard() {
           </h2>
           <div className="flex justify-around gap-4">
             <Link to="/projects?create=true">
-              <Button variant="outline" className="w-full">
-                <Plus className="w-4 h-4 mr-2" />
-                Créer un chantier
+              <Button variant="success" className="w-full">
+                <Plus className="w-8 h-8 mr-1" />
+                <p className="text-xs">Créer un chantier</p>
               </Button>
             </Link>
             <Link to="/projects">
-              <Button variant="outline" className="w-full">
-                <FolderOpen className="w-4 h-4 mr-2" />
-                Voir les chantiers
+              <Button variant="toggle" className="w-full">
+                <FolderOpen className="w-8 h-8 mr-1" />
+                <p className="text-xs">Voir les chantiers</p>
               </Button>
             </Link>
           </div>

@@ -104,7 +104,7 @@ export function JoineryDetail() {
       </div>
 
       <div className="flex pb-3 mt-6 mb-4 space-x-2 border-b border-black/70">
-        <Button onClick={() => setShowSheetModal(true)} variant="secondary">
+        <Button onClick={() => setShowSheetModal(true)} variant="success">
           <Plus className="w-4 h-4 mr-1" /> Ajouter une tôle
         </Button>
         <Button variant="secondary" onClick={handleExportPDF}>

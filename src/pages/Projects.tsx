@@ -94,7 +94,7 @@ export function Projects() {
         >
           Chantiers
         </h1>
-        <Button onClick={() => setShowCreateModal(true)}>
+        <Button variant="success" onClick={() => setShowCreateModal(true)}>
           <Plus className="w-4 h-4 mr-2" /> Nouveau chantier
         </Button>
       </div>
@@ -139,37 +139,35 @@ export function Projects() {
           {filteredProjects.map((project) => (
             <div
               key={project._id}
-              className="transition-shadow rounded-lg shadow-md hover:shadow-lg"
+              className="grid grid-cols-3 transition-shadow rounded-lg shadow-md hover:shadow-lg"
               style={{
                 backgroundColor: "var(--color-card-bg)",
                 borderColor: "var(--color-border)",
               }}
             >
-              <Link to={`/projects/${project._id}`} className="block p-6">
+              {/* Partie gauche = infos (2/3) */}
+              <Link
+                to={`/projects/${project._id}`}
+                className="block col-span-2 p-6"
+              >
                 <h3
                   className="mb-2 text-lg font-semibold"
                   style={{ color: "var(--color-card-text)" }}
                 >
                   {project.name}
                 </h3>
-                <div className="space-y-2">
+                <div className="flex flex-col w-full space-y-4">
+                  {/* Client */}
                   <div
-                    className="flex items-center text-sm"
+                    className="flex items-center w-full text-sm"
                     style={{ color: "var(--color-secondary)" }}
                   >
                     <MapPin className="w-4 h-4 mr-2" />
                     <span className="truncate">{project.client}</span>
                   </div>
-                  <div
-                    className="flex items-center text-sm"
-                    style={{ color: "var(--color-card-text)" }}
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{new Date(project.date).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-4">
+                  <div className="w-full mt-2 text-sm">
                     <span
-                      className="text-sm font-medium"
+                      className="font-medium"
                       style={{ color: "var(--color-info)" }}
                     >
                       {project.joineries.length}{" "}
@@ -177,6 +175,18 @@ export function Projects() {
                         ? "menuiserie"
                         : "menuiseries"}
                     </span>
+                  </div>
+
+                  {/* Date */}
+                  <div
+                    className="flex items-center w-full text-sm"
+                    style={{ color: "var(--color-card-text)" }}
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>{new Date(project.date).toLocaleDateString()}</span>
+                  </div>
+
+                  <div className="w-full mt-4 text-sm">
                     <span
                       className="text-xs"
                       style={{ color: "var(--color-accent)" }}
@@ -187,29 +197,49 @@ export function Projects() {
                 </div>
               </Link>
 
-              {/* Actions */}
-              <div className="flex justify-end px-6 pb-4 space-x-2">
-                <button
+              {/* Partie droite = encart photo */}
+              <div className="col-span-1">
+                {project.photo ? (
+                  <img
+                    src={project.photo}
+                    alt={project.name}
+                    className="object-cover w-full h-full rounded-r-lg"
+                  />
+                ) : (
+                  <div
+                    className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
+                    style={{
+                      backgroundColor: "var(--color-app-bg)",
+                      color: "var(--color-secondary)",
+                      minHeight: "140px",
+                    }}
+                  >
+                    Pas de photo
+                  </div>
+                )}
+              </div>
+
+              {/* Actions (pied de card, toute la largeur) */}
+              <div className="flex w-full col-span-3">
+                <Button
                   onClick={() => setEditingProject(project)}
-                  className="p-2 transition-colors rounded-md"
+                  className="flex-1 w-full p-2 transition-colors !rounded-none !rounded-bl-md"
                   style={{
                     color: "var(--color-navbar-text)",
-                    backgroundColor: "var(--color-app-bg",
+                    backgroundColor: "var(--color-app-bg)",
                   }}
                 >
                   <Edit className="w-4 h-4" />
-                </button>
+                </Button>
+
                 {user?.role === "admin" && (
-                  <button
+                  <Button
+                    variant="danger"
                     onClick={() => handleDeleteProject(project._id)}
-                    className="p-2 transition-colors rounded-md"
-                    style={{
-                      color: "var(--color-error)",
-                      backgroundColor: "var(--color-app-bg)",
-                    }}
+                    className="flex-1 w-full p-2 transition-colors  !rounded-none !rounded-br-md"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

@@ -112,7 +112,7 @@ export function ProjectDetail() {
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-4">
         <div className="flex items-center mb-4">
           <Link
             to="/projects"
@@ -128,21 +128,33 @@ export function ProjectDetail() {
             >
               {project.name}
             </h1>
-            <p style={{ color: "var(--color-secondary)" }}>
-              Client: {project.client}
-            </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4">
-          <Button onClick={() => setShowJoineryModal(true)}>
-            <Plus className="w-4 h-4 mr-2" /> Ajouter une menuiserie
+        <div className="flex pb-3 mt-6 mb-4 space-x-2 border-b border-black/70">
+          <Button
+            variant="success"
+            onClick={() => setShowJoineryModal(true)}
+            className="w-2/3"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Menuiserie
           </Button>
-          <Button variant="outline" onClick={handleExportPDF}>
-            <FileText className="w-4 h-4 mr-2" /> Export PDF
+          <Button
+            variant="secondary"
+            onClick={handleExportPDF}
+            className="w-1/3"
+          >
+            <FileText className="w-4 h-4 mr-1" />
+            PDF
           </Button>
-          <Button variant="outline" onClick={() => setShowEmailModal(true)}>
-            <Mail className="w-4 h-4 mr-2" /> Envoyer par mail
+          <Button
+            variant="secondary"
+            onClick={() => setShowEmailModal(true)}
+            className="w-1/3"
+          >
+            <Mail className="w-4 h-4 mr-1" />
+            Email
           </Button>
         </div>
       </div>
@@ -155,29 +167,28 @@ export function ProjectDetail() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <h3
-              className="mb-4 text-lg font-semibold"
+              className="mb-6 text-xl font-semibold text-center"
               style={{ color: "var(--color-page-title)" }}
             >
-              Informations de chantier
+              INFORMATIONS
             </h3>
             <div
-              className="space-y-2"
-              style={{ color: "var(--color-secondary)" }}
+              className="grid grid-cols-2 gap-y-2 gap-x-4"
+              style={{ color: "var(--color-card-text)" }}
             >
-              <p>
-                <span className="font-medium">Client:</span> {project.client}
-              </p>
-              <p>
-                <span className="font-medium">Adresse:</span> {project.address}
-              </p>
-              <p>
-                <span className="font-medium">Date:</span>{" "}
+              <span className="font-medium">Client:</span>
+              <span className="text-right">{project.client}</span>
+
+              <span className="font-medium">Adresse:</span>
+              <span className="text-right">{project.address}</span>
+
+              <span className="font-medium">Date:</span>
+              <span className="text-right">
                 {new Date(project.date).toLocaleDateString()}
-              </p>
-              <p>
-                <span className="font-medium">Créé par:</span>{" "}
-                {project.createdBy?.name}
-              </p>
+              </span>
+
+              <span className="font-medium">Créé par:</span>
+              <span className="text-right">{project.createdBy?.name}</span>
             </div>
           </div>
           {project.notes && (
@@ -230,57 +241,83 @@ export function ProjectDetail() {
             {project.joineries.map((joinery: any) => (
               <div
                 key={joinery._id}
-                className="transition-shadow rounded-lg shadow-md hover:shadow-lg"
+                className="flex transition-shadow rounded-lg shadow-md hover:shadow-lg"
                 style={{ backgroundColor: "var(--color-card-bg)" }}
               >
-                <Link
-                  to={`/projects/${id}/joineries/${joinery._id}`}
-                  className="block p-6"
-                >
-                  <h3
-                    className="mb-2 text-lg font-semibold"
-                    style={{ color: "var(--color-page-title)" }}
+                {/* Partie gauche : contenu */}
+                <div className="flex flex-col flex-1 p-6">
+                  <Link
+                    to={`/projects/${id}/joineries/${joinery._id}`}
+                    className="flex-1"
                   >
-                    {joinery.name}
-                  </h3>
-                  <div className="space-y-1">
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--color-secondary)" }}
+                    <h3
+                      className="mb-2 text-lg font-semibold"
+                      style={{ color: "var(--color-page-title)" }}
                     >
-                      Type: {joinery.type}
-                    </p>
-                    <p
-                      className="text-sm font-medium"
-                      style={{ color: "var(--color-info)" }}
-                    >
-                      {joinery.sheets.length}{" "}
-                      {joinery.sheets.length === 1 ? "tôle" : "tôles"}
-                    </p>
-                  </div>
-                </Link>
+                      {joinery.name}
+                    </h3>
+                    <div className="space-y-1">
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--color-secondary)" }}
+                      >
+                        Type: {joinery.type}
+                      </p>
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "var(--color-info)" }}
+                      >
+                        {joinery.sheets.length}{" "}
+                        {joinery.sheets.length === 1 ? "tôle" : "tôles"}
+                      </p>
+                    </div>
+                  </Link>
 
-                <div className="flex justify-end px-6 pb-4 space-x-2">
-                  <button
-                    onClick={() => setEditingJoinery(joinery)}
-                    className="p-2 transition-colors rounded-md"
-                    style={{
-                      color: "var(--color-navbar-text)",
-                      backgroundColor: "var(--color-app-bg)",
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteJoinery(joinery._id)}
-                    className="p-2 transition-colors rounded-md"
-                    style={{
-                      color: "var(--color-error)",
-                      backgroundColor: "var(--color-app-bg)",
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {/* Footer actions */}
+                  <div className="flex justify-end mt-4 space-x-2">
+                    <button
+                      onClick={() => setEditingJoinery(joinery)}
+                      className="p-2 transition-colors rounded-md"
+                      style={{
+                        color: "var(--color-navbar-text)",
+                        backgroundColor: "var(--color-app-bg)",
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteJoinery(joinery._id)}
+                      className="p-2 transition-colors rounded-md"
+                      style={{
+                        color: "var(--color-error)",
+                        backgroundColor: "var(--color-app-bg)",
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Partie droite : photo (1/3) */}
+                <div className="w-1/3">
+                  {joinery.photo ? (
+                    <img
+                      src={joinery.photo}
+                      alt={joinery.name}
+                      className="object-cover w-full h-full rounded-r-lg"
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
+                      style={{
+                        backgroundColor: "var(--color-app-bg)",
+                        color: "var(--color-secondary)",
+                        minHeight: "140px",
+                      }}
+                    >
+                      Pas de photo
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
