@@ -27,7 +27,7 @@ export function Button({
   const baseClasses =
     "inline-flex items-center justify-center rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed";
 
-  // Récupère la couleur de fond selon le variant
+  // Couleurs de fond selon le variant
   const variantBg: Record<string, string> = {
     primary: "var(--color-action-bg)",
     secondary: "var(--color-secondary)",
@@ -39,13 +39,11 @@ export function Button({
 
   const bgColor = variantBg[variant];
 
-  // Utilise getTextColorForBackground pour déterminer la couleur du texte
+  // Utilisation de la fonction existante pour calculer automatiquement une couleur de texte lisible
   const textColor =
     variant === "outline"
-      ? "var(--color-neutral-mode)" // pour outline on garde mode neutre
-      : getTextColorForBackground(
-          bgColor.startsWith("var(") ? "#FFFFFF" : bgColor
-        );
+      ? "var(--color-neutral-mode)"
+      : getTextColorForBackground(bgColor, "#ffffff", "#111827", "var(--color-app-bg)");
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-sm",
@@ -53,16 +51,13 @@ export function Button({
     lg: "px-6 py-3 text-base",
   };
 
-  // Styles dynamiques via CSS variables
-  const style: React.CSSProperties = {
-    backgroundColor: bgColor,
-    color: textColor,
-  };
-
   return (
     <button
       className={`${baseClasses} ${sizeClasses[size]} ${className}`}
-      style={style}
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+      }}
       disabled={disabled || loading}
       {...props}
     >
