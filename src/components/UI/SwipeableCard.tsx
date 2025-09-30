@@ -2,7 +2,7 @@
 import { ReactNode, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Edit, Trash2 } from "lucide-react";
-import { useAuth } from "../services/useAuth";
+import { useAuth } from "../../services/useAuth";
 
 interface SwipeableCardProps {
   children: ReactNode;
