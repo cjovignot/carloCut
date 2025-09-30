@@ -165,6 +165,7 @@ export type DerivedTheme = {
   "--color-error": string;
   "--color-warning": string;
   "--color-info": string;
+  "--color-action": string;
   "--color-neutral-mode": string;
 };
 
@@ -196,10 +197,11 @@ export function generateThemeVars(
 
   const page_title = getBestTextColor(neutral_mode);
 
-  const success = getBestTextColor("#16a34a", "#ffffff", "#111827");
-  const error = getBestTextColor("#dc2626", "#ffffff", "#111827");
-  const warning = getBestTextColor("#f59e0b", "#ffffff", "#111827");
-  const info = getBestTextColor("#0ea5e9", "#ffffff", "#111827");
+  const success = "#16a34a";
+  const error = "#dc2626";
+  const warning = "#f59e0b";
+  const info = "#0ea5e9";
+  const action = "#2563eb";
 
   return {
     "--color-app-bg": app_bg,
@@ -221,6 +223,7 @@ export function generateThemeVars(
     "--color-error": error,
     "--color-warning": warning,
     "--color-info": info,
+    "--color-action": action,
   };
 }
 
