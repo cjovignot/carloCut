@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { useSettings } from "./useSettings";
 
 // 🔹 Parse rgba(...) ou rgb(...)
-export function parseRgbaString(input: string): { r: number; g: number; b: number; a: number } | null {
+export function parseRgbaString(
+  input: string
+): { r: number; g: number; b: number; a: number } | null {
   const match = input.match(/rgba?\(([^)]+)\)/i);
   if (!match) return null;
   const parts = match[1].split(",").map((v) => parseFloat(v.trim()));
@@ -26,7 +28,11 @@ export function blendWithBackground(
 export function hexToRgba(hex: string, alpha: number) {
   if (!hex) return `rgba(0,0,0,${alpha})`;
   let c = hex.replace("#", "");
-  if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
+  if (c.length === 3)
+    c = c
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
   const r = parseInt(c.substring(0, 2), 16);
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
@@ -35,14 +41,20 @@ export function hexToRgba(hex: string, alpha: number) {
 
 // 🔹 Récupère la valeur réelle d'une var CSS
 export function getCssVarValue(varName: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
 }
 
 // 🔹 Éclaircit ou assombrit une couleur hex
 export function shadeColor(hex: string, percent: number) {
   if (!hex) return "#000000";
   let c = hex.replace("#", "");
-  if (c.length === 3) c = c.split("").map((ch) => ch + ch).join("");
+  if (c.length === 3)
+    c = c
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
   const num = parseInt(c, 16);
   let R = (num >> 16) & 0xff;
   let G = (num >> 8) & 0xff;
@@ -70,7 +82,10 @@ export function resolveColor(color: string): string {
 }
 
 // 🔹 Calcul du contraste WCAG
-function getContrastRatio(rgb1: [number, number, number], rgb2: [number, number, number]): number {
+function getContrastRatio(
+  rgb1: [number, number, number],
+  rgb2: [number, number, number]
+): number {
   const luminance = (r: number, g: number, b: number) => {
     const a = [r, g, b].map((v) => {
       v /= 255;
@@ -90,7 +105,8 @@ export function getBestTextColor(
   darkText = "#111827"
 ): string {
   const resolvedBg = resolveColor(bgColor);
-  const fg = parseRgbaString(resolvedBg) ?? parseRgbaString(hexToRgba(resolvedBg, 1));
+  const fg =
+    parseRgbaString(resolvedBg) ?? parseRgbaString(hexToRgba(resolvedBg, 1));
   if (!fg) return darkText;
 
   const bgRgb: [number, number, number] = [fg.r, fg.g, fg.b];
@@ -137,16 +153,22 @@ export type DerivedTheme = {
 };
 
 // 🔹 Génère les variables CSS à partir du primary + mode
-export function generateThemeVars(primary: string, mode: "light" | "dark"): DerivedTheme {
-  const app_bg = mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
+export function generateThemeVars(
+  primary: string,
+  mode: "light" | "dark"
+): DerivedTheme {
+  const app_bg =
+    mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
   const accent = primary; // ou remplacer par un accent calculé si souhaité
-  const neutral_mode = mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
+  const neutral_mode =
+    mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
 
   const navbar_bg = mode === "light" ? "#ffffff" : shadeColor(primary, -0.5);
   const navbar_text = getBestTextColor(navbar_bg);
 
-  const card_bg = mode === "light" ? hexToRgba(primary, 0.05) : shadeColor(app_bg, 0.05);
+  const card_bg =
+    mode === "light" ? shadeColor(primary, 0.75) : shadeColor(app_bg, 0.75);
   const card_text = getBestTextColor(card_bg);
 
   const action_bg = primary;
@@ -203,7 +225,9 @@ export function useApplyTheme() {
     console.groupEnd();
 
     // Meta theme-color
-    const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    const metaTheme = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]'
+    );
     if (metaTheme) metaTheme.setAttribute("content", cssVars["--color-app-bg"]);
 
     // Applique toutes les variables CSS

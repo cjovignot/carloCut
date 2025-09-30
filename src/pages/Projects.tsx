@@ -1,4 +1,3 @@
-// Projects.tsx
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Plus, Search, Calendar, MapPin, Trash2, Edit } from "lucide-react";
@@ -87,8 +86,8 @@ export function Projects() {
   // ---------------- Swipeable Card Component ----------------
   const ProjectCard = ({ project }: { project: any }) => {
     const [translateX, setTranslateX] = useState(0);
-    const maxSwipe = 150; // largeur totale du panneau d'actions
-    const buttonWidth = maxSwipe / 2;
+    const maxSwipe = 75;
+    const buttonWidth = maxSwipe;
 
     const handlers = useSwipeable({
       onSwipedLeft: () => setTranslateX(-maxSwipe),
@@ -101,13 +100,12 @@ export function Projects() {
     });
 
     return (
-      <div className="relative w-full">
-        {/* Actions derrière (fixes) */}
+      <div className="relative w-full overflow-hidden !z-0  rounded-lg shadow-md">
+        {/* --- Boutons en arrière-plan --- */}
         <div
-          className="absolute top-0 right-0 h-full flex"
+          className="absolute top-0 right-0 z-0 flex flex-col h-full"
           style={{ width: maxSwipe }}
         >
-          {/* Edit Button */}
           <button
             className="flex items-center justify-center h-full text-white"
             style={{
@@ -116,10 +114,9 @@ export function Projects() {
             }}
             onClick={() => setEditingProject(project)}
           >
-            <Edit className="w-4 h-4" />
+            <Edit className="w-6 h-6" />
           </button>
 
-          {/* Delete Button */}
           {user?.role === "admin" && (
             <button
               className="flex items-center justify-center h-full text-white"
@@ -129,15 +126,15 @@ export function Projects() {
               }}
               onClick={() => handleDeleteProject(project._id)}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-6 h-6" />
             </button>
           )}
         </div>
 
-        {/* Contenu de la card (swipe) */}
+        {/* --- Carte par-dessus --- */}
         <div
           {...handlers}
-          className="flex flex-col transition-transform duration-200 rounded-lg shadow-md overflow-hidden relative z-10"
+          className="relative flex flex-col transition-transform duration-200 bg-white !z-999"
           style={{
             transform: `translateX(${translateX}px)`,
             backgroundColor: "var(--color-card-bg)",
@@ -178,7 +175,7 @@ export function Projects() {
               </div>
 
               <div
-                className="text-xs mt-2"
+                className="mt-2 text-xs"
                 style={{ color: "var(--color-accent)" }}
               >
                 par {project.createdBy?.name}
@@ -231,9 +228,7 @@ export function Projects() {
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <p
-            style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}
-          >
+          <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
             Aucun chantier trouvé
           </p>
           <p
