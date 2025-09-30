@@ -147,28 +147,6 @@ export function ProjectDetail() {
               </div>
             </div>
           </div>
-
-          {/* Partie droite = encart photo */}
-          <div className="col-span-1">
-            {joinery.photo ? (
-              <img
-                src={joinery.photo}
-                alt={joinery.name}
-                className="object-cover w-full h-full rounded-r-lg"
-              />
-            ) : (
-              <div
-                className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
-                style={{
-                  backgroundColor: "var(--color-app-bg)",
-                  color: "var(--color-secondary)",
-                  minHeight: "140px",
-                }}
-              >
-                Pas de photo
-              </div>
-            )}
-          </div>
         </div>
       </SwipeableCard>
     );
