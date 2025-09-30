@@ -14,7 +14,6 @@ interface SwipeableCardProps {
   style?: React.CSSProperties;
   imageSrc?: string; // URL de la photo
   imageAlt?: string;
-  imageWidth?: number; // largeur de l'encart
 }
 
 export function SwipeableCard({
@@ -27,7 +26,6 @@ export function SwipeableCard({
   style = {},
   imageSrc,
   imageAlt = "Photo",
-  imageWidth = 100,
 }: SwipeableCardProps) {
   const [translateX, setTranslateX] = useState(0);
   const { user } = useAuth();
@@ -64,7 +62,9 @@ export function SwipeableCard({
   }
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-lg shadow-md ${className}`}>
+    <div
+      className={`relative w-full overflow-hidden rounded-lg shadow-md ${className}`}
+    >
       {/* --- Actions en arrière-plan --- */}
       {actions.length > 0 && (
         <div
@@ -96,18 +96,11 @@ export function SwipeableCard({
           ...style,
         }}
       >
-        {/* Contenu principal */}
-        <div className="flex-1">{children}</div>
+        {/* Contenu principal (2/3) */}
+        <div className="flex-2 p-4">{children}</div>
 
-        {/* Encadré image toujours présent */}
-        <div
-          className="flex-shrink-0 flex items-center justify-center bg-gray-100"
-          style={{
-            width: imageWidth,
-            height: "100%",
-            overflow: "hidden",
-          }}
-        >
+        {/* Encadré image (1/3) */}
+        <div className="flex-[1] basis-1/3 flex items-center justify-center bg-gray-100 overflow-hidden">
           {imageSrc ? (
             <img
               src={imageSrc}
@@ -115,7 +108,7 @@ export function SwipeableCard({
               className="object-cover w-full h-full rounded-r-lg"
             />
           ) : (
-            <ImageIcon className="w-10 h-10 text-gray-400" />
+            <ImageIcon className="w-12 h-12 text-gray-400" />
           )}
         </div>
       </div>
