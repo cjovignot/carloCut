@@ -21,7 +21,7 @@ import { useAuth } from "../services/useAuth";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 
 export function ProjectDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ _id: string }>();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showJoineryModal, setShowJoineryModal] = useState(false);
