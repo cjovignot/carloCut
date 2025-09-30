@@ -1,13 +1,14 @@
+// src/pages/Projects.tsx
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Plus, Search, Calendar, MapPin, Trash2, Edit } from "lucide-react";
+import { Plus, Search, Calendar, MapPin } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { ProjectForm } from "../components/Forms/ProjectForm";
 import { useAuth } from "../services/useAuth";
-import { useSwipeable } from "react-swipeable";
+import { SwipeableCard } from "../components/SwipeableCard";
 
 export function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -18,6 +19,7 @@ export function Projects() {
   const { user } = useAuth();
   const location = useLocation();
 
+  // --- Fetch projects ---
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -40,6 +42,7 @@ export function Projects() {
     }
   };
 
+  // --- CRUD handlers ---
   const handleCreateProject = async (projectData: any) => {
     try {
       await api.post("/projects", projectData);
@@ -73,6 +76,7 @@ export function Projects() {
     }
   };
 
+  // --- Filtered projects ---
   const filteredProjects = projects.filter(
     (project) =>
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,107 +87,56 @@ export function Projects() {
     return <LoadingSpinner size="lg" />;
   }
 
-  // ---------------- Swipeable Card Component ----------------
+  // ---------------- ProjectCard ----------------
   const ProjectCard = ({ project }: { project: any }) => {
-    const [translateX, setTranslateX] = useState(0);
-    const maxSwipe = 75;
-    const buttonWidth = maxSwipe;
-
-    const handlers = useSwipeable({
-      onSwipedLeft: () => setTranslateX(-maxSwipe),
-      onSwipedRight: () => setTranslateX(0),
-      onSwiping: (eventData) => {
-        let x = Math.max(Math.min(-eventData.deltaX, maxSwipe), 0);
-        setTranslateX(-x);
-      },
-      trackMouse: true,
-    });
-
     return (
-      <div className="relative w-full overflow-hidden !z-0  rounded-lg shadow-md">
-        {/* --- Boutons en arrière-plan --- */}
-        <div
-          className="absolute top-0 right-0 z-0 flex flex-col h-full"
-          style={{ width: maxSwipe }}
-        >
-          <button
-            className="flex items-center justify-center h-full text-white"
-            style={{
-              width: buttonWidth,
-              backgroundColor: "var(--color-edit-btn, #6B7280)",
-            }}
-            onClick={() => setEditingProject(project)}
+      <SwipeableCard
+        onEdit={() => setEditingProject(project)}
+        onDelete={() => handleDeleteProject(project._id)}
+        showDelete={() => user?.role === "admin"} // logique intégrée
+        maxSwipe={75}
+        style={{ backgroundColor: "var(--color-card-bg)" }}
+      >
+        <div className="p-4">
+          <h3
+            style={{ color: "var(--color-card-text)" }}
+            className="mb-2 text-lg font-semibold"
           >
-            <Edit className="w-6 h-6" />
-          </button>
+            {project.name}
+          </h3>
 
-          {user?.role === "admin" && (
-            <button
-              className="flex items-center justify-center h-full text-white"
-              style={{
-                width: buttonWidth,
-                backgroundColor: "var(--color-delete-btn, #EF4444)",
-              }}
-              onClick={() => handleDeleteProject(project._id)}
+          <div className="flex flex-col w-full space-y-2">
+            <div
+              className="flex items-center text-sm"
+              style={{ color: "var(--color-secondary)" }}
             >
-              <Trash2 className="w-6 h-6" />
-            </button>
-          )}
-        </div>
+              <MapPin className="w-4 h-4 mr-2" />
+              <span className="truncate">{project.client}</span>
+            </div>
 
-        {/* --- Carte par-dessus --- */}
-        <div
-          {...handlers}
-          className="relative flex flex-col transition-transform duration-200 bg-white !z-999"
-          style={{
-            transform: `translateX(${translateX}px)`,
-            backgroundColor: "var(--color-card-bg)",
-          }}
-        >
-          <div className="p-4">
-            <h3
+            <div className="text-sm">
+              <span style={{ color: "var(--color-info)" }}>
+                {project.joineries.length}{" "}
+                {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
+              </span>
+            </div>
+
+            <div
+              className="flex items-center text-sm"
               style={{ color: "var(--color-card-text)" }}
-              className="mb-2 text-lg font-semibold"
             >
-              {project.name}
-            </h3>
+              <span>{new Date(project.date).toLocaleDateString()}</span>
+            </div>
 
-            <div className="flex flex-col w-full space-y-2">
-              <div
-                className="flex items-center text-sm"
-                style={{ color: "var(--color-secondary)" }}
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                <span className="truncate">{project.client}</span>
-              </div>
-
-              <div className="text-sm">
-                <span style={{ color: "var(--color-info)" }}>
-                  {project.joineries.length}{" "}
-                  {project.joineries.length === 1
-                    ? "menuiserie"
-                    : "menuiseries"}
-                </span>
-              </div>
-
-              <div
-                className="flex items-center text-sm"
-                style={{ color: "var(--color-card-text)" }}
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                <span>{new Date(project.date).toLocaleDateString()}</span>
-              </div>
-
-              <div
-                className="mt-2 text-xs"
-                style={{ color: "var(--color-accent)" }}
-              >
-                par {project.createdBy?.name}
-              </div>
+            <div
+              className="mt-2 text-xs"
+              style={{ color: "var(--color-accent)" }}
+            >
+              par {project.createdBy?.name}
             </div>
           </div>
         </div>
-      </div>
+      </SwipeableCard>
     );
   };
 
