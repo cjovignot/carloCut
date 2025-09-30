@@ -8,7 +8,7 @@ import { Modal } from "../components/UI/Modal";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { ProjectForm } from "../components/Forms/ProjectForm";
 import { useAuth } from "../services/useAuth";
-import { SwipeableCard } from "../components/SwipeableCard";
+import { SwipeableCard } from "../components/UI/SwipeableCard";
 
 export function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
