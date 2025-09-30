@@ -1,10 +1,11 @@
-// components/SwipeableCard.tsx
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Edit, Trash2, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
+import { useSwipeableCardContext } from "./SwipeableCardContext";
 
 interface SwipeableCardProps {
+  id: string; // 🔹 identifiant unique
   children: ReactNode;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -12,11 +13,12 @@ interface SwipeableCardProps {
   maxSwipe?: number;
   className?: string;
   style?: React.CSSProperties;
-  imageSrc?: string; // URL de la photo
+  imageSrc?: string;
   imageAlt?: string;
 }
 
 export function SwipeableCard({
+  id,
   children,
   onEdit,
   onDelete,
@@ -29,10 +31,24 @@ export function SwipeableCard({
 }: SwipeableCardProps) {
   const [translateX, setTranslateX] = useState(0);
   const { user } = useAuth();
+  const { openCardId, setOpenCardId } = useSwipeableCardContext();
+
+  // 🔹 Ferme la carte si une autre est ouverte
+  useEffect(() => {
+    if (openCardId !== id) {
+      setTranslateX(0);
+    }
+  }, [openCardId, id]);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => setTranslateX(-maxSwipe),
-    onSwipedRight: () => setTranslateX(0),
+    onSwipedLeft: () => {
+      setTranslateX(-maxSwipe);
+      setOpenCardId(id); // indique au parent que c’est cette carte qui est ouverte
+    },
+    onSwipedRight: () => {
+      setTranslateX(0);
+      setOpenCardId(null);
+    },
     onSwiping: (eventData) => {
       let x = Math.max(Math.min(-eventData.deltaX, maxSwipe), 0);
       setTranslateX(-x);
@@ -65,7 +81,7 @@ export function SwipeableCard({
     <div
       className={`relative w-full overflow-hidden rounded-lg shadow-md ${className}`}
     >
-      {/* --- Actions en arrière-plan --- */}
+      {/* Actions */}
       {actions.length > 0 && (
         <div
           className="absolute top-0 right-0 flex flex-col h-full"
@@ -87,7 +103,7 @@ export function SwipeableCard({
         </div>
       )}
 
-      {/* --- Carte principale --- */}
+      {/* Carte principale */}
       <div
         {...handlers}
         className="relative flex transition-transform duration-200 bg-white"
@@ -96,10 +112,10 @@ export function SwipeableCard({
           ...style,
         }}
       >
-        {/* Contenu principal (2/3) */}
+        {/* Contenu principal */}
         <div className="flex-[1] basis-3/5 p-4">{children}</div>
 
-        {/* Encadré image (1/3) */}
+        {/* Encadré image */}
         <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
           {imageSrc ? (
             <img
