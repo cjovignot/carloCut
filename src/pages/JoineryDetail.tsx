@@ -128,7 +128,7 @@ export function JoineryDetail() {
             <div className="flex items-center justify-between mb-2">
               <h2
                 className="font-semibold"
-                style={{ color: "var(--color-page-title)" }}
+                style={{ color: "var(--color-card-text)" }}
               >
                 Tôle {i + 1}
               </h2>

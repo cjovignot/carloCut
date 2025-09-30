@@ -218,7 +218,7 @@ export function ProjectDetail() {
           <div>
             <h3
               className="mb-6 text-xl font-semibold text-center"
-              style={{ color: "var(--color-page-title)" }}
+              style={{ color: "var(--color-info)" }}
             >
               INFORMATIONS
             </h3>

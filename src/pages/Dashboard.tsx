@@ -75,7 +75,7 @@ export function Dashboard() {
       <div className="mb-8">
         <h1
           className="text-3xl font-bold"
-          style={{ color: "var(--color-navbar-text)" }}
+          style={{ color: "var(--color-page-title)" }}
         >
           Tableau de bord
         </h1>
@@ -173,7 +173,7 @@ export function Dashboard() {
         >
           <h2
             className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-navbar-text)" }}
+            style={{ color: "var(--color-card-text)" }}
           >
             Actions rapides
           </h2>
@@ -200,7 +200,7 @@ export function Dashboard() {
         >
           <h2
             className="mb-4 text-lg font-semibold"
-            style={{ color: "var(--color-navbar-text)" }}
+            style={{ color: "var(--color-card-text)" }}
           >
             Chantiers récents
           </h2>
@@ -227,7 +227,7 @@ export function Dashboard() {
                     <div>
                       <h3
                         className="font-medium"
-                        style={{ color: "var(--color-navbar-text)" }}
+                        style={{ color: "var(--color-card-text)" }}
                       >
                         {project.name}
                       </h3>
