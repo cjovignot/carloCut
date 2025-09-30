@@ -118,7 +118,7 @@ export function ProjectDetail() {
         onClick={() => navigate(`/projects/${id}/joineries/${joinery._id}`)} // 🔹 navigation
       >
         {/* Partie gauche = infos (2/3) */}
-        <div className="col-span-2 p-2">
+        <div className="col-span-2 p-1">
           <h3 className="mb-2 text-lg font-semibold" style={{ color: "var(--color-card-text)" }}>
             {joinery.name}
           </h3>
