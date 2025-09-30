@@ -133,7 +133,7 @@ export function JoineryDetail() {
                 Tôle {i + 1}
               </h2>
               <div className="flex space-x-2">
-                <Button variant="toggle" onClick={() => setEditingSheet(sheet)}>
+                <Button variant="action" onClick={() => setEditingSheet(sheet)}>
                   <Edit className="w-4 h-4" />
                 </Button>
                 <Button

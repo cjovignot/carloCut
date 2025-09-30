@@ -9,6 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | "danger"
     | "outline"
     | "toggle"
+    | "action"
     | "success";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
@@ -32,7 +33,8 @@ export function Button({
     secondary: "var(--color-secondary)",
     danger: "#b01c1cff",
     outline: "transparent",
-    toggle: "var(--color-input-bg)",
+    action: "var(--color-action)",
+    toggle: "var(--color-secondary)",
     success: "var(--color-success)",
   };
 

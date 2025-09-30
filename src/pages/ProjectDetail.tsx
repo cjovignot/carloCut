@@ -1,7 +1,16 @@
 // ProjectDetail.tsx
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail, MapPin, Grid2x2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Edit,
+  Trash2,
+  FileText,
+  Mail,
+  MapPin,
+  Grid2x2,
+} from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -50,7 +59,10 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
-      await api.put(`/joineries/${id}/joineries/${editingJoinery._id}`, joineryData);
+      await api.put(
+        `/joineries/${id}/joineries/${editingJoinery._id}`,
+        joineryData
+      );
       await fetchProject();
       setEditingJoinery(null);
     } catch (error) {
@@ -60,7 +72,8 @@ export function ProjectDetail() {
   };
 
   const handleDeleteJoinery = async (joineryId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
+      return;
 
     try {
       await api.delete(`/joineries/${id}/joineries/${joineryId}`);
@@ -89,7 +102,10 @@ export function ProjectDetail() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+          <h2
+            className="text-2xl font-bold"
+            style={{ color: "var(--color-text-primary)" }}
+          >
             Aucun chantier trouvé
           </h2>
           <Link
@@ -119,17 +135,27 @@ export function ProjectDetail() {
       >
         {/* Partie gauche = infos (2/3) */}
         <div className="col-span-2 p-1">
-          <h3 className="mb-2 text-lg font-semibold" style={{ color: "var(--color-card-text)" }}>
+          <h3
+            className="mb-2 text-lg font-semibold"
+            style={{ color: "var(--color-card-text)" }}
+          >
             {joinery.name}
           </h3>
           <div className="flex flex-col w-full space-y-4">
-            <div className="flex items-center w-full text-sm" style={{ color: "var(--color-secondary)" }}>
+            <div
+              className="flex items-center w-full text-sm"
+              style={{ color: "var(--color-secondary)" }}
+            >
               <Grid2x2 className="w-4 h-4 mr-2" />
               <span className="truncate">{joinery.type}</span>
             </div>
             <div className="w-full mt-2 text-sm">
-              <span className="font-medium" style={{ color: "var(--color-info)" }}>
-                {joinery.sheets.length} {joinery.sheets.length === 1 ? "tôle" : "tôles"}
+              <span
+                className="font-medium"
+                style={{ color: "var(--color-info)" }}
+              >
+                {joinery.sheets.length}{" "}
+                {joinery.sheets.length === 1 ? "tôle" : "tôles"}
               </span>
             </div>
           </div>
@@ -144,24 +170,39 @@ export function ProjectDetail() {
       {/* Header */}
       <div className="mb-4">
         <div className="flex items-center mb-4">
-          <Link to="/projects" className="mr-4" style={{ color: "var(--color-primary)" }}>
+          <Link
+            to="/projects"
+            className="mr-4"
+            style={{ color: "var(--color-primary)" }}
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
+          <h1
+            className="text-3xl font-bold"
+            style={{ color: "var(--color-page-title)" }}
+          >
             {project.name}
           </h1>
         </div>
 
         <div className="flex pb-3 mt-6 mb-4 space-x-2 border-b border-black/70">
-          <Button variant="success" onClick={() => setShowJoineryModal(true)} className="w-2/3">
+          <Button
+            variant="success"
+            onClick={() => setShowJoineryModal(true)}
+            className="w-2/3"
+          >
             <Plus className="w-4 h-4 mr-1" />
             Menuiserie
           </Button>
-          <Button variant="secondary" onClick={handleExportPDF} className="w-1/3">
+          <Button variant="action" onClick={handleExportPDF} className="w-1/3">
             <FileText className="w-4 h-4 mr-1" />
             PDF
           </Button>
-          <Button variant="secondary" onClick={() => setShowEmailModal(true)} className="w-1/3">
+          <Button
+            variant="action"
+            onClick={() => setShowEmailModal(true)}
+            className="w-1/3"
+          >
             <Mail className="w-4 h-4 mr-1" />
             Email
           </Button>
@@ -169,13 +210,22 @@ export function ProjectDetail() {
       </div>
 
       {/* Infos projet */}
-      <div className="p-6 mb-8 rounded-lg shadow-md" style={{ backgroundColor: "var(--color-card-bg)" }}>
+      <div
+        className="p-6 mb-8 rounded-lg shadow-md"
+        style={{ backgroundColor: "var(--color-card-bg)" }}
+      >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <h3 className="mb-6 text-xl font-semibold text-center" style={{ color: "var(--color-page-title)" }}>
+            <h3
+              className="mb-6 text-xl font-semibold text-center"
+              style={{ color: "var(--color-page-title)" }}
+            >
               INFORMATIONS
             </h3>
-            <div className="grid grid-cols-2 gap-y-2 gap-x-4" style={{ color: "var(--color-card-text)" }}>
+            <div
+              className="grid grid-cols-2 gap-y-2 gap-x-4"
+              style={{ color: "var(--color-card-text)" }}
+            >
               <span className="font-medium">Client:</span>
               <span className="text-right">{project.client}</span>
 
@@ -184,19 +234,33 @@ export function ProjectDetail() {
 
               <span className="font-medium">Date:</span>
               <span className="text-right">
-                {project.date ? new Date(project.date).toLocaleDateString() : "Non définie"}
+                {project.date
+                  ? new Date(project.date).toLocaleDateString()
+                  : "Non définie"}
               </span>
 
               <span className="font-medium">Créé par:</span>
-              <span className="text-right">{project.createdBy?.name || "Inconnu"}</span>
+              <span className="text-right">
+                {project.createdBy?.name || "Inconnu"}
+              </span>
             </div>
           </div>
           {project.notes && (
             <div>
-              <h3 className="mb-4 text-lg font-semibold" style={{ color: "var(--color-info)" }}>
+              <h3
+                className="mb-4 text-lg font-semibold"
+                style={{ color: "var(--color-info)" }}
+              >
                 Notes
               </h3>
-              <p style={{ color: "var(--color-text-secondary)", whiteSpace: "pre-wrap" }}>{project.notes}</p>
+              <p
+                style={{
+                  color: "var(--color-text-secondary)",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {project.notes}
+              </p>
             </div>
           )}
         </div>
@@ -204,18 +268,30 @@ export function ProjectDetail() {
 
       {/* Menuiseries */}
       <div>
-        <h2 className="mb-6 text-2xl font-bold" style={{ color: "var(--color-page-title)" }}>
+        <h2
+          className="mb-6 text-2xl font-bold"
+          style={{ color: "var(--color-page-title)" }}
+        >
           Menuiseries ({project.joineries.length})
         </h2>
 
         <SwipeableCardProvider>
           {project.joineries.length === 0 ? (
-            <div className="p-12 text-center rounded-lg shadow-md" style={{ backgroundColor: "var(--color-card-bg)" }}>
-              <p style={{ color: "var(--color-secondary)", fontSize: "1rem" }}>Encore aucune menuiserie</p>
+            <div
+              className="p-12 text-center rounded-lg shadow-md"
+              style={{ backgroundColor: "var(--color-card-bg)" }}
+            >
+              <p style={{ color: "var(--color-secondary)", fontSize: "1rem" }}>
+                Encore aucune menuiserie
+              </p>
               <p style={{ color: "var(--color-secondary)" }} className="mt-2">
                 Créez une menuiserie pour commencer
               </p>
-              <Button variant="success" className="mt-4" onClick={() => setShowJoineryModal(true)}>
+              <Button
+                variant="success"
+                className="mt-4"
+                onClick={() => setShowJoineryModal(true)}
+              >
                 <Plus className="w-4 h-4 mr-2" /> Créer une menuiserie
               </Button>
             </div>
@@ -230,11 +306,23 @@ export function ProjectDetail() {
       </div>
 
       {/* Modals */}
-      <Modal isOpen={showJoineryModal} onClose={() => setShowJoineryModal(false)} title="Créer une menuiserie" size="xl">
-        <JoineryForm onSubmit={handleCreateJoinery} onCancel={() => setShowJoineryModal(false)} />
+      <Modal
+        isOpen={showJoineryModal}
+        onClose={() => setShowJoineryModal(false)}
+        title="Créer une menuiserie"
+        size="xl"
+      >
+        <JoineryForm
+          onSubmit={handleCreateJoinery}
+          onCancel={() => setShowJoineryModal(false)}
+        />
       </Modal>
 
-      <Modal isOpen={!!editingJoinery} onClose={() => setEditingJoinery(null)} title="Modifier la menuiserie">
+      <Modal
+        isOpen={!!editingJoinery}
+        onClose={() => setEditingJoinery(null)}
+        title="Modifier la menuiserie"
+      >
         {editingJoinery && (
           <JoineryForm
             initialData={editingJoinery}
@@ -244,8 +332,15 @@ export function ProjectDetail() {
         )}
       </Modal>
 
-      <Modal isOpen={showEmailModal} onClose={() => setShowEmailModal(false)} title="Envoyer le chantier par mail">
-        <EmailForm onSubmit={handleSendEmail} onCancel={() => setShowEmailModal(false)} />
+      <Modal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        title="Envoyer le chantier par mail"
+      >
+        <EmailForm
+          onSubmit={handleSendEmail}
+          onCancel={() => setShowEmailModal(false)}
+        />
       </Modal>
     </div>
   );

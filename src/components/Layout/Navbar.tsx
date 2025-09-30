@@ -2,11 +2,18 @@ import { Link, useLocation } from "react-router-dom";
 import { LogOut, Home, FolderOpen, Anvil, Settings } from "lucide-react";
 import { useAuth } from "../../services/useAuth";
 import { useSettings } from "../../services/useSettings";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const { tempTheme } = useSettings();
   const location = useLocation();
+  const [selectedPath, setSelectedPath] = useState(location.pathname);
+
+  // Sync selectedPath with URL changes
+  useEffect(() => {
+    setSelectedPath(location.pathname);
+  }, [location.pathname]);
 
   if (!user || location.pathname === "/login") return null;
 
@@ -17,7 +24,7 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const textColorStyle = { color: "var(--color-text-on-navbar)" };
+  const textColorStyle = { color: "var(--color-navbar-text)" };
 
   return (
     <nav
@@ -45,18 +52,21 @@ export function Navbar() {
             <Link
               key={item.label}
               to={item.path}
-              style={textColorStyle}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
-                ${
-                  location.pathname === item.path
-                    ? "bg-[var(--color-navbar-active)]"
-                    : "hover:bg-[var(--color-navbar-hover)]"
-                }`}
+              className="flex items-center px-3 py-2 text-sm font-medium transition-colors rounded-md"
+              style={{
+                backgroundColor:
+                  selectedPath === item.path
+                    ? "var(--color-primary)"
+                    : "var(--color-secondary)",
+                color: "var(--color-text-on-navbar)",
+              }}
             >
               <item.icon className="w-4 h-4 mr-2" style={textColorStyle} />
               {item.label}
             </Link>
           ))}
+
+          {/* Logout button */}
           <button
             onClick={logout}
             style={textColorStyle}
@@ -82,18 +92,26 @@ export function Navbar() {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex-1 flex flex-col items-center justify-center transition-colors`}
+                className="flex flex-col items-center justify-center flex-1 transition-colors"
               >
-                <item.icon className="w-6 h-6" style={{ color: "var(--color-text-on-navbar)" }} />
+                <item.icon
+                  className="w-6 h-6"
+                  style={{
+                    color:
+                      selectedPath === item.path
+                        ? "var(--color-primary)"
+                        : "var(--color-text-on-navbar)",
+                  }}
+                />
               </Link>
             ) : (
               <button
                 key={item.label}
-              style={{ color: "var(--color-text-on-navbar)" }}
                 onClick={item.action}
                 className="flex-1 flex flex-col items-center justify-center hover:bg-[var(--color-navbar-hover)] transition-colors"
+                style={{ color: "var(--color-text-on-navbar)" }}
               >
-                <item.icon className="w-6 h-6" style={{ color: "var(--color-text-on-navbar)" }} />
+                <item.icon className="w-6 h-6" />
               </button>
             )
           )}

@@ -185,7 +185,7 @@ export function Dashboard() {
               </Button>
             </Link>
             <Link to="/projects">
-              <Button variant="toggle" className="w-full">
+              <Button variant="secondary" className="w-full">
                 <FolderOpen className="w-8 h-8 mr-1" />
                 <p className="text-xs">Voir les chantiers</p>
               </Button>

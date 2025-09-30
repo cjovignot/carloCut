@@ -61,7 +61,7 @@ export function SwipeableCard({
   if (onEdit) {
     actions.push({
       icon: <Edit className="w-6 h-6" />,
-      color: "var(--color-edit-btn, #6B7280)",
+      color: "var(--color-action)",
       onClick: onEdit,
     });
   }
@@ -72,7 +72,7 @@ export function SwipeableCard({
   if (onDelete && showDeleteBtn) {
     actions.push({
       icon: <Trash2 className="w-6 h-6" />,
-      color: "var(--color-delete-btn, #EF4444)",
+      color: "var(--color-error)",
       onClick: onDelete,
     });
   }
