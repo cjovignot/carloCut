@@ -9,7 +9,8 @@ import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { JoineryForm } from "../components/Forms/JoineryForm";
 import { EmailForm } from "../components/Forms/EmailForm";
 import { useAuth } from "../services/useAuth";
-import { SwipeableCard, SwipeableCardProvider } from "../components/UI/SwipeableCard";
+import { SwipeableCard } from "../components/UI/SwipeableCard";
+import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
