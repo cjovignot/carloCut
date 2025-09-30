@@ -9,6 +9,7 @@ import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { ProjectForm } from "../components/Forms/ProjectForm";
 import { useAuth } from "../services/useAuth";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
+import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext"; // 🔹 import du provider
 
 export function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -91,9 +92,10 @@ export function Projects() {
   const ProjectCard = ({ project }: { project: any }) => {
     return (
       <SwipeableCard
+        id={project._id} // 🔹 identifiant unique pour la gestion du swipe
         onEdit={() => setEditingProject(project)}
         onDelete={() => handleDeleteProject(project._id)}
-        showDelete={() => user?.role === "admin"} // logique intégrée
+        showDelete={() => user?.role === "admin"}
         maxSwipe={75}
         style={{ backgroundColor: "var(--color-card-bg)" }}
       >
@@ -179,25 +181,32 @@ export function Projects() {
       </div>
 
       {/* Projects Grid */}
-      {filteredProjects.length === 0 ? (
-        <div className="py-12 text-center">
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}>
-            Aucun chantier trouvé
-          </p>
-          <p
-            className="mt-2"
-            style={{ color: "var(--color-text-muted)", fontSize: "0.875rem" }}
-          >
-            Créez un nouveau chantier pour commencer
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
-          ))}
-        </div>
-      )}
+      <SwipeableCardProvider>
+        {filteredProjects.length === 0 ? (
+          <div className="py-12 text-center">
+            <p
+              style={{ color: "var(--color-text-secondary)", fontSize: "1rem" }}
+            >
+              Aucun chantier trouvé
+            </p>
+            <p
+              className="mt-2"
+              style={{
+                color: "var(--color-text-muted)",
+                fontSize: "0.875rem",
+              }}
+            >
+              Créez un nouveau chantier pour commencer
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project._id} project={project} />
+            ))}
+          </div>
+        )}
+      </SwipeableCardProvider>
 
       {/* Create Project Modal */}
       <Modal
