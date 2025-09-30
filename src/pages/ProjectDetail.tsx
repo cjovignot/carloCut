@@ -1,7 +1,7 @@
 // ProjectDetail.tsx
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail, MapPin, Calendar, Grid2x2} from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus, Edit, Trash2, FileText, Mail, MapPin, Calendar, Grid2x2 } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -9,6 +9,7 @@ import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { JoineryForm } from "../components/Forms/JoineryForm";
 import { EmailForm } from "../components/Forms/EmailForm";
 import { useAuth } from "../services/useAuth";
+import { SwipeableCard } from "../components/UI/SwipeableCard";
 
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ export function ProjectDetail() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [editingJoinery, setEditingJoinery] = useState<any>(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) fetchProject();
@@ -47,10 +49,7 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
-      await api.put(
-        `/joineries/${id}/joineries/${editingJoinery._id}`,
-        joineryData
-      );
+      await api.put(`/joineries/${id}/joineries/${editingJoinery._id}`, joineryData);
       await fetchProject();
       setEditingJoinery(null);
     } catch (error) {
@@ -107,6 +106,73 @@ export function ProjectDetail() {
     );
   }
 
+  // ---------------- JoineryCard ----------------
+  const JoineryCard = ({ joinery }: { joinery: any }) => {
+    return (
+      <SwipeableCard
+        onEdit={() => setEditingJoinery(joinery)}
+        onDelete={() => handleDeleteJoinery(joinery._id)}
+        showDelete={() => user?.role === "admin"}
+        maxSwipe={75}
+        style={{ backgroundColor: "var(--color-card-bg)" }}
+        onClick={() => navigate(`/projects/${id}/joineries/${joinery._id}`)}
+      >
+        <div className="grid grid-cols-3">
+          {/* Partie gauche = infos (2/3) */}
+          <div className="col-span-2 p-6">
+            <h3
+              className="mb-2 text-lg font-semibold"
+              style={{ color: "var(--color-card-text)" }}
+            >
+              {joinery.name}
+            </h3>
+            <div className="flex flex-col w-full space-y-4">
+              <div
+                className="flex items-center w-full text-sm"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                <Grid2x2 className="w-4 h-4 mr-2" />
+                <span className="truncate">{joinery.type}</span>
+              </div>
+              <div className="w-full mt-2 text-sm">
+                <span
+                  className="font-medium"
+                  style={{ color: "var(--color-info)" }}
+                >
+                  {joinery.sheets.length}{" "}
+                  {joinery.sheets.length === 1 ? "tôle" : "tôles"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Partie droite = encart photo */}
+          <div className="col-span-1">
+            {joinery.photo ? (
+              <img
+                src={joinery.photo}
+                alt={joinery.name}
+                className="object-cover w-full h-full rounded-r-lg"
+              />
+            ) : (
+              <div
+                className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
+                style={{
+                  backgroundColor: "var(--color-app-bg)",
+                  color: "var(--color-secondary)",
+                  minHeight: "140px",
+                }}
+              >
+                Pas de photo
+              </div>
+            )}
+          </div>
+        </div>
+      </SwipeableCard>
+    );
+  };
+
+  // ---------------- Render ----------------
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
       {/* Header */}
@@ -232,97 +298,18 @@ export function ProjectDetail() {
             <p style={{ color: "var(--color-secondary)" }} className="mt-2">
               Créez une menuiserie pour commencer
             </p>
-            <Button variant="success" className="mt-4" onClick={() => setShowJoineryModal(true)}>
+            <Button
+              variant="success"
+              className="mt-4"
+              onClick={() => setShowJoineryModal(true)}
+            >
               <Plus className="w-4 h-4 mr-2" /> Créer une menuiserie
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 py-3 md:grid-cols-2 lg:grid-cols-3">
             {project.joineries.map((joinery: any) => (
-              <div
-                key={joinery._id}
-                className="grid grid-cols-3 transition-shadow rounded-lg shadow-md hover:shadow-lg"
-                style={{
-                  backgroundColor: "var(--color-card-bg)",
-                  borderColor: "var(--color-border)",
-                }}
-              >
-                {/* Partie gauche = infos (2/3) */}
-                <Link
-                  to={`/projects/${id}/joineries/${joinery._id}`}
-                  className="block col-span-2 p-6"
-                >
-                  <h3
-                    className="mb-2 text-lg font-semibold"
-                    style={{ color: "var(--color-card-text)" }}
-                  >
-                    {joinery.name}
-                  </h3>
-                  <div className="flex flex-col w-full space-y-4">
-                    <div
-                      className="flex items-center w-full text-sm"
-                      style={{ color: "var(--color-secondary)" }}
-                    >
-                      <Grid2x2 className="w-4 h-4 mr-2" />
-                      <span className="truncate">{joinery.type}</span>
-                    </div>
-                    <div className="w-full mt-2 text-sm">
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--color-info)" }}
-                      >
-                        {joinery.sheets.length}{" "}
-                        {joinery.sheets.length === 1 ? "tôle" : "tôles"}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Partie droite = encart photo */}
-                <div className="col-span-1">
-                  {joinery.photo ? (
-                    <img
-                      src={joinery.photo}
-                      alt={joinery.name}
-                      className="object-cover w-full h-full rounded-r-lg"
-                    />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
-                      style={{
-                        backgroundColor: "var(--color-app-bg)",
-                        color: "var(--color-secondary)",
-                        minHeight: "140px",
-                      }}
-                    >
-                      Pas de photo
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex w-full col-span-3">
-                  <Button
-                    onClick={() => setEditingJoinery(joinery)}
-                    className="flex-1 w-full p-2 transition-colors !rounded-none !rounded-bl-md"
-                    style={{
-                      color: "var(--color-navbar-text)",
-                      backgroundColor: "var(--color-app-bg)",
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  {user?.role === "admin" && (
-                    <Button
-                      variant="danger"
-                      onClick={() => handleDeleteJoinery(joinery._id)}
-                      className="flex-1 w-full p-2 transition-colors !rounded-none !rounded-br-md"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <JoineryCard key={joinery._id} joinery={joinery} />
             ))}
           </div>
         )}
