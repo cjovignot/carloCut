@@ -8,8 +8,6 @@ import {
   Trash2,
   FileText,
   Mail,
-  MapPin,
-  Calendar,
   Grid2x2,
   Layers,
 } from "lucide-react";
@@ -46,92 +44,61 @@ export function ProjectDetail() {
     }
   };
 
-  // --- Handlers Joineries ---
   const handleCreateJoinery = async (joineryData: any) => {
-    try {
-      await api.post(`/joineries/${id}/joineries`, joineryData);
-      await fetchProject();
-      setShowJoineryModal(false);
-    } catch (error) {
-      console.error("Failed to create joinery:", error);
-      throw error;
-    }
+    await api.post(`/joineries/${id}/joineries`, joineryData);
+    await fetchProject();
+    setShowJoineryModal(false);
   };
 
   const handleUpdateJoinery = async (joineryData: any) => {
-    try {
-      await api.put(
-        `/joineries/${id}/joineries/${editingJoinery._id}`,
-        joineryData
-      );
-      await fetchProject();
-      setEditingJoinery(null);
-    } catch (error) {
-      console.error("Failed to update joinery:", error);
-      throw error;
-    }
+    await api.put(
+      `/joineries/${id}/joineries/${editingJoinery._id}`,
+      joineryData
+    );
+    await fetchProject();
+    setEditingJoinery(null);
   };
 
   const handleDeleteJoinery = async (joineryId: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
       return;
-
-    try {
-      await api.delete(`/joineries/${id}/joineries/${joineryId}`);
-      await fetchProject();
-    } catch (error) {
-      console.error("Failed to delete joinery:", error);
-    }
+    await api.delete(`/joineries/${id}/joineries/${joineryId}`);
+    await fetchProject();
   };
 
-  // --- Handlers Sheets (tôles) ---
   const handleDeleteSheet = async (joineryId: string, sheetId: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette tôle ?")) return;
-    try {
-      await api.delete(`/joineries/${id}/joineries/${joineryId}/sheets/${sheetId}`);
-      await fetchProject();
-    } catch (error) {
-      console.error("Failed to delete sheet:", error);
-    }
+    await api.delete(
+      `/joineries/${id}/joineries/${joineryId}/sheets/${sheetId}`
+    );
+    await fetchProject();
   };
 
   if (loading) return <LoadingSpinner size="lg" />;
-
-  if (!project) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2
-            className="text-2xl font-bold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            Aucun chantier trouvé
-          </h2>
-          <Link
-            to="/projects"
-            className="inline-block mt-4 underline"
-            style={{ color: "var(--color-primary)" }}
-          >
-            Retour aux chantiers
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!project) return <p>Aucun chantier trouvé</p>;
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
-      {/* ... infos chantier, menuiseries, etc. ... */}
+      {/* Retour + titre */}
+      <div className="flex items-center mb-6">
+        <Link to="/projects" className="mr-4" style={{ color: "var(--color-primary)" }}>
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
+          {project.name}
+        </h1>
+      </div>
 
-      {/* Tôles */}
+      {/* Menuiseries */}
+      <h2 className="mb-4 text-2xl font-bold" style={{ color: "var(--color-page-title)" }}>
+        Menuiseries ({project.joineries.length})
+      </h2>
+
       {project.joineries.map((joinery: any) => (
-        <div key={joinery._id} className="mt-10">
-          <h2
-            className="mb-4 text-xl font-semibold"
-            style={{ color: "var(--color-page-title)" }}
-          >
-            {joinery.name} – Tôles ({joinery.sheets.length})
-          </h2>
+        <div key={joinery._id} className="mb-10">
+          <h3 className="mb-3 text-xl font-semibold" style={{ color: "var(--color-info)" }}>
+            {joinery.name} ({joinery.sheets.length} tôles)
+          </h3>
 
           {joinery.sheets.length === 0 ? (
             <p className="italic" style={{ color: "var(--color-secondary)" }}>
@@ -144,7 +111,7 @@ export function ProjectDetail() {
                   key={sheet._id}
                   onEdit={() => alert("Éditer cette tôle")}
                   onDelete={() => handleDeleteSheet(joinery._id, sheet._id)}
-                  showDelete={() => user?.role === "admin"}
+                  showDelete={user?.role === "admin"} // ✅ booléen simple
                   maxSwipe={75}
                   style={{ backgroundColor: "var(--color-card-bg)" }}
                 >
@@ -177,6 +144,44 @@ export function ProjectDetail() {
           )}
         </div>
       ))}
+
+      {/* Modals */}
+      <Modal
+        isOpen={showJoineryModal}
+        onClose={() => setShowJoineryModal(false)}
+        title="Créer une menuiserie"
+        size="xl"
+      >
+        <JoineryForm
+          onSubmit={handleCreateJoinery}
+          onCancel={() => setShowJoineryModal(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={!!editingJoinery}
+        onClose={() => setEditingJoinery(null)}
+        title="Modifier la menuiserie"
+      >
+        {editingJoinery && (
+          <JoineryForm
+            initialData={editingJoinery}
+            onSubmit={handleUpdateJoinery}
+            onCancel={() => setEditingJoinery(null)}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        title="Envoyer le chantier par mail"
+      >
+        <EmailForm
+          onSubmit={() => {}}
+          onCancel={() => setShowEmailModal(false)}
+        />
+      </Modal>
     </div>
   );
 }
