@@ -100,7 +100,7 @@ export function SwipeableCard({
         <div className="flex-2 p-4">{children}</div>
 
         {/* Encadré image (1/3) */}
-        <div className="flex-[1] basis-1/3 flex items-center justify-center bg-gray-100 overflow-hidden">
+        <div className="flex-[1] basis-1/4 flex items-center justify-center bg-gray-100 overflow-hidden">
           {imageSrc ? (
             <img
               src={imageSrc}
