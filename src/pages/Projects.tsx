@@ -101,7 +101,7 @@ export function Projects() {
         style={{ backgroundColor: "var(--color-card-bg)", cursor: "pointer" }} // 🔹 curseur pointer
       >
         <div
-          className="p-4 w-full h-full"
+          className="p-2 w-full h-full"
           onClick={() => navigate(`/projects/${project._id}`)} // 🔹 navigation
         >
           <h3

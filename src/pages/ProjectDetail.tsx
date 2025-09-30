@@ -118,7 +118,7 @@ export function ProjectDetail() {
         onClick={() => navigate(`/projects/${id}/joineries/${joinery._id}`)} // 🔹 navigation
       >
         {/* Partie gauche = infos (2/3) */}
-        <div className="col-span-2 p-6">
+        <div className="col-span-2 p-2">
           <h3 className="mb-2 text-lg font-semibold" style={{ color: "var(--color-card-text)" }}>
             {joinery.name}
           </h3>
@@ -133,28 +133,6 @@ export function ProjectDetail() {
               </span>
             </div>
           </div>
-        </div>
-
-        {/* Partie droite = encart photo */}
-        <div className="col-span-1">
-          {joinery.photo ? (
-            <img
-              src={joinery.photo}
-              alt={joinery.name}
-              className="object-cover w-full h-full rounded-r-lg"
-            />
-          ) : (
-            <div
-              className="flex items-center justify-center w-full h-full text-sm italic rounded-r-lg"
-              style={{
-                backgroundColor: "var(--color-app-bg)",
-                color: "var(--color-secondary)",
-                minHeight: "140px",
-              }}
-            >
-              Pas de photo
-            </div>
-          )}
         </div>
       </div>
     </SwipeableCard>
