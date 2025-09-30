@@ -1,9 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
-import {
-  getTextColorForBackground,
-  getCssVarValue,
-} from "../../services/useApplyTheme";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -42,42 +38,21 @@ export function Button({
 
   const bgColor = variantBg[variant];
 
-  // Résoudre la vraie valeur de bgColor si c’est une var(...)
-  const resolvedBgColor = bgColor.startsWith("var(")
-    ? getCssVarValue(bgColor.replace(/var\(|\)/g, ""))
-    : bgColor;
-
-  // Détermine le fond derrière le bouton (utile pour le blending si bgColor est translucide)
-  const backgroundBehind =
-    variant === "outline"
-      ? getCssVarValue("--color-neutral-mode")
-      : getCssVarValue("--color-app-bg");
-
-  // Couleur du texte calculée automatiquement selon la couleur réelle
-  const textColor =
-    variant === "outline"
-      ? "var(--color-neutral-mode)"
-      : getTextColorForBackground(
-          resolvedBgColor,
-          "#FFFFFF",
-          "#111827",
-          backgroundBehind
-        );
-
   const sizeClasses = {
     sm: "px-3 py-1.5 text-sm",
     md: "px-4 py-2 text-sm",
     lg: "px-6 py-3 text-base",
   };
 
-  console.log("Button →", { bgColor, backgroundBehind, textColor });
-
   return (
     <button
       className={`${baseClasses} ${sizeClasses[size]} ${className}`}
       style={{
         backgroundColor: bgColor,
-        color: textColor,
+        color:
+          variant === "outline"
+            ? "var(--color-neutral-mode)"
+            : "var(--color-action-text)", // Texte géré par useApplyTheme
       }}
       disabled={disabled || loading}
       {...props}
