@@ -1,6 +1,6 @@
 // src/pages/Projects.tsx
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // 🔹 import useNavigate
 import { Plus, Search, Calendar, MapPin } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
@@ -9,7 +9,7 @@ import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { ProjectForm } from "../components/Forms/ProjectForm";
 import { useAuth } from "../services/useAuth";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
-import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext"; // 🔹 import du provider
+import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 
 export function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -19,6 +19,7 @@ export function Projects() {
   const [editingProject, setEditingProject] = useState<any>(null);
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate(); // 🔹 hook navigation
 
   // --- Fetch projects ---
   useEffect(() => {
@@ -92,14 +93,17 @@ export function Projects() {
   const ProjectCard = ({ project }: { project: any }) => {
     return (
       <SwipeableCard
-        id={project._id} // 🔹 identifiant unique pour la gestion du swipe
+        id={project._id}
         onEdit={() => setEditingProject(project)}
         onDelete={() => handleDeleteProject(project._id)}
         showDelete={() => user?.role === "admin"}
         maxSwipe={75}
-        style={{ backgroundColor: "var(--color-card-bg)" }}
+        style={{ backgroundColor: "var(--color-card-bg)", cursor: "pointer" }} // 🔹 curseur pointer
       >
-        <div className="p-4">
+        <div
+          className="p-4 w-full h-full"
+          onClick={() => navigate(`/projects/${project._id}`)} // 🔹 navigation
+        >
           <h3
             style={{ color: "var(--color-card-text)" }}
             className="mb-2 text-lg font-semibold"
