@@ -98,16 +98,33 @@ function getContrastRatio(
   return L1 > L2 ? L1 / L2 : L2 / L1;
 }
 
-// 🔹 Choisit la meilleure couleur de texte pour un fond donné
+// 🔹 Choisit la meilleure couleur de texte pour un fond donné en gérant la transparence
 export function getBestTextColor(
   bgColor: string,
   lightText = "#ffffff",
-  darkText = "#111827"
+  darkText = "#111827",
+  baseBgVar = "--color-app-bg"
 ): string {
   const resolvedBg = resolveColor(bgColor);
-  const fg =
-    parseRgbaString(resolvedBg) ?? parseRgbaString(hexToRgba(resolvedBg, 1));
-  if (!fg) return darkText;
+
+  // Parse rgba ou hex
+  let fg = parseRgbaString(resolvedBg);
+  if (!fg) {
+    fg = parseRgbaString(hexToRgba(resolvedBg, 1));
+    if (!fg) return darkText;
+  }
+
+  // Si alpha < 1, blend avec le fond principal
+  if (fg.a < 1) {
+    const baseBgColor = resolveColor(getCssVarValue(baseBgVar));
+    const baseRgbMatch =
+      parseRgbaString(baseBgColor) ??
+      parseRgbaString(hexToRgba(baseBgColor, 1));
+    if (baseRgbMatch) {
+      const blended = blendWithBackground(fg, baseRgbMatch);
+      fg = { r: blended.r, g: blended.g, b: blended.b, a: 1 };
+    }
+  }
 
   const bgRgb: [number, number, number] = [fg.r, fg.g, fg.b];
   const lightRgb: [number, number, number] = [255, 255, 255];
@@ -119,13 +136,12 @@ export function getBestTextColor(
   return contrastLight > contrastDark ? lightText : darkText;
 }
 
-// 🔹 Alias pour compatibilité avec l'ancien code
+// 🔹 Alias pour compatibilité
 export function getTextColorForBackground(
   bgColor: string,
   lightText = "#ffffff",
   darkText = "#111827"
 ): string {
-  // Appelle le nouveau système robuste
   return getBestTextColor(bgColor, lightText, darkText);
 }
 
@@ -160,7 +176,7 @@ export function generateThemeVars(
   const app_bg =
     mode === "light" ? shadeColor(primary, 0.85) : shadeColor(primary, -0.6);
   const secondary = shadeColor(primary, 0.3);
-  const accent = primary; // ou remplacer par un accent calculé si souhaité
+  const accent = primary;
   const neutral_mode =
     mode === "light" ? shadeColor(primary, 0.8) : shadeColor(primary, -0.6);
 
@@ -180,10 +196,10 @@ export function generateThemeVars(
 
   const page_title = getBestTextColor(neutral_mode);
 
-  const success = "#16a34a";
-  const error = "#dc2626";
-  const warning = "#f59e0b";
-  const info = "#0ea5e9";
+  const success = getBestTextColor("#16a34a", "#ffffff", "#111827");
+  const error = getBestTextColor("#dc2626", "#ffffff", "#111827");
+  const warning = getBestTextColor("#f59e0b", "#ffffff", "#111827");
+  const info = getBestTextColor("#0ea5e9", "#ffffff", "#111827");
 
   return {
     "--color-app-bg": app_bg,
@@ -217,7 +233,6 @@ export function useApplyTheme() {
 
     const cssVars = generateThemeVars(tempTheme.primary, tempTheme.mode);
 
-    // Logs pour debug
     console.group("🎨 Variables CSS du thème");
     Object.entries(cssVars).forEach(([key, value]) => {
       console.log(`${key}: ${value}`);
