@@ -97,7 +97,7 @@ export function SwipeableCard({
         }}
       >
         {/* Contenu principal (2/3) */}
-        <div className="flex-2 p-4">{children}</div>
+        <div className="flex-2 p-2">{children}</div>
 
         {/* Encadré image (1/3) */}
         <div className="flex-[1] basis-1/3 flex items-center justify-center bg-gray-100 overflow-hidden">
