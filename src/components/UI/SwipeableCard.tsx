@@ -106,7 +106,7 @@ export function SwipeableCard({
       {/* Carte principale */}
       <div
         {...handlers}
-        className="relative flex transition-transform duration-200 bg-white"
+        className="relative flex transition-transform duration-200"
         style={{
           transform: `translateX(${translateX}px)`,
           ...style,
