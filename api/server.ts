@@ -29,7 +29,6 @@ const allowedOrigins = [
 // Security & CORS middleware
 // ---------------------------
 app.use(helmet());
-app.use("/api/upload", uploadRouter);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -64,6 +63,7 @@ app.use("/api/joineries", joineryRoutes);
 app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/upload", uploadRouter);
 
 app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Server is running" });
