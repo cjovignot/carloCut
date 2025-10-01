@@ -1,7 +1,7 @@
 // src/pages/Projects.tsx
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; // 🔹 import useNavigate
-import { Plus, Search, Calendar, MapPin } from "lucide-react";
+import { Plus, Search, MapPin } from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -94,14 +94,18 @@ export function Projects() {
     return (
       <SwipeableCard
         id={project._id}
+        imageURL={project.imageURL}
         onEdit={() => setEditingProject(project)}
         onDelete={() => handleDeleteProject(project._id)}
         showDelete={() => user?.role === "admin"}
         maxSwipe={75}
-        style={{ backgroundColor: "var(--color-app-bg)", cursor: "pointer" }} // 🔹 curseur pointer
+        style={{
+          backgroundColor: "var(--color-app-bg)",
+          cursor: "pointer",
+        }} // 🔹 curseur pointer
       >
         <div
-          className="p-1 w-full h-full"
+          className="w-full h-full p-1"
           onClick={() => navigate(`/projects/${project._id}`)} // 🔹 navigation
         >
           <h3

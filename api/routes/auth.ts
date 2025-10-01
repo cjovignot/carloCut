@@ -52,23 +52,23 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Login attempt:", email, password);
+    // console.log("Login attempt:", email, password);
 
     const user = await User.findOne({ email });
-    console.log("Found user:", user);
+    // console.log("Found user:", user);
 
     if (!user) {
-      console.warn("User not found");
+      // console.warn("User not found");
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
     if (typeof user.comparePassword !== "function") {
-      console.error("comparePassword not defined on User model");
+      // console.error("comparePassword not defined on User model");
       return res.status(500).json({ message: "Server misconfiguration" });
     }
 
     const isMatch = await user.comparePassword(password);
-    console.log("Password match:", isMatch);
+    // console.log("Password match:", isMatch);
 
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });

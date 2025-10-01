@@ -21,6 +21,7 @@ export interface ISheet extends mongoose.Document {
 export interface IJoinery extends mongoose.Document {
   name: string;
   type: string;
+  imageURL?: string;
   sheets: Types.DocumentArray<ISheet>;
 }
 
@@ -31,6 +32,7 @@ export interface IProject extends Document {
   date: Date;
   notes: string;
   joineries: Types.DocumentArray<IJoinery>;
+  imageURL?: string;
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -92,6 +94,11 @@ const joinerySchema = new mongoose.Schema<IJoinery>({
     trim: true,
     maxLength: [100, "Name cannot exceed 100 characters"],
   },
+  imageURL: {
+    type: String,
+    required: false,
+    maxLength: [150, "URL cannot exceed 150 characters"],
+  },
   type: {
     type: String,
     required: [true, "Joinery type is required"],
@@ -107,6 +114,11 @@ const projectSchema = new mongoose.Schema<IProject>(
       required: [true, "Project name is required"],
       trim: true,
       maxLength: [150, "Name cannot exceed 150 characters"],
+    },
+    imageURL: {
+      type: String,
+      required: false,
+      maxLength: [150, "URL cannot exceed 150 characters"],
     },
     client: {
       type: String,

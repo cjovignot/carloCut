@@ -12,7 +12,7 @@ const connectDB = async () => {
     // console.log("Connecting to MongoDB with URI:", mongoURI);
     await mongoose.connect(mongoURI);
     isConnected = true;
-    console.log("MongoDB connected successfully ✅");
+    // console.log("MongoDB connected successfully ✅");
   } catch (error) {
     console.error("MongoDB connection failed:", error);
     throw error;

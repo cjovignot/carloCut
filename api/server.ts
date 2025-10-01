@@ -10,6 +10,7 @@ import joineryRoutes from "./routes/joineries.js";
 import sheetRoutes from "./routes/sheets.js";
 import pdfRoutes from "./routes/pdf.js";
 import emailRoutes from "./routes/email.js";
+import uploadRouter from "./routes/upload.js";
 
 import connectDB from "./utils/connectDB.js";
 
@@ -26,7 +27,7 @@ const allowedOrigins = [
   "http://localhost:5173", // toujours autorisé pour ton frontend en local
   "http://localhost:5000", // si tu tapes l’API directement
   process.env.VITE_API_URL, // backend déployé (Vercel)
-  "https://carlo-cut.vercel.app"
+  "https://carlo-cut.vercel.app",
 ].filter(Boolean); // enlève les undefined
 
 app.use(
@@ -99,10 +100,12 @@ if (process.env.NODE_ENV !== "production") {
   connectDB()
     .then(() => {
       app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+        // console.log(`Server running on http://localhost:${PORT}`);
       });
     })
     .catch((err) => {
       console.error("Failed to connect to MongoDB:", err);
     });
 }
+
+app.use("/api/upload", uploadRouter);

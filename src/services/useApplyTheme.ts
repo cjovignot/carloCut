@@ -236,11 +236,11 @@ export function useApplyTheme() {
 
     const cssVars = generateThemeVars(tempTheme.primary, tempTheme.mode);
 
-    console.group("🎨 Variables CSS du thème");
-    Object.entries(cssVars).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-    });
-    console.groupEnd();
+    // console.group("🎨 Variables CSS du thème");
+    // Object.entries(cssVars).forEach(([key, value]) => {
+    //   console.log(`${key}: ${value}`);
+    // });
+    // console.groupEnd();
 
     // Meta theme-color
     const metaTheme = document.querySelector<HTMLMetaElement>(

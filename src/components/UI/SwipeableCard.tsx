@@ -13,7 +13,7 @@ interface SwipeableCardProps {
   maxSwipe?: number;
   className?: string;
   style?: React.CSSProperties;
-  imageSrc?: string;
+  imageURL?: string;
   imageAlt?: string;
 }
 
@@ -26,7 +26,7 @@ export function SwipeableCard({
   maxSwipe = 75,
   className = "",
   style = {},
-  imageSrc,
+  imageURL,
   imageAlt = "Photo",
 }: SwipeableCardProps) {
   const [translateX, setTranslateX] = useState(0);
@@ -113,15 +113,20 @@ export function SwipeableCard({
         }}
       >
         {/* Contenu principal */}
-        <div className="flex-[1] basis-3/5 p-4" style={{ backgroundColor: "var(--color-card-bg)" }}>{children}</div>
+        <div
+          className="flex-[1] basis-3/5 p-4"
+          style={{ backgroundColor: "var(--color-card-bg)" }}
+        >
+          {children}
+        </div>
 
         {/* Encadré image */}
         <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
-          {imageSrc ? (
+          {imageURL ? (
             <img
-              src={imageSrc}
+              src={imageURL}
               alt={imageAlt}
-              className="object-cover w-full h-full rounded-r-lg"
+              className="object-cover w-full h-full rounded-r-none"
             />
           ) : (
             <ImageIcon className="w-12 h-12 text-gray-400" />
