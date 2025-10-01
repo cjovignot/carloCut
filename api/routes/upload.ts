@@ -4,10 +4,10 @@ import multer from "multer";
 import cloudinary from "../utils/cloudinary.js";
 import fs from "fs";
 
-const router = express.Router();
+const uploadRouter = express.Router();
 const upload = multer({ dest: "uploads/" }); // dossier temporaire
 
-router.post("/", upload.single("file"), async (req, res) => {
+uploadRouter.post("/", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
@@ -26,4 +26,4 @@ router.post("/", upload.single("file"), async (req, res) => {
   }
 });
 
-export default router;
+export default uploadRouter;
