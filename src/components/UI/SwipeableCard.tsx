@@ -108,7 +108,7 @@ export function SwipeableCard({
         {...handlers}
         className="relative flex transition-transform duration-200"
         style={{
-          transform: `translateX(${translateX}px)`,
+          transform: `translateX(${translateX}px)`, borderColor: "var(--color-secondary)", borderWidth: 1, borderStyle: "solid",
           ...style,
         }}
       >
