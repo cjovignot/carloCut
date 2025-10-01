@@ -106,7 +106,7 @@ export function SwipeableCard({
       {/* Carte principale */}
       <div
         {...handlers}
-        className="relative flex transition-transform duration-200 rounded-l-xl"
+        className="relative flex transition-transform duration-200 rounded-l-full"
         style={{
           transform: `translateX(${translateX}px)`, borderColor: "var(--color-secondary)", borderWidth: 1, borderStyle: "solid",
           ...style,
