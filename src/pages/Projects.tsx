@@ -98,7 +98,7 @@ export function Projects() {
         onDelete={() => handleDeleteProject(project._id)}
         showDelete={() => user?.role === "admin"}
         maxSwipe={75}
-        style={{ backgroundColor: "var(--color-card-bg)", cursor: "pointer", opacity: 0.3 }} // 🔹 curseur pointer
+        style={{ backgroundColor: "var(--color-app-bg)", cursor: "pointer" }} // 🔹 curseur pointer
       >
         <div
           className="p-1 w-full h-full"

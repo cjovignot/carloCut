@@ -113,7 +113,7 @@ export function SwipeableCard({
         }}
       >
         {/* Contenu principal */}
-        <div className="flex-[1] basis-3/5 p-4">{children}</div>
+        <div className="flex-[1] basis-3/5 p-4" style={{ backgroundColor: "var(--color-card-bg)" }}>{children}</div>
 
         {/* Encadré image */}
         <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
