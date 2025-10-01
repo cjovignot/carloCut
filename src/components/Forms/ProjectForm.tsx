@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
+import { Edit, Trash2 } from "lucide-react";
 
 interface ProjectFormProps {
   initialData?: any;
@@ -14,10 +15,14 @@ export function ProjectForm({
   onCancel,
 }: ProjectFormProps) {
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(
+    initialData?.imageURL || null
+  );
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: initialData
@@ -34,12 +39,21 @@ export function ProjectForm({
         },
   });
 
+  const imageFile = watch("imageURL");
+  useEffect(() => {
+    if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
+      const file = imageFile[0];
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+  }, [imageFile]);
+
   const onFormSubmit = async (data: any) => {
     setLoading(true);
     try {
-      let imageURL = "";
+      let imageURL = preview || "";
 
-      // Upload image si sélectionnée
       if (data.imageURL && data.imageURL[0]) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
@@ -55,7 +69,6 @@ export function ProjectForm({
         imageURL = json.url;
       }
 
-      // Crée le payload final
       const payload = {
         name: data.name,
         client: data.client,
@@ -72,11 +85,8 @@ export function ProjectForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onFormSubmit)}
-      className="space-y-2"
-      encType="multipart/form-data"
-    >
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
+      {/* Nom du projet */}
       <div>
         <label className="block text-sm font-medium">Nom du projet *</label>
         <input
@@ -88,6 +98,7 @@ export function ProjectForm({
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
       </div>
 
+      {/* Client */}
       <div>
         <label className="block text-sm font-medium">Client *</label>
         <input
@@ -101,6 +112,7 @@ export function ProjectForm({
         )}
       </div>
 
+      {/* Adresse */}
       <div>
         <label className="block text-sm font-medium">Adresse *</label>
         <input
@@ -114,6 +126,7 @@ export function ProjectForm({
         )}
       </div>
 
+      {/* Date */}
       <div>
         <label className="block text-sm font-medium">Date *</label>
         <input
@@ -124,6 +137,7 @@ export function ProjectForm({
         {errors.date && <p className="text-red-500">{errors.date.message}</p>}
       </div>
 
+      {/* Notes */}
       <div>
         <label className="block text-sm font-medium">Notes</label>
         <textarea
@@ -134,17 +148,43 @@ export function ProjectForm({
         />
       </div>
 
+      {/* Photo style Notion avec overlay */}
       <div>
-        <label className="block text-sm font-medium">Photo</label>
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          {...register("imageURL")}
-          className="block w-full mt-1 text-sm"
-        />
+        <label className="block mb-1 text-sm font-medium">Photo</label>
+        <div>
+          <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
+            {/* Aperçu ou texte */}
+            {preview ? (
+              <img
+                src={preview}
+                alt="Aperçu"
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
+                Ajouter une photo
+              </div>
+            )}
+
+            {/* Overlay au hover */}
+            <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
+
+            {/* Icône Edit au hover */}
+            <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
+
+            {/* Input fichier toujours cliquable */}
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              {...register("imageURL")}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
 
+      {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
         <Button type="button" variant="outline" onClick={onCancel}>
           Annuler
