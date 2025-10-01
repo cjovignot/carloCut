@@ -80,6 +80,7 @@ export function SwipeableCard({
   return (
     <div
       className={`relative w-full overflow-hidden rounded-lg shadow-md ${className}`}
+      style={{ borderColor: "var(--color-secondary)", borderWidth: 1, borderStyle: "solid"}}
     >
       {/* Actions */}
       {actions.length > 0 && (

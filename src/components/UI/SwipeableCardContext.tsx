@@ -11,9 +11,7 @@ export function SwipeableCardProvider({ children }: { children: ReactNode }) {
   const [openCardId, setOpenCardId] = useState<string | null>(null);
   return (
     <SwipeableCardContext.Provider value={{ openCardId, setOpenCardId }}>
-    <div style={{ borderColor: "var(--color-secondary)", borderWidth: 1, borderStyle: "solid"}}>
       {children}
-      </div>
     </SwipeableCardContext.Provider>
   );
 }
