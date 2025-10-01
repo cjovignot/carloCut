@@ -18,11 +18,6 @@ dotenv.config();
 
 const app = express();
 
-// ---------------------------
-// Security & CORS middleware
-// ---------------------------
-app.use(helmet());
-
 const allowedOrigins = [
   "http://localhost:5173", // toujours autorisé pour ton frontend en local
   "http://localhost:5000", // si tu tapes l’API directement
@@ -30,6 +25,11 @@ const allowedOrigins = [
   "https://carlo-cut.vercel.app",
 ].filter(Boolean); // enlève les undefined
 
+// ---------------------------
+// Security & CORS middleware
+// ---------------------------
+app.use(helmet());
+app.use("/api/upload", uploadRouter);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -107,5 +107,3 @@ if (process.env.NODE_ENV !== "production") {
       console.error("Failed to connect to MongoDB:", err);
     });
 }
-
-app.use("/api/upload", uploadRouter);
