@@ -136,7 +136,7 @@ export function Projects() {
 
             <div
               className="mt-2 text-xs"
-              style={{ color: "var(--color-accent)" }}
+              style={{ color: "var(--color-warning)" }}
             >
               par {project.createdBy?.name}
             </div>
