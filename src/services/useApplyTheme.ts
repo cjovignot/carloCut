@@ -185,7 +185,7 @@ export function generateThemeVars(
   const navbar_text = getBestTextColor(navbar_bg);
 
   const card_bg =
-    mode === "light" ? shadeColor(primary, 0.7) : shadeColor(app_bg, 0.05);
+    mode === "light" ? shadeColor(primary, 0.2) : shadeColor(app_bg, 0.05);
   const card_text = getBestTextColor(card_bg);
 
   const action_bg = primary;
