@@ -148,25 +148,25 @@ export function ProjectDetail() {
           {project.client && (
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-bg)" }}>Client : {project.client}</span>
+              <span style={{ color: "var(--color-card-text)" }}>Client : {project.client}</span>
             </div>
           )}
           {project.address && (
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-bg)" }}>{project.address}</span>
+              <span style={{ color: "var(--color-card-text)" }}>{project.address}</span>
             </div>
           )}
           {project.date && (
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-bg)" }}>{new Date(project.date).toLocaleDateString()}</span>
+              <span style={{ color: "var(--color-card-text)" }}>{new Date(project.date).toLocaleDateString()}</span>
             </div>
           )}
           {project.notes && (
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-bg)" }}>{project.notes}</span>
+              <span style={{ color: "var(--color-card-text)" }}>{project.notes}</span>
             </div>
           )}
           <div className="flex items-center gap-2">
