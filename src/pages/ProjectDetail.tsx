@@ -16,7 +16,7 @@ import {
   ClipboardList,
   User,
   Building2,
-  Window,
+  Square,
   DoorClosed,
   DoorOpen,
   FileText,
