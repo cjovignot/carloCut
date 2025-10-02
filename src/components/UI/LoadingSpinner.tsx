@@ -10,12 +10,12 @@ export function LoadingSpinner({
   const sizeClasses = {
     sm: "h-4 w-4",
     md: "h-6 w-6",
-    lg: "h-10 w-10",
+    lg: "h-10 w-10 min-h-screen",
   };
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen"
+      className="flex items-center justify-center"
       style={{ backgroundColor: "var(--color-app-bg)" }}
     >
       <div
