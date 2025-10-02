@@ -117,66 +117,83 @@ export function ProjectDetail() {
   );
 
   return (
-    <div className="relative pb-20">
-      {/* Titre projet */}
-      <h1
-        className="text-3xl font-bold mb-4 px-4 py-4"
-        style={{ color: "var(--color-page-title)" }}
-      >
-        {project.name}
-      </h1>
-
-      {/* Image projet */}
-      {project.imageURL && (
-        <div className="w-full mb-6">
-          <img
-            src={project.imageURL}
-            alt={project.name}
-            className="w-full object-cover"
-            style={{ height: "33vh" }} // 1/3 hauteur écran
-          />
+    {/* Infos projet en grid 2 colonnes */}
+<div
+  className="rounded-lg p-2 pr-0"
+  style={{ backgroundColor: "var(--color-primary)" }}
+>
+  <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+    {project.client && (
+      <>
+        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+          <User className="w-4 h-4" />
+          <span>Nom du client</span>
         </div>
-      )}
+        <div style={{ color: "var(--color-secondary)" }}>{project.client}</div>
+        <div className="col-span-2 border-b border-gray-300"></div>
+      </>
+    )}
 
-      {/* Infos projet compactes type dashboard */}
-      <div className="px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-        {project.client && (
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
-            <span style={{ color: "var(--color-card-text)" }}>{project.client}</span>
-          </div>
-        )}
-        {project.address && (
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
-            <span style={{ color: "var(--color-card-text)" }}>{project.address}</span>
-          </div>
-        )}
-        {project.date && (
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
-            <span style={{ color: "var(--color-card-text)" }}>
-              {new Date(project.date).toLocaleDateString()}
-            </span>
-          </div>
-        )}
-        {project.notes && (
-          <div className="flex items-center gap-2 col-span-1 md:col-span-2">
-            <FileText className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
-            <span style={{ color: "var(--color-card-text)" }}>{project.notes}</span>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-info)" }} />
-          <span style={{ color: "var(--color-info)" }}>{project.joineries?.length || 0} menuiseries</span>
+    {project.address && (
+      <>
+        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+          <MapPin className="w-4 h-4" />
+          <span>Adresse</span>
         </div>
-        {project.createdBy && (
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4" style={{ color: "var(--color-warning)" }} />
-            <span style={{ color: "var(--color-warning)" }}>{project.createdBy?.name || "Inconnu"}</span>
-          </div>
-        )}
-      </div>
+        <div style={{ color: "var(--color-secondary)" }}>{project.address}</div>
+        <div className="col-span-2 border-b border-gray-300"></div>
+      </>
+    )}
+
+    {project.date && (
+      <>
+        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+          <Calendar className="w-4 h-4" />
+          <span>Date</span>
+        </div>
+        <div style={{ color: "var(--color-secondary)" }}>
+          {new Date(project.date).toLocaleDateString()}
+        </div>
+        <div className="col-span-2 border-b border-gray-300"></div>
+      </>
+    )}
+
+    {project.notes && (
+      <>
+        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+          <FileText className="w-4 h-4" />
+          <span>Notes</span>
+        </div>
+        <div style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
+        <div className="col-span-2 border-b border-gray-300"></div>
+      </>
+    )}
+
+    {/* Menuiseries */}
+    <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+      <PanelsTopLeft className="w-4 h-4" />
+      <span>Menuiseries</span>
+    </div>
+    <div style={{ color: "var(--color-secondary)" }}>
+      {project.joineries?.length || 0} menuiseries
+    </div>
+    <div className="col-span-2 border-b border-gray-300"></div>
+
+    {/* Créateur */}
+    {project.createdBy && (
+      <>
+        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+          <User className="w-4 h-4" />
+          <span>Créé par</span>
+        </div>
+        <div style={{ color: "var(--color-secondary)" }}>
+          {project.createdBy?.name || "Inconnu"}
+        </div>
+        <div className="col-span-2 border-b border-gray-300"></div>
+      </>
+    )}
+  </div>
+</div>
 
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
