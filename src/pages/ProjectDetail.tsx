@@ -16,8 +16,24 @@ import {
   ClipboardList,
   User,
   Square,
-  FileText,
+  DoorOpen,
+  PanelsTopLeft,
 } from "lucide-react";
+
+// --- mapping des icônes selon type joinery ---
+const getJoineryIcon = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "porte":
+      return <DoorOpen className="w-4 h-4 mr-1" />;
+    case "fenetre":
+    case "fenêtre":
+      return <PanelsTopLeft className="w-4 h-4 mr-1" />;
+    case "baie vitrée":
+      return <Square className="w-4 h-4 mr-1" />;
+    default:
+      return <Square className="w-4 h-4 mr-1" />;
+  }
+};
 
 export function ProjectDetail() {
   const { id } = useParams();
@@ -70,6 +86,7 @@ export function ProjectDetail() {
 
   const handleDeleteJoinery = async (joineryId: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
+
     try {
       await api.delete(`/projects/${id}/joineries/${joineryId}`);
       await fetchProject();
@@ -81,36 +98,21 @@ export function ProjectDetail() {
   if (loading) return <LoadingSpinner size="lg" />;
   if (!project) return <p>Projet introuvable</p>;
 
-  // --- Icônes par type de menuiserie ---
-  const getJoineryIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "porte":
-        return <FileText className="w-5 h-5 text-gray-500 mr-2" />;
-      case "fenetre":
-      case "fenêtre":
-        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
-      case "baie vitrée":
-        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
-      default:
-        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
-    }
-  };
-
   // --- JoineryCard ---
   const JoineryCard = ({ joinery }: { joinery: any }) => (
-    <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
-      <SwipeableCard
-        id={joinery._id}
-        imageURL={joinery.imageURL || ""}
-        onEdit={() => setEditingJoinery(joinery)}
-        onDelete={() => handleDeleteJoinery(joinery._id)}
-        showDelete={() => user?.role === "admin"}
-        maxSwipe={75}
-        style={{
-          backgroundColor: "var(--color-app-bg)",
-          cursor: "pointer",
-        }}
-      >
+    <SwipeableCard
+      id={joinery._id}
+      imageURL={joinery.imageURL || ""}
+      onEdit={() => setEditingJoinery(joinery)}
+      onDelete={() => handleDeleteJoinery(joinery._id)}
+      showDelete={() => user?.role === "admin"}
+      maxSwipe={75}
+      style={{
+        backgroundColor: "var(--color-app-bg)",
+      }}
+    >
+      {/* 👉 contenu principal cliquable */}
+      <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
         <div className="w-full h-full p-1">
           <h3
             style={{ color: "var(--color-card-text)" }}
@@ -125,60 +127,71 @@ export function ProjectDetail() {
           {joinery.sheets?.length > 0 && (
             <div className="flex items-center mt-1 text-xs text-gray-500">
               <ClipboardList className="w-4 h-4 mr-1" />
-              {joinery.sheets.length} tôles
+              {joinery.sheets.length}{" "}
+              {joinery.sheets.length === 1 ? "tôle" : "tôles"}
             </div>
           )}
         </div>
-      </SwipeableCard>
-    </Link>
+      </Link>
+    </SwipeableCard>
   );
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-5xl sm:px-6 lg:px-8">
-      {/* Encart projet */}
-      <div className="flex flex-col md:flex-row items-start md:items-center mb-8 p-4 rounded-lg shadow bg-white">
+      {/* --- Encart projet --- */}
+      <div className="mb-8 border rounded-lg p-6 bg-white shadow-sm">
         {project.imageURL && (
           <img
             src={project.imageURL}
             alt={project.name}
-            className="w-32 h-32 object-cover rounded-md mr-6"
+            className="w-full h-64 object-cover rounded mb-4"
           />
         )}
-        <div className="flex-1 space-y-2">
-          <h1 className="text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
-            {project.name}
-          </h1>
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            {project.client && (
-              <div className="flex items-center gap-1">
-                <User className="w-4 h-4" />
-                {project.client}
-              </div>
-            )}
-            {project.address && (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
-                {project.address}
-              </div>
-            )}
-            {project.date && (
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                {new Date(project.date).toLocaleDateString()}
-              </div>
-            )}
-            {project.notes && (
-              <div className="flex items-center gap-1">
-                <ClipboardList className="w-4 h-4" />
-                {project.notes}
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              <Square className="w-4 h-4" />
-              {project.joineries?.length || 0} menuiserie(s)
-            </div>
+
+        <h1
+          className="text-3xl font-bold mb-2"
+          style={{ color: "var(--color-page-title)" }}
+        >
+          {project.name}
+        </h1>
+
+        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            {project.client}
           </div>
+          {project.address && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {project.address}
+            </div>
+          )}
+          {project.date && (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {new Date(project.date).toLocaleDateString()}
+            </div>
+          )}
+          {project.joineries?.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Square className="w-4 h-4" />
+              {project.joineries.length}{" "}
+              {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
+            </div>
+          )}
         </div>
+
+        {project.notes && (
+          <p className="text-base mb-2" style={{ color: "var(--color-card-text)" }}>
+            {project.notes}
+          </p>
+        )}
+
+        {project.createdBy?.name && (
+          <p className="text-xs text-gray-500">
+            Créé par {project.createdBy.name}
+          </p>
+        )}
       </div>
 
       {/* Bouton ajout */}
