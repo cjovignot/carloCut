@@ -31,32 +31,33 @@ export function JoineryForm({
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: initialData
-      ? {
-          name: initialData.name,
-          type: initialData.type,
-          imageURL: initialData.imageURL || preview,
-        }
-      : {},
+    defaultValues: {
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null, // ⚡ toujours null (jamais une string)
+    },
   });
 
   // Gestion preview image
   const imageFile = watch("imageURL");
+
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
       const file = imageFile[0];
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
+    } else if (initialData?.imageURL) {
+      setPreview(initialData.imageURL);
     }
-  }, [imageFile]);
+  }, [imageFile, initialData]);
 
   const onFormSubmit = async (data: any) => {
     setLoading(true);
     try {
-      let imageURL = preview || "";
+      let imageURL = initialData?.imageURL || ""; // ⚡ garde l’ancienne par défaut
 
-      if (data.imageURL && data.imageURL[0]) {
+      if (data.imageURL && data.imageURL[0] instanceof File) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
 
@@ -107,7 +108,7 @@ export function JoineryForm({
       <div>
         <label className="block text-sm font-medium">Type *</label>
         <select
-          {...register("type", { required: "Type is required" })}
+          {...register("type", { required: "Type requis" })}
           style={{
             backgroundColor: "var(--color-input-bg)",
             color: "var(--color-input-text)",
@@ -150,7 +151,6 @@ export function JoineryForm({
           <input
             type="file"
             accept="image/*"
-            capture="environment"
             {...register("imageURL")}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
