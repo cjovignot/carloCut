@@ -1,6 +1,6 @@
 // src/pages/ProjectDetail.tsx
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // 🔹 import navigate
+import { useParams, Link } from "react-router-dom";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -15,16 +15,12 @@ import {
   MapPin,
   ClipboardList,
   User,
-  Building2,
   Square,
-  DoorClosed,
-  DoorOpen,
   FileText,
 } from "lucide-react";
 
 export function ProjectDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -74,7 +70,6 @@ export function ProjectDetail() {
 
   const handleDeleteJoinery = async (joineryId: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
-
     try {
       await api.delete(`/projects/${id}/joineries/${joineryId}`);
       await fetchProject();
@@ -86,21 +81,24 @@ export function ProjectDetail() {
   if (loading) return <LoadingSpinner size="lg" />;
   if (!project) return <p>Projet introuvable</p>;
 
-  // --- JoineryCard ---
-  const JoineryCard = ({ joinery }: { joinery: any }) => {
-    const getTypeIcon = (type: string) => {
-      switch (type.toLowerCase()) {
-        case "porte":
-          return <DoorClosed className="w-4 h-4 mr-1" />;
-        case "baie vitrée":
-          return <DoorOpen className="w-4 h-4 mr-1" />;
-        case "fenêtre":
-        default:
-          return <Square className="w-4 h-4 mr-1" />;
-      }
-    };
+  // --- Icônes par type de menuiserie ---
+  const getJoineryIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "porte":
+        return <FileText className="w-5 h-5 text-gray-500 mr-2" />;
+      case "fenetre":
+      case "fenêtre":
+        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
+      case "baie vitrée":
+        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
+      default:
+        return <Square className="w-5 h-5 text-gray-500 mr-2" />;
+    }
+  };
 
-    return (
+  // --- JoineryCard ---
+  const JoineryCard = ({ joinery }: { joinery: any }) => (
+    <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
       <SwipeableCard
         id={joinery._id}
         imageURL={joinery.imageURL || ""}
@@ -112,71 +110,73 @@ export function ProjectDetail() {
           backgroundColor: "var(--color-app-bg)",
           cursor: "pointer",
         }}
-        onClick={() =>
-          navigate(`/projects/${project._id}/joineries/${joinery._id}`)
-        } // 🔹 navigation au clic
       >
-        <div className="w-full h-full p-2 flex flex-col justify-between">
-          <div>
-            <h3
-              style={{ color: "var(--color-card-text)" }}
-              className="mb-2 text-lg font-semibold"
-            >
-              {joinery.name}
-            </h3>
-            <div
-              className="flex items-center text-sm mb-2"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              {getTypeIcon(joinery.type)}
-              {joinery.type}
+        <div className="w-full h-full p-1">
+          <h3
+            style={{ color: "var(--color-card-text)" }}
+            className="mb-2 text-lg font-semibold"
+          >
+            {joinery.name}
+          </h3>
+          <div className="flex items-center text-sm" style={{ color: "var(--color-secondary)" }}>
+            {getJoineryIcon(joinery.type)}
+            {joinery.type}
+          </div>
+          {joinery.sheets?.length > 0 && (
+            <div className="flex items-center mt-1 text-xs text-gray-500">
+              <ClipboardList className="w-4 h-4 mr-1" />
+              {joinery.sheets.length} tôles
             </div>
-          </div>
-          <div className="flex items-center text-xs text-gray-500 mt-2">
-            <FileText className="w-4 h-4 mr-1" />
-            {joinery.sheets?.length || 0} tôles
-          </div>
+          )}
         </div>
       </SwipeableCard>
-    );
-  };
+    </Link>
+  );
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-5xl sm:px-6 lg:px-8">
       {/* Encart projet */}
-      <div className="mb-8 p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
+      <div className="flex flex-col md:flex-row items-start md:items-center mb-8 p-4 rounded-lg shadow bg-white">
         {project.imageURL && (
           <img
             src={project.imageURL}
             alt={project.name}
-            className="w-full h-48 object-cover rounded-md mb-4"
+            className="w-32 h-32 object-cover rounded-md mr-6"
           />
         )}
-        <h1
-          className="text-3xl font-bold mb-4"
-          style={{ color: "var(--color-page-title)" }}
-        >
-          {project.name}
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4" /> {project.client}
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" /> {project.address}
-          </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            {new Date(project.date).toLocaleDateString()}
-          </div>
-          <div className="flex items-center gap-2">
-            <ClipboardList className="w-4 h-4" /> {project.notes}
-          </div>
-          <div className="flex items-center gap-2">
-            <Square className="w-4 h-4" /> {project.joineries?.length || 0} menuiseries
-          </div>
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4" /> Créé par {project.createdBy?.name || "Inconnu"}
+        <div className="flex-1 space-y-2">
+          <h1 className="text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
+            {project.name}
+          </h1>
+          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            {project.client && (
+              <div className="flex items-center gap-1">
+                <User className="w-4 h-4" />
+                {project.client}
+              </div>
+            )}
+            {project.address && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                {project.address}
+              </div>
+            )}
+            {project.date && (
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                {new Date(project.date).toLocaleDateString()}
+              </div>
+            )}
+            {project.notes && (
+              <div className="flex items-center gap-1">
+                <ClipboardList className="w-4 h-4" />
+                {project.notes}
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <Square className="w-4 h-4" />
+              {project.joineries?.length || 0} menuiserie(s)
+            </div>
           </div>
         </div>
       </div>
