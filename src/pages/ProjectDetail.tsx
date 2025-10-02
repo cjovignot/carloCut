@@ -117,83 +117,104 @@ export function ProjectDetail() {
   );
 
   return (
-    {/* Infos projet en grid 2 colonnes */}
-<div
-  className="rounded-lg p-2 pr-0"
-  style={{ backgroundColor: "var(--color-primary)" }}
->
-  <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-    {project.client && (
-      <>
-        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-          <User className="w-4 h-4" />
-          <span>Nom du client</span>
-        </div>
-        <div style={{ color: "var(--color-secondary)" }}>{project.client}</div>
-        <div className="col-span-2 border-b border-gray-300"></div>
-      </>
-    )}
+    <div className="relative pb-20">
+      {/* Titre projet */}
+      <h1
+        className="text-3xl font-bold mb-4 px-4 py-4"
+        style={{ color: "var(--color-page-title)" }}
+      >
+        {project.name}
+      </h1>
 
-    {project.address && (
-      <>
-        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-          <MapPin className="w-4 h-4" />
-          <span>Adresse</span>
+      {/* Image projet */}
+      {project.imageURL && (
+        <div className="w-full mb-6">
+          <img
+            src={project.imageURL}
+            alt={project.name}
+            className="w-full object-cover"
+            style={{ height: "33vh" }} // 1/3 hauteur écran
+          />
         </div>
-        <div style={{ color: "var(--color-secondary)" }}>{project.address}</div>
-        <div className="col-span-2 border-b border-gray-300"></div>
-      </>
-    )}
+      )}
 
-    {project.date && (
-      <>
-        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-          <Calendar className="w-4 h-4" />
-          <span>Date</span>
-        </div>
-        <div style={{ color: "var(--color-secondary)" }}>
-          {new Date(project.date).toLocaleDateString()}
-        </div>
-        <div className="col-span-2 border-b border-gray-300"></div>
-      </>
-    )}
+      {/* Infos projet en grid 2 colonnes */}
+      <div
+        className="rounded-lg p-2 pr-0 mb-8"
+        style={{ backgroundColor: "var(--color-primary)" }}
+      >
+        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+          {project.client && (
+            <>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                <User className="w-4 h-4" />
+                <span>Nom du client</span>
+              </div>
+              <div style={{ color: "var(--color-secondary)" }}>{project.client}</div>
+              <div className="col-span-2 border-b border-gray-300"></div>
+            </>
+          )}
 
-    {project.notes && (
-      <>
-        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-          <FileText className="w-4 h-4" />
-          <span>Notes</span>
-        </div>
-        <div style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
-        <div className="col-span-2 border-b border-gray-300"></div>
-      </>
-    )}
+          {project.address && (
+            <>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                <MapPin className="w-4 h-4" />
+                <span>Adresse</span>
+              </div>
+              <div style={{ color: "var(--color-secondary)" }}>{project.address}</div>
+              <div className="col-span-2 border-b border-gray-300"></div>
+            </>
+          )}
 
-    {/* Menuiseries */}
-    <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-      <PanelsTopLeft className="w-4 h-4" />
-      <span>Menuiseries</span>
-    </div>
-    <div style={{ color: "var(--color-secondary)" }}>
-      {project.joineries?.length || 0} menuiseries
-    </div>
-    <div className="col-span-2 border-b border-gray-300"></div>
+          {project.date && (
+            <>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                <Calendar className="w-4 h-4" />
+                <span>Date</span>
+              </div>
+              <div style={{ color: "var(--color-secondary)" }}>
+                {new Date(project.date).toLocaleDateString()}
+              </div>
+              <div className="col-span-2 border-b border-gray-300"></div>
+            </>
+          )}
 
-    {/* Créateur */}
-    {project.createdBy && (
-      <>
-        <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-          <User className="w-4 h-4" />
-          <span>Créé par</span>
+          {project.notes && (
+            <>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                <FileText className="w-4 h-4" />
+                <span>Notes</span>
+              </div>
+              <div style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
+              <div className="col-span-2 border-b border-gray-300"></div>
+            </>
+          )}
+
+          {/* Menuiseries */}
+          <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+            <PanelsTopLeft className="w-4 h-4" />
+            <span>Menuiseries</span>
+          </div>
+          <div style={{ color: "var(--color-secondary)" }}>
+            {project.joineries?.length || 0} menuiseries
+          </div>
+          <div className="col-span-2 border-b border-gray-300"></div>
+
+          {/* Créateur */}
+          {project.createdBy && (
+            <>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                <User className="w-4 h-4" />
+                <span>Créé par</span>
+              </div>
+              <div style={{ color: "var(--color-secondary)" }}>
+                {project.createdBy?.name || "Inconnu"}
+              </div>
+              <div className="col-span-2 border-b border-gray-300"></div>
+            </>
+          )}
         </div>
-        <div style={{ color: "var(--color-secondary)" }}>
-          {project.createdBy?.name || "Inconnu"}
-        </div>
-        <div className="col-span-2 border-b border-gray-300"></div>
-      </>
-    )}
-  </div>
-</div>
+      </div>
 
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
