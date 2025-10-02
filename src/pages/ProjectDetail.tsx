@@ -79,6 +79,15 @@ export function ProjectDetail() {
   if (loading) return <LoadingSpinner size="lg" />;
   if (!project) return <p>Projet introuvable</p>;
 
+  const Divider = () => {
+  return (
+    <div
+      style={{ borderColor: "var(--color-input-bg)" }}
+      className="col-span-2 border-b"
+    ></div>
+  );
+};
+
   // --- JoineryCard ---
   const JoineryCard = ({ joinery }: { joinery: any }) => (
     <SwipeableCardProvider>
@@ -140,7 +149,7 @@ export function ProjectDetail() {
 
       {/* Infos projet en grid 2 colonnes */}
       <div
-        className="rounded-lg p-2 mx-3 pr-0 mb-8"
+        className="rounded-lg p-2 mx-4 pr-0 mb-8"
         style={{ backgroundColor: "var(--color-primary)" }}
       >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
@@ -151,7 +160,7 @@ export function ProjectDetail() {
                 <span>Nom du client</span>
               </div>
               <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.client}</div>
-              <div className="col-span-2 border-b border-gray-300"></div>
+<Divider />
             </>
           )}
 
@@ -162,7 +171,7 @@ export function ProjectDetail() {
                 <span>Adresse</span>
               </div>
               <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.address}</div>
-              <div className="col-span-2 border-b border-gray-300"></div>
+<Divider />
             </>
           )}
 
@@ -175,7 +184,7 @@ export function ProjectDetail() {
               <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
                 {new Date(project.date).toLocaleDateString()}
               </div>
-              <div className="col-span-2 border-b border-gray-300"></div>
+<Divider />
             </>
           )}
 
@@ -186,7 +195,7 @@ export function ProjectDetail() {
                 <span>Notes</span>
               </div>
               <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
-              <div className="col-span-2 border-b border-gray-300"></div>
+<Divider />
             </>
           )}
 
@@ -198,7 +207,7 @@ export function ProjectDetail() {
           <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
             {project.joineries?.length || 0} menuiseries
           </div>
-          <div className="col-span-2 border-b border-gray-300"></div>
+<Divider />
 
           {/* Créateur */}
           {project.createdBy && (
