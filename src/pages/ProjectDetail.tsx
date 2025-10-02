@@ -96,7 +96,7 @@ export function ProjectDetail() {
           return <DoorOpen className="w-4 h-4 mr-1" />;
         case "fenêtre":
         default:
-          return <Saquare className="w-4 h-4 mr-1" />;
+          return <Square className="w-4 h-4 mr-1" />;
       }
     };
 
