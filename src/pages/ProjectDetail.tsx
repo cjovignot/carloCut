@@ -148,25 +148,25 @@ export function ProjectDetail() {
           {project.client && (
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span style={{ color: "var(--color-input-text)" }}>Client : {project.client}</span>
+              <span style={{ color: "var(--color-card-bg)" }}>Client : {project.client}</span>
             </div>
           )}
           {project.address && (
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              <span style={{ color: "var(--color-input-text)" }}>{project.address}</span>
+              <span style={{ color: "var(--color-card-bg)" }}>{project.address}</span>
             </div>
           )}
           {project.date && (
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span style={{ color: "var(--color-input-text)" }}>{new Date(project.date).toLocaleDateString()}</span>
+              <span style={{ color: "var(--color-card-bg)" }}>{new Date(project.date).toLocaleDateString()}</span>
             </div>
           )}
           {project.notes && (
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              <span style={{ color: "var(--color-input-text)" }}>{project.notes}</span>
+              <span style={{ color: "var(--color-card-bg)" }}>{project.notes}</span>
             </div>
           )}
           <div className="flex items-center gap-2">
@@ -200,7 +200,7 @@ export function ProjectDetail() {
       {/* Bouton flottant */}
       <button
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 p-4 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white"
+        className="fixed bottom-10 right-6 p-4 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white"
       >
         <Plus className="w-6 h-6" />
       </button>
