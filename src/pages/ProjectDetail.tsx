@@ -197,7 +197,7 @@ export function ProjectDetail() {
       {/* Infos projet en grid 2 colonnes */}
       <div
         className="px-3 py-2 pr-0 mx-4 mb-6 rounded-lg"
-        style={{ backgroundColor: "var(--color-primary)" }}
+        style={{ backgroundColor: "var(--color-card-bg)" }}
       >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
           {infoFields
