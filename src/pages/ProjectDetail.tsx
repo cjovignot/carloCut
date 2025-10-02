@@ -96,7 +96,7 @@ export function ProjectDetail() {
           return <DoorOpen className="w-4 h-4 mr-1" />;
         case "fenêtre":
         default:
-          return <Window className="w-4 h-4 mr-1" />;
+          return <Saquare className="w-4 h-4 mr-1" />;
       }
     };
 
@@ -173,7 +173,7 @@ export function ProjectDetail() {
             <ClipboardList className="w-4 h-4" /> {project.notes}
           </div>
           <div className="flex items-center gap-2">
-            <Window className="w-4 h-4" /> {project.joineries?.length || 0} menuiseries
+            <Square className="w-4 h-4" /> {project.joineries?.length || 0} menuiseries
           </div>
           <div className="flex items-center gap-2">
             <User className="w-4 h-4" /> Créé par {project.createdBy?.name || "Inconnu"}
