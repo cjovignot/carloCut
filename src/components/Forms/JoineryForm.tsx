@@ -1,3 +1,5 @@
+// src/components/forms/JoineryForm.tsx
+
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
@@ -30,7 +32,7 @@ export function JoineryForm({
   const [preview, setPreview] = useState<string | null>(
     initialData?.imageURL || null
   );
-  const [imageRemoved, setImageRemoved] = useState(false); // si l'utilisateur supprime l'image existante
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const {
     register,
@@ -46,7 +48,7 @@ export function JoineryForm({
     },
   });
 
-  // Si initialData change, on reset le formulaire et la preview
+  // reset si initialData change
   useEffect(() => {
     reset({
       name: initialData?.name || "",
@@ -57,7 +59,7 @@ export function JoineryForm({
     setImageRemoved(false);
   }, [initialData, reset]);
 
-  // Watch le champ fichier pour générer une preview quand on choisit un nouveau fichier
+  // Watch fichier choisi
   const imageFile = watch("imageURL");
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
@@ -66,32 +68,32 @@ export function JoineryForm({
       setPreview(objectUrl);
       setImageRemoved(false);
       return () => URL.revokeObjectURL(objectUrl);
-    } else {
-      // si aucun nouveau fichier choisi, on laisse la preview issue de initialData (déjà gérée par reset effect)
-      if (!initialData?.imageURL) setPreview(null);
     }
-  }, [imageFile, initialData]);
+    // sinon on garde la preview existante (ne pas l’écraser inutilement)
+  }, [imageFile]);
 
+  // Suppression d’image existante
   const handleRemoveImage = () => {
-    // retire la preview (pour indiquer suppression) et marque removed
     setPreview(null);
     setImageRemoved(true);
-    // clear le file input dans react-hook-form si besoin
-    reset((prev) => ({ ...prev, imageURL: null }));
+    reset({
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null,
+    });
   };
 
   const onFormSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
-      // Par défaut, on conserve l'URL existante (si en édition)
       let imageURL: string = initialData?.imageURL || "";
 
-      // Si l'utilisateur a cliqué pour supprimer l'image existante -> on vide
+      // si suppression → on vide
       if (imageRemoved) {
         imageURL = "";
       }
 
-      // Si un nouveau fichier a été choisi -> upload
+      // si nouveau fichier → upload
       if (data.imageURL && data.imageURL.length > 0 && data.imageURL[0] instanceof File) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
@@ -116,7 +118,7 @@ export function JoineryForm({
         imageURL,
       };
 
-      console.log("Joinery payload ->", payload); // utile pour debug réseau
+      console.log("Joinery payload ->", payload);
       await onSubmit(payload);
     } catch (err) {
       console.error("JoineryForm submit error:", err);
@@ -169,7 +171,7 @@ export function JoineryForm({
         )}
       </div>
 
-      {/* Photo style Notion */}
+      {/* Photo */}
       <div>
         <label className="block mb-1 text-sm font-medium">Photo</label>
         <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
@@ -180,7 +182,7 @@ export function JoineryForm({
                 alt="Aperçu"
                 className="object-cover w-full h-full"
               />
-              {/* bouton supprimer (petit) */}
+              {/* bouton supprimer */}
               <button
                 type="button"
                 onClick={handleRemoveImage}
