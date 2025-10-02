@@ -9,7 +9,7 @@ import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
-import { Plus } from "lucide-react";
+import { Plus, Calendar, MapPin } from "lucide-react";
 
 export function ProjectDetail() {
   const { id } = useParams();
@@ -78,7 +78,7 @@ export function ProjectDetail() {
   const JoineryCard = ({ joinery }: { joinery: any }) => (
     <SwipeableCard
       id={joinery._id}
-      imageURL={joinery.imageURL || ""} // 🔹 même logique que project.imageURL
+      imageURL={joinery.imageURL || ""} // 🔹 photo joinery ou vide
       onEdit={() => setEditingJoinery(joinery)}
       onDelete={() => handleDeleteJoinery(joinery._id)}
       showDelete={() => user?.role === "admin"}
@@ -107,14 +107,37 @@ export function ProjectDetail() {
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-5xl sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      {/* Header projet */}
+      <div className="mb-8">
         <h1
-          className="text-3xl font-bold"
+          className="text-3xl font-bold mb-2"
           style={{ color: "var(--color-page-title)" }}
         >
           {project.name}
         </h1>
+        <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+          {project.date && (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {new Date(project.date).toLocaleDateString()}
+            </div>
+          )}
+          {project.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {project.location}
+            </div>
+          )}
+        </div>
+        {project.description && (
+          <p className="text-base" style={{ color: "var(--color-card-text)" }}>
+            {project.description}
+          </p>
+        )}
+      </div>
+
+      {/* Bouton ajout */}
+      <div className="flex justify-end mb-6">
         <Button variant="success" onClick={() => setShowCreateModal(true)}>
           <Plus className="w-4 h-4 mr-2" /> Nouvelle menuiserie
         </Button>
