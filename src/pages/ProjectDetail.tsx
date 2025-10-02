@@ -124,7 +124,7 @@ export function ProjectDetail() {
     <div className="relative pb-20">
       {/* Titre projet */}
       <h1
-        className="text-3xl font-bold mb-4 px-4 pt-6"
+        className="text-3xl font-bold mb-4 px-4 py-6"
         style={{ color: "var(--color-page-title)" }}
       >
         {project.name}
@@ -148,35 +148,35 @@ export function ProjectDetail() {
           {project.client && (
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span>Client : {project.client}</span>
+              <span style={{ color: "var(--color-input-text)" }}>Client : {project.client}</span>
             </div>
           )}
           {project.address && (
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              <span>{project.address}</span>
+              <span style={{ color: "var(--color-input-text)" }}>{project.address}</span>
             </div>
           )}
           {project.date && (
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>{new Date(project.date).toLocaleDateString()}</span>
+              <span style={{ color: "var(--color-input-text)" }}>{new Date(project.date).toLocaleDateString()}</span>
             </div>
           )}
           {project.notes && (
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              <span>{project.notes}</span>
+              <span style={{ color: "var(--color-input-text)" }}>{project.notes}</span>
             </div>
           )}
           <div className="flex items-center gap-2">
             <PanelsTopLeft className="w-4 h-4" />
-            <span>{project.joineries?.length || 0} menuiseries</span>
+            <span style={{ color: "var(--color-info)" }}>{project.joineries?.length || 0} menuiseries</span>
           </div>
           {project.createdBy && (
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span>Créé par : {project.createdBy?.name || "Inconnu"}</span>
+              <span style={{ color: "var(--color-warning)" }}>Créé par : {project.createdBy?.name || "Inconnu"}</span>
             </div>
           )}
         </div>
