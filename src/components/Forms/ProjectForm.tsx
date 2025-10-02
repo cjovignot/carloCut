@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit } from "lucide-react";
 
 interface ProjectFormProps {
   initialData?: any;
@@ -25,37 +25,37 @@ export function ProjectForm({
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: initialData
-      ? {
-          name: initialData.name,
-          client: initialData.client,
-          address: initialData.address,
-          imageURL: initialData.imageURL,
-          date: initialData.date?.split("T")[0],
-          notes: initialData.notes,
-        }
-      : {
-          date: new Date().toISOString().split("T")[0],
-        },
+    defaultValues: {
+      name: initialData?.name || "",
+      client: initialData?.client || "",
+      address: initialData?.address || "",
+      imageURL: null, // ⚡ toujours null au départ
+      date:
+        initialData?.date?.split("T")[0] ||
+        new Date().toISOString().split("T")[0],
+      notes: initialData?.notes || "",
+    },
   });
 
   const imageFile = watch("imageURL");
+
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
       const file = imageFile[0];
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
+    } else if (initialData?.imageURL) {
+      setPreview(initialData.imageURL); // ⚡ garde l’URL existante si pas de nouveau fichier
     }
-  }, [imageFile]);
+  }, [imageFile, initialData]);
 
   const onFormSubmit = async (data: any) => {
     setLoading(true);
     try {
-      let imageURL = preview || "";
+      let imageURL = initialData?.imageURL || ""; // ⚡ conserve l’existante par défaut
 
-      console.log(imageURL);
-      if (data.imageURL && data.imageURL[0]) {
+      if (data.imageURL && data.imageURL[0] instanceof File) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
 
