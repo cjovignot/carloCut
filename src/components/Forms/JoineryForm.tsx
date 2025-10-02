@@ -35,7 +35,7 @@ export function JoineryForm({
       ? {
           name: initialData.name,
           type: initialData.type,
-          imageURL: initialData.imageURL,
+          imageURL: initialData.imageURL || preview,
         }
       : {},
   });
