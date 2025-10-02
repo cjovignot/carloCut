@@ -150,18 +150,18 @@ export function ProjectDetail() {
                 <User className="w-4 h-4" />
                 <span>Nom du client</span>
               </div>
-              <div style={{ color: "var(--color-secondary)" }}>{project.client}</div>
+              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.client}</div>
               <div className="col-span-2 border-b border-gray-300"></div>
             </>
           )}
 
           {project.address && (
             <>
-              <div className="flex items-center justify-end gap-2" style={{ color: "var(--color-page-title)" }}>
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
                 <MapPin className="w-4 h-4" />
                 <span>Adresse</span>
               </div>
-              <div style={{ color: "var(--color-secondary)" }}>{project.address}</div>
+              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.address}</div>
               <div className="col-span-2 border-b border-gray-300"></div>
             </>
           )}
@@ -172,7 +172,7 @@ export function ProjectDetail() {
                 <Calendar className="w-4 h-4" />
                 <span>Date</span>
               </div>
-              <div style={{ color: "var(--color-secondary)" }}>
+              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
                 {new Date(project.date).toLocaleDateString()}
               </div>
               <div className="col-span-2 border-b border-gray-300"></div>
@@ -185,7 +185,7 @@ export function ProjectDetail() {
                 <FileText className="w-4 h-4" />
                 <span>Notes</span>
               </div>
-              <div style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
+              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
               <div className="col-span-2 border-b border-gray-300"></div>
             </>
           )}
@@ -195,7 +195,7 @@ export function ProjectDetail() {
             <PanelsTopLeft className="w-4 h-4" />
             <span>Menuiseries</span>
           </div>
-          <div style={{ color: "var(--color-secondary)" }}>
+          <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
             {project.joineries?.length || 0} menuiseries
           </div>
           <div className="col-span-2 border-b border-gray-300"></div>
@@ -207,7 +207,7 @@ export function ProjectDetail() {
                 <User className="w-4 h-4" />
                 <span>Créé par</span>
               </div>
-              <div style={{ color: "var(--color-secondary)" }}>
+              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
                 {project.createdBy?.name || "Inconnu"}
                 </div>
             </>
