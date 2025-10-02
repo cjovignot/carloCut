@@ -54,6 +54,7 @@ export function ProjectForm({
     try {
       let imageURL = preview || "";
 
+      console.log(imageURL);
       if (data.imageURL && data.imageURL[0]) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);

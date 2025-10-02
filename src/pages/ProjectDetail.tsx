@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
+import { Divider } from "../components/UI/Divider";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
@@ -67,7 +68,8 @@ export function ProjectDetail() {
   };
 
   const handleDeleteJoinery = async (joineryId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
+      return;
     try {
       await api.delete(`/projects/${id}/joineries/${joineryId}`);
       await fetchProject();
@@ -79,14 +81,47 @@ export function ProjectDetail() {
   if (loading) return <LoadingSpinner size="lg" />;
   if (!project) return <p>Projet introuvable</p>;
 
-  const Divider = () => {
-  return (
-    <div
-      style={{ borderColor: "var(--color-input-bg)" }}
-      className="col-span-2 border-b"
-    ></div>
-  );
-};
+  // Définition des infos projet
+  const infoFields = [
+    {
+      icon: <User className="w-4 h-4" />,
+      label: "Client",
+      value: project.client,
+      showDivider: true,
+    },
+    {
+      icon: <MapPin className="w-4 h-4" />,
+      label: "Adresse",
+      value: project.address,
+      showDivider: true,
+    },
+    {
+      icon: <Calendar className="w-4 h-4" />,
+      label: "Date",
+      value: project.date ? new Date(project.date).toLocaleDateString() : null,
+      showDivider: true,
+    },
+    {
+      icon: <FileText className="w-4 h-4" />,
+      label: "Notes",
+      value: project.notes,
+      showDivider: true,
+    },
+    {
+      icon: <PanelsTopLeft className="w-4 h-4" />,
+      label: "Menuiseries",
+      value: `${project.joineries?.length || 0} menuiserie${
+        project.joineries?.length > 1 ? "s" : ""
+      }`,
+      showDivider: true,
+    },
+    {
+      icon: <User className="w-4 h-4" />,
+      label: "Créé par",
+      value: project.createdBy?.name || "Inconnu",
+      showDivider: false,
+    },
+  ];
 
   // --- JoineryCard ---
   const JoineryCard = ({ joinery }: { joinery: any }) => (
@@ -111,12 +146,24 @@ export function ProjectDetail() {
             >
               {joinery.name}
             </h3>
-            <div className="flex items-center gap-2 text-sm" style={{ color: "var(--color-secondary)" }}>
-              <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
+            <div
+              className="flex items-center gap-2 text-sm"
+              style={{ color: "var(--color-secondary)" }}
+            >
+              <PanelsTopLeft
+                className="w-4 h-4"
+                style={{ color: "var(--color-secondary)" }}
+              />
               {joinery.type}
             </div>
-            <div className="flex items-center gap-2 text-xs mt-1" style={{ color: "var(--color-secondary)" }}>
-              <LayoutPanelTop className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
+            <div
+              className="flex items-center gap-2 mt-1 text-xs"
+              style={{ color: "var(--color-secondary)" }}
+            >
+              <LayoutPanelTop
+                className="w-4 h-4"
+                style={{ color: "var(--color-secondary)" }}
+              />
               {joinery.sheets?.length || 0} tôles
             </div>
           </div>
@@ -129,7 +176,7 @@ export function ProjectDetail() {
     <div className="relative pb-20">
       {/* Titre projet */}
       <h1
-        className="text-3xl font-bold mb-4 px-4 py-4"
+        className="px-4 py-4 mb-4 text-3xl font-bold"
         style={{ color: "var(--color-page-title)" }}
       >
         {project.name}
@@ -141,7 +188,7 @@ export function ProjectDetail() {
           <img
             src={project.imageURL}
             alt={project.name}
-            className="w-full object-cover"
+            className="object-cover w-full"
             style={{ height: "33vh" }} // 1/3 hauteur écran
           />
         </div>
@@ -149,78 +196,30 @@ export function ProjectDetail() {
 
       {/* Infos projet en grid 2 colonnes */}
       <div
-        className="rounded-lg p-2 mx-4 pr-0 mb-8"
+        className="px-3 py-2 pr-0 mx-4 mb-6 rounded-lg"
         style={{ backgroundColor: "var(--color-primary)" }}
       >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-          {project.client && (
-            <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                <User className="w-4 h-4" />
-                <span>Nom du client</span>
-              </div>
-              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.client}</div>
-<Divider />
-            </>
-          )}
-
-          {project.address && (
-            <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                <MapPin className="w-4 h-4" />
-                <span>Adresse</span>
-              </div>
-              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.address}</div>
-<Divider />
-            </>
-          )}
-
-          {project.date && (
-            <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                <Calendar className="w-4 h-4" />
-                <span>Date</span>
-              </div>
-              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
-                {new Date(project.date).toLocaleDateString()}
-              </div>
-<Divider />
-            </>
-          )}
-
-          {project.notes && (
-            <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                <FileText className="w-4 h-4" />
-                <span>Notes</span>
-              </div>
-              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>{project.notes}</div>
-<Divider />
-            </>
-          )}
-
-          {/* Menuiseries */}
-          <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-            <PanelsTopLeft className="w-4 h-4" />
-            <span>Menuiseries</span>
-          </div>
-          <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
-            {project.joineries?.length || 0} menuiseries
-          </div>
-<Divider />
-
-          {/* Créateur */}
-          {project.createdBy && (
-            <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                <User className="w-4 h-4" />
-                <span>Créé par</span>
-              </div>
-              <div className="flex justify-end items-center" style={{ color: "var(--color-secondary)" }}>
-                {project.createdBy?.name || "Inconnu"}
+          {infoFields
+            .filter((field) => field.value) // n’affiche que si une valeur existe
+            .map((field, idx) => (
+              <div key={idx} className="contents">
+                <div
+                  className="flex items-center gap-2"
+                  style={{ color: "var(--color-page-title)" }}
+                >
+                  {field.icon}
+                  <span>{field.label}</span>
                 </div>
-            </>
-          )}
+                <div
+                  className="flex items-center justify-end pr-3"
+                  style={{ color: "var(--color-secondary)" }}
+                >
+                  {field.value}
+                </div>
+                {field.showDivider && <Divider />}
+              </div>
+            ))}
         </div>
       </div>
 
@@ -240,7 +239,7 @@ export function ProjectDetail() {
       {/* Bouton flottant */}
       <button
         onClick={() => setShowCreateModal(true)}
-        className="fixed top-6 right-6 p-4 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white"
+        className="fixed p-2 text-white bg-green-600 shadow-lg rounded-xl top-4 right-4 hover:bg-green-700"
       >
         <Plus className="w-6 h-6" />
       </button>
