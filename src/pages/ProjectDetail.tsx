@@ -140,7 +140,7 @@ export function ProjectDetail() {
 
       {/* Infos projet en grid 2 colonnes */}
       <div
-        className="rounded-lg p-2 pr-0 mb-8"
+        className="rounded-lg p-2 mx-3 pr-0 mb-8"
         style={{ backgroundColor: "var(--color-primary)" }}
       >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
@@ -157,7 +157,7 @@ export function ProjectDetail() {
 
           {project.address && (
             <>
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+              <div className="flex items-center justify-end gap-2" style={{ color: "var(--color-page-title)" }}>
                 <MapPin className="w-4 h-4" />
                 <span>Adresse</span>
               </div>
@@ -209,8 +209,7 @@ export function ProjectDetail() {
               </div>
               <div style={{ color: "var(--color-secondary)" }}>
                 {project.createdBy?.name || "Inconnu"}
-              </div>
-              <div className="col-span-2 border-b border-gray-300"></div>
+                </div>
             </>
           )}
         </div>
