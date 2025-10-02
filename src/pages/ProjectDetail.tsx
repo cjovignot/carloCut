@@ -1,6 +1,6 @@
 // src/pages/ProjectDetail.tsx
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // 🔹 import navigate
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -9,10 +9,22 @@ import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
-import { Plus, Calendar, MapPin } from "lucide-react";
+import {
+  Plus,
+  Calendar,
+  MapPin,
+  ClipboardList,
+  User,
+  Building2,
+  Window,
+  DoorClosed,
+  DoorOpen,
+  FileText,
+} from "lucide-react";
 
 export function ProjectDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -75,65 +87,98 @@ export function ProjectDetail() {
   if (!project) return <p>Projet introuvable</p>;
 
   // --- JoineryCard ---
-  const JoineryCard = ({ joinery }: { joinery: any }) => (
-    <SwipeableCard
-      id={joinery._id}
-      imageURL={joinery.imageURL || ""} // 🔹 photo joinery ou vide
-      onEdit={() => setEditingJoinery(joinery)}
-      onDelete={() => handleDeleteJoinery(joinery._id)}
-      showDelete={() => user?.role === "admin"}
-      maxSwipe={75}
-      style={{
-        backgroundColor: "var(--color-app-bg)",
-        cursor: "pointer",
-      }}
-    >
-      <div className="w-full h-full p-1">
-        <h3
-          style={{ color: "var(--color-card-text)" }}
-          className="mb-2 text-lg font-semibold"
-        >
-          {joinery.name}
-        </h3>
-        <div
-          className="text-sm"
-          style={{ color: "var(--color-secondary)" }}
-        >
-          {joinery.type}
+  const JoineryCard = ({ joinery }: { joinery: any }) => {
+    const getTypeIcon = (type: string) => {
+      switch (type.toLowerCase()) {
+        case "porte":
+          return <DoorClosed className="w-4 h-4 mr-1" />;
+        case "baie vitrée":
+          return <DoorOpen className="w-4 h-4 mr-1" />;
+        case "fenêtre":
+        default:
+          return <Window className="w-4 h-4 mr-1" />;
+      }
+    };
+
+    return (
+      <SwipeableCard
+        id={joinery._id}
+        imageURL={joinery.imageURL || ""}
+        onEdit={() => setEditingJoinery(joinery)}
+        onDelete={() => handleDeleteJoinery(joinery._id)}
+        showDelete={() => user?.role === "admin"}
+        maxSwipe={75}
+        style={{
+          backgroundColor: "var(--color-app-bg)",
+          cursor: "pointer",
+        }}
+        onClick={() =>
+          navigate(`/projects/${project._id}/joineries/${joinery._id}`)
+        } // 🔹 navigation au clic
+      >
+        <div className="w-full h-full p-2 flex flex-col justify-between">
+          <div>
+            <h3
+              style={{ color: "var(--color-card-text)" }}
+              className="mb-2 text-lg font-semibold"
+            >
+              {joinery.name}
+            </h3>
+            <div
+              className="flex items-center text-sm mb-2"
+              style={{ color: "var(--color-secondary)" }}
+            >
+              {getTypeIcon(joinery.type)}
+              {joinery.type}
+            </div>
+          </div>
+          <div className="flex items-center text-xs text-gray-500 mt-2">
+            <FileText className="w-4 h-4 mr-1" />
+            {joinery.sheets?.length || 0} tôles
+          </div>
         </div>
-      </div>
-    </SwipeableCard>
-  );
+      </SwipeableCard>
+    );
+  };
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-5xl sm:px-6 lg:px-8">
-      {/* Header projet */}
-      <div className="mb-8">
+      {/* Encart projet */}
+      <div className="mb-8 p-6 rounded-lg shadow-md bg-white dark:bg-gray-800">
+        {project.imageURL && (
+          <img
+            src={project.imageURL}
+            alt={project.name}
+            className="w-full h-48 object-cover rounded-md mb-4"
+          />
+        )}
         <h1
-          className="text-3xl font-bold mb-2"
+          className="text-3xl font-bold mb-4"
           style={{ color: "var(--color-page-title)" }}
         >
           {project.name}
         </h1>
-        <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
-          {project.date && (
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              {new Date(project.date).toLocaleDateString()}
-            </div>
-          )}
-          {project.location && (
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              {project.location}
-            </div>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4" /> {project.client}
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" /> {project.address}
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {new Date(project.date).toLocaleDateString()}
+          </div>
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-4 h-4" /> {project.notes}
+          </div>
+          <div className="flex items-center gap-2">
+            <Window className="w-4 h-4" /> {project.joineries?.length || 0} menuiseries
+          </div>
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" /> Créé par {project.createdBy?.name || "Inconnu"}
+          </div>
         </div>
-        {project.description && (
-          <p className="text-base" style={{ color: "var(--color-card-text)" }}>
-            {project.description}
-          </p>
-        )}
       </div>
 
       {/* Bouton ajout */}
