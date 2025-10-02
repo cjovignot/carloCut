@@ -81,7 +81,7 @@ export function ProjectDetail() {
 
   // --- JoineryCard ---
   const JoineryCard = ({ joinery }: { joinery: any }) => (
-    <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
+    <SwipeableCardProvider>
       <SwipeableCard
         id={joinery._id}
         imageURL={joinery.imageURL || ""}
@@ -91,40 +91,42 @@ export function ProjectDetail() {
         maxSwipe={75}
         style={{
           backgroundColor: "var(--color-app-bg)",
-          cursor: "pointer",
         }}
       >
-        <div className="w-full h-full p-2">
-          <h3
-            className="mb-1 text-lg font-semibold"
-            style={{ color: "var(--color-card-text)" }}
-          >
-            {joinery.name}
-          </h3>
-          <div
-            className="flex items-center gap-2 text-sm"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            <PanelsTopLeft className="w-4 h-4" />
-            {joinery.type}
+        {/* Partie cliquable pour navigation */}
+        <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
+          <div className="w-full p-2 cursor-pointer">
+            <h3
+              className="mb-1 text-lg font-semibold"
+              style={{ color: "var(--color-card-text)" }}
+            >
+              {joinery.name}
+            </h3>
+            <div
+              className="flex items-center gap-2 text-sm"
+              style={{ color: "var(--color-secondary)" }}
+            >
+              <PanelsTopLeft className="w-4 h-4" />
+              {joinery.type}
+            </div>
+            <div
+              className="flex items-center gap-2 text-xs mt-1"
+              style={{ color: "var(--color-secondary)" }}
+            >
+              <LayoutPanelTop className="w-4 h-4" />
+              {joinery.sheets?.length || 0} tôles
+            </div>
           </div>
-          <div
-            className="flex items-center gap-2 text-xs mt-1"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            <LayoutPanelTop className="w-4 h-4" />
-            {joinery.sheets?.length || 0} tôles
-          </div>
-        </div>
+        </Link>
       </SwipeableCard>
-    </Link>
+    </SwipeableCardProvider>
   );
 
   return (
     <div className="relative pb-20">
       {/* Titre projet */}
       <h1
-        className="text-3xl font-bold mb-4 px-4 py-6"
+        className="text-3xl font-bold mb-4 px-4 py-4"
         style={{ color: "var(--color-page-title)" }}
       >
         {project.name}
@@ -136,66 +138,64 @@ export function ProjectDetail() {
           <img
             src={project.imageURL}
             alt={project.name}
-            className="w-full object-cover"
+            className="w-full object-cover rounded-md"
             style={{ height: "33vh" }} // 1/3 hauteur écran
           />
         </div>
       )}
 
-      {/* Infos projet */}
-      <div className="px-4 sm:px-6 lg:px-8 mb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          {project.client && (
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-text)" }}>Client : {project.client}</span>
-            </div>
-          )}
-          {project.address && (
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-text)" }}>{project.address}</span>
-            </div>
-          )}
-          {project.date && (
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-text)" }}>{new Date(project.date).toLocaleDateString()}</span>
-            </div>
-          )}
-          {project.notes && (
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              <span style={{ color: "var(--color-card-text)" }}>{project.notes}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <PanelsTopLeft className="w-4 h-4" />
-            <span style={{ color: "var(--color-info)" }}>{project.joineries?.length || 0} menuiseries</span>
+      {/* Infos projet compacte */}
+      <div className="px-4 sm:px-6 lg:px-8 mb-10 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+        {project.client && (
+          <div className="flex items-center gap-1 col-span-1">
+            <User className="w-4 h-4" />
+            <span style={{ color: "var(--color-card-text)" }}>{project.client}</span>
           </div>
-          {project.createdBy && (
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              <span style={{ color: "var(--color-warning)" }}>Créé par : {project.createdBy?.name || "Inconnu"}</span>
-            </div>
-          )}
+        )}
+        {project.address && (
+          <div className="flex items-center gap-1 col-span-1">
+            <MapPin className="w-4 h-4" />
+            <span style={{ color: "var(--color-card-text)" }}>{project.address}</span>
+          </div>
+        )}
+        {project.date && (
+          <div className="flex items-center gap-1 col-span-1">
+            <Calendar className="w-4 h-4" />
+            <span style={{ color: "var(--color-card-text)" }}>
+              {new Date(project.date).toLocaleDateString()}
+            </span>
+          </div>
+        )}
+        {project.notes && (
+          <div className="flex items-center gap-1 col-span-2 md:col-span-1">
+            <FileText className="w-4 h-4" />
+            <span style={{ color: "var(--color-card-text)" }}>{project.notes}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-1 col-span-1">
+          <PanelsTopLeft className="w-4 h-4" />
+          <span style={{ color: "var(--color-info)" }}>{project.joineries?.length || 0} menuiseries</span>
         </div>
+        {project.createdBy && (
+          <div className="flex items-center gap-1 col-span-1">
+            <User className="w-4 h-4" />
+            <span style={{ color: "var(--color-warning)" }}>{project.createdBy?.name || "Inconnu"}</span>
+          </div>
+        )}
       </div>
 
       {/* Liste des menuiseries */}
-      <SwipeableCardProvider>
-        {project.joineries.length === 0 ? (
-          <div className="py-12 text-center text-gray-500">
-            Aucune menuiserie ajoutée
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 md:grid-cols-2 lg:grid-cols-3">
-            {project.joineries.map((joinery: any) => (
-              <JoineryCard key={joinery._id} joinery={joinery} />
-            ))}
-          </div>
-        )}
-      </SwipeableCardProvider>
+      {project.joineries.length === 0 ? (
+        <div className="py-12 text-center text-gray-500">
+          Aucune menuiserie ajoutée
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 md:grid-cols-2 lg:grid-cols-3">
+          {project.joineries.map((joinery: any) => (
+            <JoineryCard key={joinery._id} joinery={joinery} />
+          ))}
+        </div>
+      )}
 
       {/* Bouton flottant */}
       <button
