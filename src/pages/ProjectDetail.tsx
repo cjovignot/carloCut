@@ -1,277 +1,200 @@
-// src/pages/ProjectDetail.tsx
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { api } from "../services/api";
-import { Button } from "../components/UI/Button";
-import { Modal } from "../components/UI/Modal";
-import { Divider } from "../components/UI/Divider";
-import { LoadingSpinner } from "../components/UI/LoadingSpinner";
-import { JoineryForm } from "../components/Forms/JoineryForm";
-import { SwipeableCard } from "../components/UI/SwipeableCard";
-import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
-import { useAuth } from "../services/useAuth";
-import {
-  Plus,
-  Calendar,
-  MapPin,
-  User,
-  FileText,
-  LayoutPanelTop,
-  PanelsTopLeft,
-} from "lucide-react";
+// src/components/Forms/JoineryForm.tsx
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "../UI/Button";
+import { Edit, Trash2 } from "lucide-react";
 
-export function ProjectDetail() {
-  const { id } = useParams();
-  const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingJoinery, setEditingJoinery] = useState<any>(null);
-  const { user } = useAuth();
+interface JoineryFormProps {
+  initialData?: any;
+  onSubmit: (data: any) => Promise<void>;
+  onCancel: () => void;
+}
 
+const joineryTypes = [
+  { value: "fenetre", label: "Fenêtre" },
+  { value: "porte", label: "Porte" },
+  { value: "baie", label: "Baie" },
+];
+
+type FormValues = {
+  name: string;
+  type: string;
+  imageURL: FileList | null;
+};
+
+export function JoineryForm({ initialData, onSubmit, onCancel }: JoineryFormProps) {
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(initialData?.imageURL || null);
+  const [imageRemoved, setImageRemoved] = useState(false); // si l'utilisateur supprime l'image existante
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null,
+    },
+  });
+
+  // Reset form si initialData change
   useEffect(() => {
-    fetchProject();
-  }, [id]);
+    reset({
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null,
+    });
+    setPreview(initialData?.imageURL || null);
+    setImageRemoved(false);
+  }, [initialData, reset]);
 
-  const fetchProject = async () => {
+  // Watch le champ fichier pour générer la preview
+  const imageFile = watch("imageURL");
+  useEffect(() => {
+    if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
+      const file = imageFile[0];
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      setImageRemoved(false);
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      // si aucun nouveau fichier choisi
+      if (!initialData?.imageURL) setPreview(null);
+    }
+  }, [imageFile, initialData]);
+
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setImageRemoved(true);
+    reset((prev) => ({ ...prev, imageURL: null }));
+  };
+
+  const onFormSubmit = async (data: FormValues) => {
+    setLoading(true);
     try {
-      const response = await api.get(`/projects/${id}`);
-      setProject(response.data);
-    } catch (error) {
-      console.error("Failed to fetch project:", error);
+      // Par défaut, on conserve l'image existante
+      let imageURL: string | undefined = initialData?.imageURL;
+
+      // Si suppression
+      if (imageRemoved) imageURL = "";
+
+      // Si nouveau fichier
+      if (data.imageURL && data.imageURL.length > 0 && data.imageURL[0] instanceof File) {
+        const formData = new FormData();
+        formData.append("file", data.imageURL[0]);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Upload failed");
+
+        imageURL = json.url;
+      }
+
+      const payload: any = {
+        name: data.name,
+        type: data.type,
+      };
+      if (imageURL !== undefined) payload.imageURL = imageURL;
+
+      await onSubmit(payload);
+    } catch (err) {
+      console.error("JoineryForm submit error:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // --- CRUD joineries ---
-  const handleCreateJoinery = async (joineryData: any) => {
-    try {
-      await api.post(`/projects/${id}/joineries`, joineryData);
-      await fetchProject();
-      setShowCreateModal(false);
-    } catch (error) {
-      console.error("Failed to create joinery:", error);
-    }
-  };
-
-  const handleUpdateJoinery = async (joineryData: any) => {
-    try {
-      await api.put(
-        `/projects/${id}/joineries/${editingJoinery._id}`,
-        joineryData
-      );
-      await fetchProject();
-      setEditingJoinery(null);
-    } catch (error) {
-      console.error("Failed to update joinery:", error);
-    }
-  };
-
-  const handleDeleteJoinery = async (joineryId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
-      return;
-    try {
-      await api.delete(`/projects/${id}/joineries/${joineryId}`);
-      await fetchProject();
-    } catch (error) {
-      console.error("Failed to delete joinery:", error);
-    }
-  };
-
-  if (loading) return <LoadingSpinner size="lg" />;
-  if (!project) return <p>Projet introuvable</p>;
-
-  // Définition des infos projet
-  const infoFields = [
-    {
-      icon: <User className="w-4 h-4" />,
-      label: "Client",
-      value: project.client,
-      showDivider: true,
-    },
-    {
-      icon: <MapPin className="w-4 h-4" />,
-      label: "Adresse",
-      value: project.address,
-      showDivider: true,
-    },
-    {
-      icon: <Calendar className="w-4 h-4" />,
-      label: "Date",
-      value: project.date ? new Date(project.date).toLocaleDateString() : null,
-      showDivider: true,
-    },
-    {
-      icon: <FileText className="w-4 h-4" />,
-      label: "Notes",
-      value: project.notes,
-      showDivider: true,
-    },
-    {
-      icon: <PanelsTopLeft className="w-4 h-4" />,
-      label: "Menuiseries",
-      value: `${project.joineries?.length || 0} menuiserie${
-        project.joineries?.length > 1 ? "s" : ""
-      }`,
-      showDivider: true,
-    },
-    {
-      icon: <User className="w-4 h-4" />,
-      label: "Créé par",
-      value: project.createdBy?.name || "Inconnu",
-      showDivider: false,
-    },
-  ];
-
-  // --- JoineryCard ---
-  const JoineryCard = ({ joinery }: { joinery: any }) => (
-    <SwipeableCardProvider>
-      <SwipeableCard
-        id={joinery._id}
-        imageURL={joinery.imageURL || ""}
-        onEdit={() => setEditingJoinery(joinery)}
-        onDelete={() => handleDeleteJoinery(joinery._id)}
-        showDelete={() => user?.role === "admin"}
-        maxSwipe={75}
-        style={{
-          backgroundColor: "var(--color-app-bg)",
-        }}
-      >
-        {/* Partie cliquable pour navigation */}
-        <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
-          <div className="w-full p-2 cursor-pointer">
-            <h3
-              className="mb-1 text-lg font-semibold"
-              style={{ color: "var(--color-card-text)" }}
-            >
-              {joinery.name}
-            </h3>
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <PanelsTopLeft
-                className="w-4 h-4"
-                style={{ color: "var(--color-secondary)" }}
-              />
-              {joinery.type}
-            </div>
-            <div
-              className="flex items-center gap-2 mt-1 text-xs"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <LayoutPanelTop
-                className="w-4 h-4"
-                style={{ color: "var(--color-secondary)" }}
-              />
-              {joinery.sheets?.length || 0} tôles
-            </div>
-          </div>
-        </Link>
-      </SwipeableCard>
-    </SwipeableCardProvider>
-  );
-
   return (
-    <div className="relative pb-20">
-      {/* Titre projet */}
-      <h1
-        className="px-4 py-4 mb-4 text-3xl font-bold"
-        style={{ color: "var(--color-page-title)" }}
-      >
-        {project.name}
-      </h1>
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      {/* Nom */}
+      <div>
+        <label className="block text-sm font-medium">Menuiserie *</label>
+        <input
+          type="text"
+          {...register("name", { required: "Nom de menuiserie requis" })}
+          style={{
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-input-text)",
+          }}
+          className="p-1 block w-full mt-1 border-gray-300 rounded-md shadow-sm"
+          placeholder="Fenêtre SDB, Porte d'entrée..."
+        />
+        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+      </div>
 
-      {/* Image projet */}
-      {project.imageURL && (
-        <div className="w-full mb-6">
-          <img
-            src={project.imageURL}
-            alt={project.name}
-            className="object-cover w-full"
-            style={{ height: "33vh" }} // 1/3 hauteur écran
+      {/* Type */}
+      <div>
+        <label className="block text-sm font-medium">Type *</label>
+        <select
+          {...register("type", { required: "Type requis" })}
+          style={{
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-input-text)",
+          }}
+          className="block p-1 w-full mt-1 border-gray-300 rounded-md shadow-sm"
+        >
+          <option value="">Sélectionner un type</option>
+          {joineryTypes.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+        {errors.type && <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>}
+      </div>
+
+      {/* Photo */}
+      <div>
+        <label className="block mb-1 text-sm font-medium">Photo</label>
+        <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
+          {preview ? (
+            <>
+              <img src={preview} alt="Aperçu" className="object-cover w-full h-full" />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-1 right-1 p-1 rounded bg-white bg-opacity-80"
+                title="Supprimer l'image"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
+              Ajouter une photo
+            </div>
+          )}
+
+          <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
+          <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
+
+          <input
+            type="file"
+            accept="image/*"
+            {...register("imageURL")}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-        </div>
-      )}
-
-      {/* Infos projet en grid 2 colonnes */}
-      <div
-        className="px-3 py-2 pr-0 mx-4 mb-6 rounded-lg"
-        style={{ backgroundColor: "var(--color-card-bg)" }}
-      >
-        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-          {infoFields
-            .filter((field) => field.value) // n’affiche que si une valeur existe
-            .map((field, idx) => (
-              <div key={idx} className="contents">
-                <div
-                  className="flex items-center gap-2"
-                  style={{ color: "var(--color-page-title)" }}
-                >
-                  {field.icon}
-                  <span>{field.label}</span>
-                </div>
-                <div
-                  className="flex items-center justify-end pr-3"
-                  style={{ color: "var(--color-secondary)" }}
-                >
-                  {field.value}
-                </div>
-                {field.showDivider && <Divider />}
-              </div>
-            ))}
         </div>
       </div>
 
-      {/* Liste des menuiseries */}
-      {project.joineries.length === 0 ? (
-        <div className="py-12 text-center text-gray-500">
-          Aucune menuiserie ajoutée
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 md:grid-cols-2 lg:grid-cols-3">
-          {project.joineries.map((joinery: any) => (
-            <JoineryCard key={joinery._id} joinery={joinery} />
-          ))}
-        </div>
-      )}
-
-      {/* Bouton flottant */}
-      <button
-        onClick={() => setShowCreateModal(true)}
-        className="fixed p-2 text-white bg-green-600 shadow-lg rounded-xl top-4 right-4 hover:bg-green-700"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
-
-      {/* Modal création */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Ajouter une menuiserie"
-        size="lg"
-      >
-        <JoineryForm
-          onSubmit={handleCreateJoinery}
-          onCancel={() => setShowCreateModal(false)}
-        />
-      </Modal>
-
-      {/* Modal édition */}
-      <Modal
-        isOpen={!!editingJoinery}
-        onClose={() => setEditingJoinery(null)}
-        title="Modifier une menuiserie"
-        size="lg"
-      >
-        {editingJoinery && (
-          <JoineryForm
-            initialData={editingJoinery}
-            onSubmit={handleUpdateJoinery}
-            onCancel={() => setEditingJoinery(null)}
-          />
-        )}
-      </Modal>
-    </div>
+      {/* Boutons */}
+      <div className="flex justify-end pt-4 space-x-3">
+        <Button type="button" variant="secondary" onClick={onCancel}>
+          Annuler
+        </Button>
+        <Button type="submit" variant="success" loading={loading}>
+          {initialData ? "Mettre à jour" : "Créer"} la menuiserie
+        </Button>
+      </div>
+    </form>
   );
 }
