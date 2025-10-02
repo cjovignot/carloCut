@@ -102,18 +102,12 @@ export function ProjectDetail() {
             >
               {joinery.name}
             </h3>
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <PanelsTopLeft className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-sm" style={{ color: "var(--color-secondary)" }}>
+              <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
               {joinery.type}
             </div>
-            <div
-              className="flex items-center gap-2 text-xs mt-1"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <LayoutPanelTop className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-xs mt-1" style={{ color: "var(--color-secondary)" }}>
+              <LayoutPanelTop className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
               {joinery.sheets?.length || 0} tôles
             </div>
           </div>
@@ -138,47 +132,47 @@ export function ProjectDetail() {
           <img
             src={project.imageURL}
             alt={project.name}
-            className="w-full object-cover rounded-md"
+            className="w-full object-cover"
             style={{ height: "33vh" }} // 1/3 hauteur écran
           />
         </div>
       )}
 
-      {/* Infos projet compacte */}
-      <div className="px-4 sm:px-6 lg:px-8 mb-10 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+      {/* Infos projet compactes type dashboard */}
+      <div className="px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
         {project.client && (
-          <div className="flex items-center gap-1 col-span-1">
-            <User className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
             <span style={{ color: "var(--color-card-text)" }}>{project.client}</span>
           </div>
         )}
         {project.address && (
-          <div className="flex items-center gap-1 col-span-1">
-            <MapPin className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
             <span style={{ color: "var(--color-card-text)" }}>{project.address}</span>
           </div>
         )}
         {project.date && (
-          <div className="flex items-center gap-1 col-span-1">
-            <Calendar className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
             <span style={{ color: "var(--color-card-text)" }}>
               {new Date(project.date).toLocaleDateString()}
             </span>
           </div>
         )}
         {project.notes && (
-          <div className="flex items-center gap-1 col-span-2 md:col-span-1">
-            <FileText className="w-4 h-4" />
+          <div className="flex items-center gap-2 col-span-1 md:col-span-2">
+            <FileText className="w-4 h-4" style={{ color: "var(--color-card-text)" }} />
             <span style={{ color: "var(--color-card-text)" }}>{project.notes}</span>
           </div>
         )}
-        <div className="flex items-center gap-1 col-span-1">
-          <PanelsTopLeft className="w-4 h-4" />
+        <div className="flex items-center gap-2">
+          <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-info)" }} />
           <span style={{ color: "var(--color-info)" }}>{project.joineries?.length || 0} menuiseries</span>
         </div>
         {project.createdBy && (
-          <div className="flex items-center gap-1 col-span-1">
-            <User className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" style={{ color: "var(--color-warning)" }} />
             <span style={{ color: "var(--color-warning)" }}>{project.createdBy?.name || "Inconnu"}</span>
           </div>
         )}
@@ -200,7 +194,7 @@ export function ProjectDetail() {
       {/* Bouton flottant */}
       <button
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-10 right-6 p-4 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white"
+        className="fixed top-6 right-6 p-4 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white"
       >
         <Plus className="w-6 h-6" />
       </button>
