@@ -150,7 +150,6 @@ export function ProjectForm({
       </div>
 
       {/* Photo style Notion avec overlay */}
-      {/* Photo style JoineryForm */}
 <div>
   <label className="block mb-1 text-sm font-medium">Photo</label>
   <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
@@ -191,7 +190,6 @@ export function ProjectForm({
     <input
       type="file"
       accept="image/*"
-      capture="environment"
       {...register("imageURL")}
       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
     />
