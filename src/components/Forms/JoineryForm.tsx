@@ -1,5 +1,4 @@
-// src/components/forms/JoineryForm.tsx
-
+// src/components/Forms/JoineryForm.tsx
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
@@ -32,7 +31,7 @@ export function JoineryForm({
   const [preview, setPreview] = useState<string | null>(
     initialData?.imageURL || null
   );
-  const [imageRemoved, setImageRemoved] = useState(false);
+  const [imageRemoved, setImageRemoved] = useState(false); // si l'utilisateur supprime l'image existante
 
   const {
     register,
@@ -48,7 +47,7 @@ export function JoineryForm({
     },
   });
 
-  // reset si initialData change
+  // Reset form si initialData change
   useEffect(() => {
     reset({
       name: initialData?.name || "",
@@ -59,7 +58,7 @@ export function JoineryForm({
     setImageRemoved(false);
   }, [initialData, reset]);
 
-  // Watch fichier choisi
+  // Watch le champ fichier pour générer la preview
   const imageFile = watch("imageURL");
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
@@ -68,33 +67,33 @@ export function JoineryForm({
       setPreview(objectUrl);
       setImageRemoved(false);
       return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      // si aucun nouveau fichier choisi
+      if (!initialData?.imageURL) setPreview(null);
     }
-    // sinon on garde la preview existante (ne pas l’écraser inutilement)
-  }, [imageFile]);
+  }, [imageFile, initialData]);
 
-  // Suppression d’image existante
   const handleRemoveImage = () => {
     setPreview(null);
     setImageRemoved(true);
-    reset({
-      name: initialData?.name || "",
-      type: initialData?.type || "",
-      imageURL: null,
-    });
+    reset((prev) => ({ ...prev, imageURL: null }));
   };
 
   const onFormSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
-      let imageURL: string = initialData?.imageURL || "";
+      // Par défaut, on conserve l'image existante
+      let imageURL: string | undefined = initialData?.imageURL;
 
-      // si suppression → on vide
-      if (imageRemoved) {
-        imageURL = "";
-      }
+      // Si suppression
+      if (imageRemoved) imageURL = "";
 
-      // si nouveau fichier → upload
-      if (data.imageURL && data.imageURL.length > 0 && data.imageURL[0] instanceof File) {
+      // Si nouveau fichier
+      if (
+        data.imageURL &&
+        data.imageURL.length > 0 &&
+        data.imageURL[0] instanceof File
+      ) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
 
@@ -104,21 +103,17 @@ export function JoineryForm({
         });
 
         const json = await res.json();
-        if (!res.ok) {
-          console.error("Upload error response:", json);
-          throw new Error(json.error || "Upload failed");
-        }
+        if (!res.ok) throw new Error(json.error || "Upload failed");
 
         imageURL = json.url;
       }
 
-      const payload = {
+      const payload: any = {
         name: data.name,
         type: data.type,
-        imageURL,
       };
+      if (imageURL !== undefined) payload.imageURL = imageURL;
 
-      console.log("Joinery payload ->", payload);
       await onSubmit(payload);
     } catch (err) {
       console.error("JoineryForm submit error:", err);
@@ -140,7 +135,7 @@ export function JoineryForm({
             backgroundColor: "var(--color-input-bg)",
             color: "var(--color-input-text)",
           }}
-          className="p-1 block w-full mt-1 border-gray-300 rounded-md shadow-sm"
+          className="block w-full p-1 mt-1 border-gray-300 rounded-md shadow-sm"
           placeholder="Fenêtre SDB, Porte d'entrée..."
         />
         {errors.name && (
@@ -157,7 +152,7 @@ export function JoineryForm({
             backgroundColor: "var(--color-input-bg)",
             color: "var(--color-input-text)",
           }}
-          className="block p-1 w-full mt-1 border-gray-300 rounded-md shadow-sm"
+          className="block w-full p-1 mt-1 border-gray-300 rounded-md shadow-sm"
         >
           <option value="">Sélectionner un type</option>
           {joineryTypes.map((type) => (
@@ -182,11 +177,10 @@ export function JoineryForm({
                 alt="Aperçu"
                 className="object-cover w-full h-full"
               />
-              {/* bouton supprimer */}
               <button
                 type="button"
                 onClick={handleRemoveImage}
-                className="absolute top-1 right-1 p-1 rounded bg-white bg-opacity-80"
+                className="absolute p-1 bg-white rounded top-1 right-1 bg-opacity-80"
                 title="Supprimer l'image"
               >
                 <Trash2 className="w-4 h-4" />
@@ -198,11 +192,9 @@ export function JoineryForm({
             </div>
           )}
 
-          {/* Overlay */}
           <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
           <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
 
-          {/* Input fichier cliquable */}
           <input
             type="file"
             accept="image/*"
