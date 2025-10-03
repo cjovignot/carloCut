@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
-import { Edit } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 
 interface ProjectFormProps {
   initialData?: any;
