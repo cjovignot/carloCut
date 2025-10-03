@@ -1,7 +1,7 @@
 // src/components/Forms/JoineryForm.tsx
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../UI/Button";
+import { Button } from "../components/UI/Button";
 import { Edit, Trash2 } from "lucide-react";
 
 interface JoineryFormProps {
