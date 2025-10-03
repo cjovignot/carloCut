@@ -150,40 +150,53 @@ export function ProjectForm({
       </div>
 
       {/* Photo style Notion avec overlay */}
-      <div>
-        <label className="block mb-1 text-sm font-medium">Photo</label>
-        <div>
-          <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
-            {/* Aperçu ou texte */}
-            {preview ? (
-              <img
-                src={preview}
-                alt="Aperçu"
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
-                Ajouter une photo
-              </div>
-            )}
-
-            {/* Overlay au hover */}
-            <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
-
-            {/* Icône Edit au hover */}
-            <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
-
-            {/* Input fichier toujours cliquable */}
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              {...register("imageURL")}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-          </div>
-        </div>
+      {/* Photo style JoineryForm */}
+<div>
+  <label className="block mb-1 text-sm font-medium">Photo</label>
+  <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
+    {preview ? (
+      <>
+        <img
+          src={preview}
+          alt="Aperçu"
+          className="object-cover w-full h-full"
+        />
+        {/* bouton supprimer */}
+        <Button
+          size="xs"
+          type="button"
+          variant="danger"
+          onClick={() => {
+            setPreview(null);
+            // si tu veux aussi vider le champ du form
+            reset({ ...watch(), imageURL: null });
+          }}
+          className="absolute z-20 p-1 rounded top-1 right-1 bg-opacity-80"
+          title="Supprimer l'image"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </>
+    ) : (
+      <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
+        Ajouter une photo
       </div>
+    )}
+
+    {/* Overlay */}
+    <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
+    <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
+
+    {/* Input fichier cliquable */}
+    <input
+      type="file"
+      accept="image/*"
+      capture="environment"
+      {...register("imageURL")}
+      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+    />
+  </div>
+</div>
 
       {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
