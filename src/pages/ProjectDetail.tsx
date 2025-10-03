@@ -8,6 +8,7 @@ import { Divider } from "../components/UI/Divider";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
+import { joineryTypes } from "../components/Forms/JoineryForm";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
 import {
@@ -46,7 +47,7 @@ export function ProjectDetail() {
   // --- CRUD joineries ---
   const handleCreateJoinery = async (joineryData: any) => {
     try {
-      await api.post(`/projects/${id}/joineries`, joineryData);
+      await api.post(`/joineries/${id}/joineries`, joineryData);
       await fetchProject();
       setShowCreateModal(false);
     } catch (error) {
@@ -56,9 +57,8 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
-      console.log(joineryData);
       await api.put(
-        `/projects/${id}/joineries/${editingJoinery._id}`,
+        `/joineries/${id}/joineries/${editingJoinery._id}`,
         joineryData
       );
       await fetchProject();
@@ -72,17 +72,21 @@ export function ProjectDetail() {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
       return;
     try {
-      await api.delete(`/projects/${id}/joineries/${joineryId}`);
+      await api.delete(`/joineries/${id}/joineries/${joineryId}`);
       await fetchProject();
     } catch (error) {
       console.error("Failed to delete joinery:", error);
     }
   };
 
-  if (loading) return <LoadingSpinner size="lg" />;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   if (!project) return <p>Projet introuvable</p>;
 
-  // Définition des infos projet
   const infoFields = [
     {
       icon: <User className="w-4 h-4" />,
@@ -134,41 +138,38 @@ export function ProjectDetail() {
         onDelete={() => handleDeleteJoinery(joinery._id)}
         showDelete={() => user?.role === "admin"}
         maxSwipe={75}
-        style={{
-          backgroundColor: "var(--color-app-bg)",
-        }}
+        style={{ backgroundColor: "var(--color-app-bg)" }}
+        linkTo={`/projects/${project._id}/joineries/${joinery._id}`} // 🔹 un seul paramètre à passer
       >
-        {/* Partie cliquable pour navigation */}
-        <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
-          <div className="w-full p-2 cursor-pointer">
-            <h3
-              className="mb-1 text-lg font-semibold"
-              style={{ color: "var(--color-card-text)" }}
-            >
-              {joinery.name}
-            </h3>
-            <div
-              className="flex items-center gap-2 text-sm"
+        <h3
+          className="mb-1 text-lg font-semibold"
+          style={{ color: "var(--color-card-text)" }}
+        >
+          {joinery.name}
+        </h3>
+        <div className="absolute bottom-6">
+          <div
+            className="flex items-center gap-2 text-sm"
+            style={{ color: "var(--color-secondary)" }}
+          >
+            <PanelsTopLeft
+              className="w-4 h-4"
               style={{ color: "var(--color-secondary)" }}
-            >
-              <PanelsTopLeft
-                className="w-4 h-4"
-                style={{ color: "var(--color-secondary)" }}
-              />
-              {joinery.type}
-            </div>
-            <div
-              className="flex items-center gap-2 mt-1 text-xs"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <LayoutPanelTop
-                className="w-4 h-4"
-                style={{ color: "var(--color-secondary)" }}
-              />
-              {joinery.sheets?.length || 0} tôles
-            </div>
+            />
+            {joineryTypes.find((t) => t.value === joinery.type)?.label ||
+              joinery.type}
           </div>
-        </Link>
+          <div
+            className="flex items-center gap-2 mt-1 text-sm"
+            style={{ color: "var(--color-secondary)" }}
+          >
+            <LayoutPanelTop
+              className="w-4 h-4"
+              style={{ color: "var(--color-secondary)" }}
+            />
+            {joinery.sheets?.length || 0} tôles
+          </div>
+        </div>
       </SwipeableCard>
     </SwipeableCardProvider>
   );
@@ -177,7 +178,7 @@ export function ProjectDetail() {
     <div className="relative pb-20">
       {/* Titre projet */}
       <h1
-        className="px-4 py-4 mb-4 text-3xl font-bold"
+        className="px-4 py-4 pt-6 mb-4 text-3xl font-bold"
         style={{ color: "var(--color-page-title)" }}
       >
         {project.name}

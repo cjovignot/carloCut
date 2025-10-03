@@ -15,8 +15,8 @@ export function LoadingSpinner({
 
   return (
     <div
-      className="flex items-center justify-center"
-      style={{ backgroundColor: "var(--color-app-bg)" }}
+      className="flex items-center justify-center h-fit"
+      style={{ backgroundColor: "transparent" }}
     >
       <div
         className={`animate-spin rounded-full border-2 ${sizeClasses[size]} ${className}`}

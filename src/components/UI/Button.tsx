@@ -59,7 +59,7 @@ export function Button({
       disabled={disabled || loading}
       {...props}
     >
-      {loading && <LoadingSpinner size="sm" className="mr-2" />}
+      {loading && <LoadingSpinner size="sm" className="mr-2 bg-none" />}
       {children}
     </button>
   );

@@ -1,7 +1,17 @@
 // src/pages/Projects.tsx
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; // 🔹 import useNavigate
-import { Plus, Search, MapPin } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Calendar,
+  MapPin,
+  User,
+  FileText,
+  LayoutPanelTop,
+  SquarePen,
+  PanelsTopLeft,
+} from "lucide-react";
 import { api } from "../services/api";
 import { Button } from "../components/UI/Button";
 import { Modal } from "../components/UI/Modal";
@@ -86,15 +96,62 @@ export function Projects() {
   );
 
   if (loading) {
-    return <LoadingSpinner size="lg" />;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   // ---------------- ProjectCard ----------------
   const ProjectCard = ({ project }: { project: any }) => {
+    const infoFields = [
+      {
+        icon: <User className="w-4 h-4" />,
+        label: "Client",
+        value: project.client,
+      },
+      // {
+      //   icon: <MapPin className="w-4 h-4" />,
+      //   label: "Adresse",
+      //   value: project.address,
+      // },
+      // {
+      //   icon: <Calendar className="w-4 h-4" />,
+      //   label: "Date",
+      //   value: project.date
+      //     ? new Date(project.date).toLocaleDateString()
+      //     : null,
+      // },
+      {
+        icon: <PanelsTopLeft className="w-4 h-4" />,
+        label: "Menuiseries",
+        value: `${project.joineries?.length || 0} menuiserie${
+          project.joineries?.length > 1 ? "s" : ""
+        }`,
+      },
+      {
+        icon: <FileText className="w-4 h-4" />,
+        label: "Notes",
+        value: project.notes,
+      },
+      {
+        icon: (
+          <SquarePen
+            className="w-4 h-4"
+            style={{ color: "var(--color-warning)" }}
+          />
+        ),
+        label: "Créé par",
+        value: project.createdBy?.name || "Inconnu",
+      },
+    ];
+
     return (
       <SwipeableCard
         id={project._id}
         imageURL={project.imageURL}
+        linkTo={`/projects/${project._id}`} // 🔹 un seul paramètre à passer
         onEdit={() => setEditingProject(project)}
         onDelete={() => handleDeleteProject(project._id)}
         showDelete={() => user?.role === "admin"}
@@ -104,47 +161,53 @@ export function Projects() {
           cursor: "pointer",
         }} // 🔹 curseur pointer
       >
-        <div
-          className="w-full h-full p-1"
-          onClick={() => navigate(`/projects/${project._id}`)} // 🔹 navigation
-        >
-          <h3
-            style={{ color: "var(--color-card-text)" }}
-            className="mb-2 text-lg font-semibold"
-          >
-            {project.name}
-          </h3>
+        <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-2">
+          {infoFields
+            .filter((field) => field.value) // n’affiche que si une valeur existe
+            .map((field, idx) => {
+              if (field.label === "Client") {
+                // Champ client : pas d'icône, valeur en titre
+                return (
+                  <div key={idx} className="col-span-full">
+                    <h3
+                      className="mb-3 text-xl font-semibold"
+                      style={{ color: "var(--color-page-title)" }}
+                    >
+                      {field.value}
+                    </h3>
+                  </div>
+                );
+              } else if (field.label === "Créé par") {
+                // Champ client : pas d'icône, valeur en titre
+                return (
+                  <div key={idx} className="col-span-full">
+                    <h3
+                      className="my-3 text-xs italic"
+                      style={{ color: "var(--color-warning)" }}
+                    >
+                      {field.label} {field.value}
+                    </h3>
+                  </div>
+                );
+              }
 
-          <div className="flex flex-col w-full space-y-2">
-            <div
-              className="flex items-center text-sm"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              <span className="truncate">{project.client}</span>
-            </div>
-
-            <div className="text-sm">
-              <span style={{ color: "var(--color-info)" }}>
-                {project.joineries.length}{" "}
-                {project.joineries.length === 1 ? "menuiserie" : "menuiseries"}
-              </span>
-            </div>
-
-            <div
-              className="flex items-center text-sm"
-              style={{ color: "var(--color-card-text)" }}
-            >
-              <span>{new Date(project.date).toLocaleDateString()}</span>
-            </div>
-
-            <div
-              className="mt-2 text-xs"
-              style={{ color: "var(--color-warning)" }}
-            >
-              par {project.createdBy?.name}
-            </div>
-          </div>
+              return (
+                <div key={idx} className="contents">
+                  <div
+                    className="flex items-center gap-2"
+                    style={{ color: "var(--color-page-title)" }}
+                  >
+                    {field.icon}
+                  </div>
+                  <div
+                    className="flex items-center"
+                    style={{ color: "var(--color-secondary)" }}
+                  >
+                    {field.value}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </SwipeableCard>
     );

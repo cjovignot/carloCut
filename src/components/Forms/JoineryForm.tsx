@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+// src/components/forms/JoineryForm.tsx
+
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
-import { Edit } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 
 interface JoineryFormProps {
   initialData?: any;
@@ -9,11 +11,17 @@ interface JoineryFormProps {
   onCancel: () => void;
 }
 
-const joineryTypes = [
+export const joineryTypes = [
   { value: "fenetre", label: "Fenêtre" },
   { value: "porte", label: "Porte" },
   { value: "baie", label: "Baie" },
 ];
+
+type FormValues = {
+  name: string;
+  type: string;
+  imageURL: FileList | null;
+};
 
 export function JoineryForm({
   initialData,
@@ -24,42 +32,73 @@ export function JoineryForm({
   const [preview, setPreview] = useState<string | null>(
     initialData?.imageURL || null
   );
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
-
+    reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: {
       name: initialData?.name || "",
       type: initialData?.type || "",
-      imageURL: null, // ⚡ toujours null (jamais une string)
+      imageURL: null,
     },
   });
 
-  // Gestion preview image
-  const imageFile = watch("imageURL");
+  // reset si initialData change
+  useEffect(() => {
+    reset({
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null,
+    });
+    setPreview(initialData?.imageURL || null);
+    setImageRemoved(false);
+  }, [initialData, reset]);
 
+  // Watch fichier choisi
+  const imageFile = watch("imageURL");
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
       const file = imageFile[0];
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
-
+      setImageRemoved(false);
       return () => URL.revokeObjectURL(objectUrl);
-    } else if (initialData?.imageURL) {
-      setPreview(initialData.imageURL);
     }
-  }, [imageFile, initialData]);
+    // sinon on garde la preview existante (ne pas l’écraser inutilement)
+  }, [imageFile]);
 
-  const onFormSubmit = async (data: any) => {
+  // Suppression d’image existante
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setImageRemoved(true);
+    reset({
+      name: initialData?.name || "",
+      type: initialData?.type || "",
+      imageURL: null,
+    });
+  };
+
+  const onFormSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
-      let imageURL = initialData?.imageURL || ""; // ⚡ garde l’ancienne par défaut
+      let imageURL: string = initialData?.imageURL || "";
 
-      if (data.imageURL && data.imageURL[0] instanceof File) {
+      // si suppression → on vide
+      if (imageRemoved) {
+        imageURL = "";
+      }
+
+      // si nouveau fichier → upload
+      if (
+        data.imageURL &&
+        data.imageURL.length > 0 &&
+        data.imageURL[0] instanceof File
+      ) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
 
@@ -69,7 +108,10 @@ export function JoineryForm({
         });
 
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Upload failed");
+        if (!res.ok) {
+          console.error("Upload error response:", json);
+          throw new Error(json.error || "Upload failed");
+        }
 
         imageURL = json.url;
       }
@@ -80,7 +122,11 @@ export function JoineryForm({
         imageURL,
       };
 
+      console.log("Joinery payload ->", payload);
       await onSubmit(payload);
+    } catch (err) {
+      console.error("JoineryForm submit error:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -129,16 +175,29 @@ export function JoineryForm({
         )}
       </div>
 
-      {/* Photo style Notion */}
+      {/* Photo */}
       <div>
         <label className="block mb-1 text-sm font-medium">Photo</label>
         <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
           {preview ? (
-            <img
-              src={preview}
-              alt="Aperçu"
-              className="object-cover w-full h-full"
-            />
+            <>
+              <img
+                src={preview}
+                alt="Aperçu"
+                className="object-cover w-full h-full"
+              />
+              {/* bouton supprimer */}
+              <Button
+                size="xs"
+                type="button"
+                variant="danger"
+                onClick={handleRemoveImage}
+                className="absolute z-20 p-1 rounded top-1 right-1 bg-opacity-80"
+                title="Supprimer l'image"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </>
           ) : (
             <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
               Ajouter une photo
