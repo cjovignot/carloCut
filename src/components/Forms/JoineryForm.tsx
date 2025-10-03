@@ -1,8 +1,7 @@
-// src/components/Forms/JoineryForm.tsx
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/Button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit } from "lucide-react";
 
 interface JoineryFormProps {
   initialData?: any;
@@ -16,12 +15,6 @@ const joineryTypes = [
   { value: "baie", label: "Baie" },
 ];
 
-type FormValues = {
-  name: string;
-  type: string;
-  imageURL: FileList | null;
-};
-
 export function JoineryForm({
   initialData,
   onSubmit,
@@ -31,69 +24,42 @@ export function JoineryForm({
   const [preview, setPreview] = useState<string | null>(
     initialData?.imageURL || null
   );
-  const [imageRemoved, setImageRemoved] = useState(false); // si l'utilisateur supprime l'image existante
 
   const {
     register,
     handleSubmit,
     watch,
-    reset,
+
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm({
     defaultValues: {
       name: initialData?.name || "",
       type: initialData?.type || "",
-      imageURL: null,
+      imageURL: null, // ⚡ toujours null (jamais une string)
     },
   });
 
-  // Reset form si initialData change
-  useEffect(() => {
-    reset({
-      name: initialData?.name || "",
-      type: initialData?.type || "",
-      imageURL: null,
-    });
-    setPreview(initialData?.imageURL || null);
-    setImageRemoved(false);
-  }, [initialData, reset]);
-
-  // Watch le champ fichier pour générer la preview
+  // Gestion preview image
   const imageFile = watch("imageURL");
+
   useEffect(() => {
     if (imageFile && imageFile.length > 0 && imageFile[0] instanceof File) {
       const file = imageFile[0];
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
-      setImageRemoved(false);
+
       return () => URL.revokeObjectURL(objectUrl);
-    } else {
-      // si aucun nouveau fichier choisi
-      if (!initialData?.imageURL) setPreview(null);
+    } else if (initialData?.imageURL) {
+      setPreview(initialData.imageURL);
     }
   }, [imageFile, initialData]);
 
-  const handleRemoveImage = () => {
-    setPreview(null);
-    setImageRemoved(true);
-    reset((prev) => ({ ...prev, imageURL: null }));
-  };
-
-  const onFormSubmit = async (data: FormValues) => {
+  const onFormSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // Par défaut, on conserve l'image existante
-      let imageURL: string | undefined = initialData?.imageURL;
+      let imageURL = initialData?.imageURL || ""; // ⚡ garde l’ancienne par défaut
 
-      // Si suppression
-      if (imageRemoved) imageURL = "";
-
-      // Si nouveau fichier
-      if (
-        data.imageURL &&
-        data.imageURL.length > 0 &&
-        data.imageURL[0] instanceof File
-      ) {
+      if (data.imageURL && data.imageURL[0] instanceof File) {
         const formData = new FormData();
         formData.append("file", data.imageURL[0]);
 
@@ -108,16 +74,13 @@ export function JoineryForm({
         imageURL = json.url;
       }
 
-      const payload: any = {
+      const payload = {
         name: data.name,
         type: data.type,
+        imageURL,
       };
-      if (imageURL !== undefined) payload.imageURL = imageURL;
 
       await onSubmit(payload);
-    } catch (err) {
-      console.error("JoineryForm submit error:", err);
-      throw err;
     } finally {
       setLoading(false);
     }
@@ -166,35 +129,27 @@ export function JoineryForm({
         )}
       </div>
 
-      {/* Photo */}
+      {/* Photo style Notion */}
       <div>
         <label className="block mb-1 text-sm font-medium">Photo</label>
         <div className="relative w-32 h-32 overflow-hidden border border-gray-300 rounded-md cursor-pointer bg-gray-50 group">
           {preview ? (
-            <>
-              <img
-                src={preview}
-                alt="Aperçu"
-                className="object-cover w-full h-full"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute p-1 bg-white rounded top-1 right-1 bg-opacity-80"
-                title="Supprimer l'image"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
+            <img
+              src={preview}
+              alt="Aperçu"
+              className="object-cover w-full h-full"
+            />
           ) : (
             <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
               Ajouter une photo
             </div>
           )}
 
+          {/* Overlay */}
           <div className="absolute inset-0 transition-opacity bg-black opacity-0 pointer-events-none bg-opacity-40 group-hover:opacity-100"></div>
           <Edit className="absolute inset-0 w-6 h-6 m-auto text-white transition-opacity opacity-0 pointer-events-none group-hover:opacity-100" />
 
+          {/* Input fichier cliquable */}
           <input
             type="file"
             accept="image/*"

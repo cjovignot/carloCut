@@ -56,6 +56,7 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
+      console.log(joineryData);
       await api.put(
         `/projects/${id}/joineries/${editingJoinery._id}`,
         joineryData
