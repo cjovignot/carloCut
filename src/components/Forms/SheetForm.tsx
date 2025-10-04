@@ -59,7 +59,7 @@ function RALSelect({
       </button>
 
       {open && (
-        <ul className="absolute z-10 w-full mt-1 overflow-auto bg-white border rounded-md shadow-lg max-h-40">
+        <ul style={{ backgroundColor: "var(--color-input-bg)" }} className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40">
           {RAL_CLASSIC.map((c) => (
             <li
               key={c.code}
