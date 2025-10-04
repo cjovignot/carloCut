@@ -329,7 +329,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
                       Math.floor(Number(e.target.value)).toString()
                     )
                   }
-                  className="w-full p-1 mr-2 text-sm text-right border-none focus:outline-none"
+                  className="w-full p-1 mr-2 text-base text-right border-none focus:outline-none"
                   style={{
                     backgroundColor: "transparent",
                     color: "var(--color-secondary)",
