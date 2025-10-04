@@ -13,6 +13,7 @@ interface SheetFormValues {
   color: string; // code RAL
   textured: boolean;
   quantity: number;
+  imageURL?: string;
   dimensions: Record<string, number>;
 }
 
@@ -236,6 +237,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         dimensions: Object.fromEntries(
           Object.entries(formValues).map(([k, v]) => [k, Number(v) || 0])
         ),
+        imageURL: model?.src, // 🔹 on récupère l'image du modèle
       };
       await onSubmit(payload);
     } finally {

@@ -4,6 +4,7 @@ import { RAL_CLASSIC } from "../../src/constants/ral_classic_colors.js";
 
 export interface ISheet extends mongoose.Document {
   profileType: string;
+  imageURL: string;
   modelId: string;
   textured: boolean;
   color: string; // juste string ici
@@ -37,6 +38,10 @@ const sheetSchema = new mongoose.Schema<ISheet>(
       type: String,
       enum: ["appui", "tableau D", "tableau G", "linteau"],
       required: [true, "Profile type is required"],
+    },
+    imageURL: {
+      type: String,
+      required: [true, "imageURL type is required"],
     },
     modelId: {
       type: String,

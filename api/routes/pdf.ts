@@ -15,6 +15,10 @@ router.get("/:id/pdf", async (req, res) => {
       return res.status(404).json({ error: "Projet non trouvé" });
     }
 
+    // --- LOG pour debug ---
+    console.log("=== Project RAW ===");
+    console.log(project);
+
     // Créer le document PDF
     const doc = new PDFDocument({ size: "A4", margin: 40 });
 
