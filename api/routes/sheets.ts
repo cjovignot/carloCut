@@ -54,6 +54,8 @@ router.put(
         return res.status(404).json({ message: "Sheet not found" });
       }
 
+      console.log(sheet);
+
       Object.assign(sheet, req.body);
       await project.save();
 

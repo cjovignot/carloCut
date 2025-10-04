@@ -9,8 +9,7 @@ import { Divider } from "../UI/Divider";
 
 interface SheetFormValues {
   profileType: "appui" | "tableau D" | "tableau G" | "linteau";
-  model: string;
-  modelId?: string; // 🔹 ajout pour initialisation par modelId
+  modelId: string; // 🔹 ajout pour initialisation par modelId
   color: string; // code RAL
   textured: boolean;
   quantity: number;
@@ -156,8 +155,12 @@ function TypeSelect({
    Formulaire principal
 ------------------------------ */
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
-  const [selectedModel, setSelectedModel] = useState<SheetFormValues["modelId"] | "">("");
-  const [selectedType, setSelectedType] = useState<SheetFormValues["profileType"] | "">("");
+  const [selectedModel, setSelectedModel] = useState<
+    SheetFormValues["modelId"] | ""
+  >("");
+  const [selectedType, setSelectedType] = useState<
+    SheetFormValues["profileType"] | ""
+  >("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [color, setColor] = useState("");
   const [textured, setTextured] = useState(false);
@@ -188,6 +191,21 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
     }
   }, [initialData]);
 
+  useEffect(() => {
+    if (!selectedType) return;
+
+    const modelsForType = sheetModels.filter(
+      (m) => m.profileType === selectedType
+    );
+
+    if (modelsForType.length === 1) {
+      setSelectedModel(modelsForType[0].id);
+    } else if (!modelsForType.some((m) => m.id === selectedModel)) {
+      // si le modèle actuel n'existe plus pour ce type, on reset
+      setSelectedModel(null);
+    }
+  }, [selectedType]);
+
   const model = sheetModels.find((m) => m.id === selectedModel);
 
   const handleInputChange = (key: string, value: string) => {
@@ -211,7 +229,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
     try {
       const payload: SheetFormValues = {
         profileType: selectedType,
-        model: selectedModel,
+        modelId: selectedModel,
         color,
         textured,
         quantity: Number(quantity) || 1,
