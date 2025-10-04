@@ -156,7 +156,7 @@ function TypeSelect({
    Formulaire principal
 ------------------------------ */
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<SheetFormValues["modelId"] | "">("");
   const [selectedType, setSelectedType] = useState<SheetFormValues["profileType"] | "">("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [color, setColor] = useState("");
