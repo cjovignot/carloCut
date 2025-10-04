@@ -158,13 +158,7 @@ export function ProjectDetail() {
         >
           <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
             <div className="w-full p-2 cursor-pointer">
-              <ImageWithPlaceholder
-                src={optimizeCloudinary(joinery.imageURL || thumbnail, 600)}
-                alt={joinery.name}
-                className="w-full h-40 rounded-md"
-                width="600"
-                height="300"
-              />
+             
               <h3
                 className="pb-2 mt-2 mb-1 text-lg font-semibold"
                 style={{ color: "var(--color-card-text)" }}
