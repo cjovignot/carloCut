@@ -6,10 +6,9 @@ import { useAuth } from "../../services/useAuth";
 import { useSwipeableCardContext } from "./SwipeableCardContext";
 import { Link } from "react-router-dom";
 import { ImageWithPlaceholder } from "./ImageWithPlaceholder";
-import { optimizeCloudinary } from "../../utils/optimizeCloudinary"; // 🔹 adapte selon ton chemin utilitaire
 
 interface SwipeableCardProps {
-  id: string;
+  id: string; // identifiant unique
   children: ReactNode;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -39,7 +38,7 @@ export function SwipeableCard({
   const { user } = useAuth();
   const { openCardId, setOpenCardId } = useSwipeableCardContext();
 
-  // 🔹 Ferme la carte si une autre est ouverte
+  // Ferme la carte si une autre est ouverte
   useEffect(() => {
     if (openCardId !== id) {
       setTranslateX(0);
@@ -90,6 +89,23 @@ export function SwipeableCard({
     });
   }
 
+  // Bloc image (utilise toujours ImageWithPlaceholder si URL dispo)
+  const ImageBlock = (
+    <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
+      {imageURL ? (
+        <ImageWithPlaceholder
+          src={imageURL}
+          alt={imageAlt}
+          className="object-cover w-full h-full rounded-r-none"
+          width="600"
+          height="300"
+        />
+      ) : (
+        <ImageIcon className="w-12 h-12 text-gray-400" />
+      )}
+    </div>
+  );
+
   return (
     <div
       className={`relative w-full h-fit overflow-hidden rounded-lg shadow-md ${className}`}
@@ -127,33 +143,14 @@ export function SwipeableCard({
         }}
       >
         {linkTo ? (
-          <Link
-            to={linkTo}
-            className="flex w-full"
-            style={{ textDecoration: "none" }}
-          >
-            {/* Contenu texte */}
+          <Link to={linkTo} className="flex w-full" style={{ textDecoration: "none" }}>
             <div
               className="flex-[1] basis-3/5 p-4"
               style={{ backgroundColor: "var(--color-card-bg)" }}
             >
               {children}
             </div>
-
-            {/* Image avec placeholder */}
-            <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
-              {imageURL ? (
-                <ImageWithPlaceholder
-                  src={optimizeCloudinary(imageURL, 600)}
-                  alt={imageAlt}
-                  className="object-cover w-full h-40 rounded-md"
-                  width="600"
-                  height="300"
-                />
-              ) : (
-                <ImageIcon className="w-12 h-12 text-gray-400" />
-              )}
-            </div>
+            {ImageBlock}
           </Link>
         ) : (
           <>
@@ -163,19 +160,7 @@ export function SwipeableCard({
             >
               {children}
             </div>
-            <div className="flex-[1] basis-2/5 flex items-center justify-center bg-gray-100 overflow-hidden">
-              {imageURL ? (
-                <ImageWithPlaceholder
-                  src={optimizeCloudinary(imageURL, 600)}
-                  alt={imageAlt}
-                  className="object-cover w-full h-40 rounded-md"
-                  width="600"
-                  height="300"
-                />
-              ) : (
-                <ImageIcon className="w-12 h-12 text-gray-400" />
-              )}
-            </div>
+            {ImageBlock}
           </>
         )}
       </div>
