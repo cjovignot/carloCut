@@ -10,7 +10,7 @@ import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
-import { sheetTypes, sheetModels } from "../constants/sheetModels";
+import { sheetModels } from "../constants/sheetModels";
 import {
   Plus,
   Calendar,
@@ -21,6 +21,8 @@ import {
   LayoutPanelTop,
   PanelsTopLeft,
 } from "lucide-react";
+import { ImageWithPlaceholder } from "../components/UI/ImageWithPlaceholder";
+
 
 // --- Utils Cloudinary ---
 function optimizeCloudinary(url: string, width: number = 1200) {
@@ -156,14 +158,21 @@ export function ProjectDetail() {
         >
           <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
             <div className="w-full p-2 cursor-pointer">
+              <ImageWithPlaceholder
+                src={optimizeCloudinary(joinery.imageURL || thumbnail, 600)}
+                alt={joinery.name}
+                className="w-full h-40 rounded-md"
+                width="600"
+                height="300"
+              />
               <h3
-                className="pb-2 mb-1 text-lg font-semibold"
+                className="pb-2 mt-2 mb-1 text-lg font-semibold"
                 style={{ color: "var(--color-card-text)" }}
               >
                 {joinery.name}
               </h3>
               <div
-                className="flex items-center gap-2 mt-12 text-sm"
+                className="flex items-center gap-2 mt-2 text-sm"
                 style={{ color: "var(--color-secondary)" }}
               >
                 <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
@@ -198,12 +207,10 @@ export function ProjectDetail() {
       {/* Image projet */}
       {project.imageURL && (
         <div className="w-full mb-6">
-          <img
+          <ImageWithPlaceholder
             src={optimizeCloudinary(project.imageURL, 1600)}
             alt={project.name}
-            className="object-cover w-full"
             style={{ height: "33vh" }}
-            loading="lazy"
             width="1600"
             height="600"
           />
