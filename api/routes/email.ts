@@ -1,10 +1,14 @@
 import express from "express";
 import nodemailer from "nodemailer";
+import multer from "multer";
 import { authenticate, AuthRequest } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Configure email transporter
+// Multer pour recevoir le fichier PDF
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Fonction pour créer le transporteur SMTP
 const createTransport = () => {
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -17,10 +21,11 @@ const createTransport = () => {
   });
 };
 
-// Send project PDF via email
+// Envoyer PDF projet par email
 router.post(
   "/send-project/:id",
   authenticate,
+  upload.single("file"),
   async (req: AuthRequest, res) => {
     try {
       const { recipient, subject, message } = req.body;
@@ -31,75 +36,45 @@ router.post(
           .json({ message: "Recipient and subject are required" });
       }
 
-      const transporter = createTransport();
-
-      // Generate PDF URL
-      const pdfUrl = `${req.protocol}://${req.get("host")}/api/pdf/project/${
-        req.params.id
-      }`;
-
-      const mailOptions = {
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
-        to: recipient,
-        subject: subject,
-        text: message || "Please find attached the sheet metal order.",
-        html: `
-        <h2>Sheet Metal Order</h2>
-        <p>${message || "Please find attached the sheet metal order."}</p>
-        <p>You can download the PDF from: <a href="${pdfUrl}">Download Order</a></p>
-        <p>Best regards,<br>${req.user.name}</p>
-      `,
-      };
-
-      await transporter.sendMail(mailOptions);
-
-      res.json({ message: "Email sent successfully" });
-    } catch (error: any) {
-      console.error("Email error:", error);
-      res.status(500).json({ message: "Failed to send email" });
-    }
-  }
-);
-
-// Send joinery PDF via email
-router.post(
-  "/send-joinery/:projectId/:joineryId",
-  authenticate,
-  async (req: AuthRequest, res) => {
-    try {
-      const { recipient, subject, message } = req.body;
-
-      if (!recipient || !subject) {
-        return res
-          .status(400)
-          .json({ message: "Recipient and subject are required" });
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF attachment is required" });
       }
 
       const transporter = createTransport();
 
-      const pdfUrl = `${req.protocol}://${req.get("host")}/api/pdf/joinery/${
-        req.params.projectId
-      }/${req.params.joineryId}`;
-
       const mailOptions = {
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: recipient,
-        subject: subject,
+        subject,
         text: message || "Please find attached the sheet metal order.",
         html: `
-        <h2>Sheet Metal Order</h2>
-        <p>${message || "Please find attached the sheet metal order."}</p>
-        <p>You can download the PDF from: <a href="${pdfUrl}">Download Order</a></p>
-        <p>Best regards,<br>${req.user.name}</p>
-      `,
+          <h2>Emeraude Confort Bois</h2>
+          <p>${
+            message ||
+            "Vous trouverez ci-joint les différentes tôles à réaliser."
+          }</p>
+          <p>Cordialement,<br>${req.user.name}</p>
+        `,
+        attachments: [
+          {
+            filename: req.file.originalname,
+            content: req.file.buffer,
+            contentType: req.file.mimetype,
+          },
+        ],
       };
 
       await transporter.sendMail(mailOptions);
 
       res.json({ message: "Email sent successfully" });
     } catch (error: any) {
-      console.error("Email error:", error);
-      res.status(500).json({ message: "Failed to send email" });
+      console.error("Email sending failed:");
+      console.error(error); // log complet pour debugger
+      res.status(500).json({
+        message: "Failed to send email",
+        error: error.message,
+        stack: error.stack,
+      });
     }
   }
 );

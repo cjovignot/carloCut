@@ -229,7 +229,7 @@ export function JoineryDetail() {
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
         title="Envoyer par email"
-        size="md"
+        size="xl"
       >
         <EmailForm
           onSubmit={handleSendEmail}

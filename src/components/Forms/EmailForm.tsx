@@ -16,7 +16,9 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      subject: "Sheet Metal Order",
+      recipient: "jovignot.cosme@icloud.com",
+      subject: "Emeraude Confort Bois [Commande]",
+      message: "",
     },
   });
 
@@ -32,7 +34,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="space-y-4 p-4 rounded-md shadow-md"
+      className="p-4 space-y-4 rounded-md shadow-md"
       style={{ backgroundColor: "var(--color-card-bg)" }}
     >
       {/* Destinataire */}
@@ -45,7 +47,8 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
         </label>
         <input
           type="email"
-          // {...register("recipient", { ... })}
+          {...register("recipient", { required: "Le destinataire est requis" })}
+          // readOnly
           className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
             borderColor: "var(--color-neutral-dark)",
@@ -53,17 +56,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
             backgroundColor: "var(--color-app-bg)",
             outlineColor: "var(--color-primary)",
           }}
-          placeholder="supplier@example.com"
-          value="contact@carlo.fr"
         />
-        {errors.recipient && (
-          <p
-            className="mt-1 text-sm"
-            style={{ color: "var(--color-error)" }}
-          >
-            {errors.recipient.message}
-          </p>
-        )}
       </div>
 
       {/* Objet */}
@@ -86,10 +79,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
           }}
         />
         {errors.subject && (
-          <p
-            className="mt-1 text-sm"
-            style={{ color: "var(--color-error)" }}
-          >
+          <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
             {errors.subject.message}
           </p>
         )}

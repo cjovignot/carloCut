@@ -1,13 +1,17 @@
 // src/pages/ProjectDetail.tsx
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { api } from "../services/api";
 import { joineryTypes, JoineryForm } from "../components/Forms/JoineryForm";
 import { Modal } from "../components/UI/Modal";
 import { Divider } from "../components/UI/Divider";
+import { Button } from "../components/UI/Button";
+import { FloatingActionButtons } from "../components/UI/FloatingActionButtons";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
+import { EmailForm } from "../components/Forms/EmailForm";
+import { ProjectPDF } from "../components/Export/ProjectPDF";
 import { useAuth } from "../services/useAuth";
 import { sheetModels } from "../constants/sheetModels";
 import {
@@ -21,6 +25,13 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 import { ImageWithPlaceholder } from "../components/UI/ImageWithPlaceholder";
+import { Buffer } from "buffer";
+import { pdf } from "@react-pdf/renderer";
+
+// --- Buffer polyfill pour le navigateur
+if (typeof window !== "undefined") {
+  (window as any).Buffer = Buffer;
+}
 
 // --- Utils Cloudinary ---
 function optimizeCloudinary(url: string, width: number = 1200) {
@@ -34,6 +45,7 @@ export function ProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingJoinery, setEditingJoinery] = useState<any>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -64,7 +76,10 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
-      await api.put(`/joineries/${id}/joineries/${editingJoinery._id}`, joineryData);
+      await api.put(
+        `/joineries/${id}/joineries/${editingJoinery._id}`,
+        joineryData
+      );
       await fetchProject();
       setEditingJoinery(null);
     } catch (error) {
@@ -73,7 +88,8 @@ export function ProjectDetail() {
   };
 
   const handleDeleteJoinery = async (joineryId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
+      return;
     try {
       await api.delete(`/joineries/${id}/joineries/${joineryId}`);
       await fetchProject();
@@ -93,12 +109,44 @@ export function ProjectDetail() {
 
   // --- Infos projet ---
   const infoFields = [
-    { icon: <User className="w-4 h-4" />, label: "Nom du client", value: project.client, showDivider: true },
-    { icon: <MapPin className="w-4 h-4" />, label: "Adresse", value: project.address, showDivider: true },
-    { icon: <Calendar className="w-4 h-4" />, label: "Date", value: project.date ? new Date(project.date).toLocaleDateString() : null, showDivider: true },
-    { icon: <FileText className="w-4 h-4" />, label: "Notes", value: project.notes, showDivider: true },
-    { icon: <DoorClosed className="w-4 h-4" />, label: "Menuiseries", value: `${project.joineries?.length || 0} menuiserie${project.joineries?.length > 1 ? "s" : ""}`, showDivider: true },
-    { icon: <User className="w-4 h-4" />, label: "Créé par", value: project.createdBy?.name || "Inconnu", showDivider: false },
+    {
+      icon: <User className="w-4 h-4" />,
+      label: "Nom du client",
+      value: project.client,
+      showDivider: true,
+    },
+    {
+      icon: <MapPin className="w-4 h-4" />,
+      label: "Adresse",
+      value: project.address,
+      showDivider: true,
+    },
+    {
+      icon: <Calendar className="w-4 h-4" />,
+      label: "Date",
+      value: project.date ? new Date(project.date).toLocaleDateString() : null,
+      showDivider: true,
+    },
+    {
+      icon: <FileText className="w-4 h-4" />,
+      label: "Notes",
+      value: project.notes,
+      showDivider: true,
+    },
+    {
+      icon: <DoorClosed className="w-4 h-4" />,
+      label: "Menuiseries",
+      value: `${project.joineries?.length || 0} menuiserie${
+        project.joineries?.length > 1 ? "s" : ""
+      }`,
+      showDivider: true,
+    },
+    {
+      icon: <User className="w-4 h-4" />,
+      label: "Créé par",
+      value: project.createdBy?.name || "Inconnu",
+      showDivider: false,
+    },
   ];
 
   // --- Carte Joinery ---
@@ -119,16 +167,27 @@ export function ProjectDetail() {
           linkTo={`/projects/${project._id}/joineries/${joinery._id}`}
         >
           <div className="w-full p-2 cursor-pointer">
-            <h3 className="pb-2 mt-2 mb-1 text-lg font-semibold" style={{ color: "var(--color-card-text)" }}>
+            <h3
+              className="pb-2 mt-2 mb-1 text-lg font-semibold"
+              style={{ color: "var(--color-card-text)" }}
+            >
               {joinery.name}
             </h3>
-            <div className="flex items-center gap-2 mt-2 text-sm" style={{ color: "var(--color-secondary)" }}>
+            <div
+              className="flex items-center gap-2 mt-2 text-sm"
+              style={{ color: "var(--color-secondary)" }}
+            >
               <PanelsTopLeft className="w-4 h-4" />
-              {joineryTypes.find((t) => t.value === joinery.type)?.label || joinery.type}
+              {joineryTypes.find((t) => t.value === joinery.type)?.label ||
+                joinery.type}
             </div>
-            <div className="flex items-center gap-2 mt-1 text-sm" style={{ color: "var(--color-secondary)" }}>
+            <div
+              className="flex items-center gap-2 mt-1 text-sm"
+              style={{ color: "var(--color-secondary)" }}
+            >
               <LayoutPanelTop className="w-4 h-4" />
-              {joinery.sheets?.length || 0} {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
+              {joinery.sheets?.length || 0}{" "}
+              {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
             </div>
           </div>
         </SwipeableCard>
@@ -136,12 +195,59 @@ export function ProjectDetail() {
     );
   };
 
+  // --- Export PDF ---
+  const generatePdfBlob = async () => {
+    const blob = await pdf(<ProjectPDF project={project} />).toBlob();
+    return blob;
+  };
+
+  const handleExportPDF = async () => {
+    const blob = await generatePdfBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${project.name}.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSendEmail = async (data: any) => {
+    try {
+      const pdfBlob = await generatePdfBlob();
+
+      const formData = new FormData();
+      formData.append("file", pdfBlob, `${project.name}.pdf`);
+      formData.append("recipient", "jovignot.cosme@icloud.com"); // fixe ou depuis l'input
+      formData.append("subject", data.subject);
+      formData.append("message", data.message || "");
+
+      await api.post(`/email/send-project/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setShowEmailModal(false);
+      alert("Email envoyé !");
+    } catch (error: any) {
+      console.error("Failed to send email:", error);
+      alert("Erreur lors de l'envoi de l'email");
+    }
+  };
+
   return (
     <div className="relative pb-20">
       {/* Titre projet */}
-      <h1 className="px-4 py-4 mb-4 text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
+      <h1
+        className="px-4 py-4 mb-4 text-3xl font-bold"
+        style={{ color: "var(--color-page-title)" }}
+      >
         {project.name}
       </h1>
+
+      <FloatingActionButtons
+        onAddJoinery={() => setShowCreateModal(true)}
+        onExportPDF={handleExportPDF}
+        onEmail={() => setShowEmailModal(true)}
+      />
 
       {/* Image projet */}
       {project.imageURL && (
@@ -157,25 +263,39 @@ export function ProjectDetail() {
       )}
 
       {/* Infos projet */}
-      <div className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg" style={{ backgroundColor: "var(--color-card-bg)" }}>
+      <div
+        className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg"
+        style={{ backgroundColor: "var(--color-card-bg)" }}
+      >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-          {infoFields.filter(f => f.value).map((field, idx) => (
-            <div key={idx} className="contents">
-              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                {field.icon}<span>{field.label}</span>
+          {infoFields
+            .filter((f) => f.value)
+            .map((field, idx) => (
+              <div key={idx} className="contents">
+                <div
+                  className="flex items-center gap-2"
+                  style={{ color: "var(--color-page-title)" }}
+                >
+                  {field.icon}
+                  <span>{field.label}</span>
+                </div>
+                <div
+                  className="flex items-center justify-end pr-3"
+                  style={{ color: "var(--color-card-text)" }}
+                >
+                  {field.value}
+                </div>
+                {field.showDivider && <Divider />}
               </div>
-              <div className="flex items-center justify-end pr-3" style={{ color: "var(--color-card-text)" }}>
-                {field.value}
-              </div>
-              {field.showDivider && <Divider />}
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
-        <div className="py-12 text-center text-gray-500">Aucune menuiserie ajoutée</div>
+        <div className="py-12 text-center text-gray-500">
+          Aucune menuiserie ajoutée
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 md:grid-cols-2 lg:grid-cols-3">
           {project.joineries.map((joinery: any) => (
@@ -184,24 +304,46 @@ export function ProjectDetail() {
         </div>
       )}
 
-      {/* Bouton flottant */}
-      <button
-        onClick={() => setShowCreateModal(true)}
-        className="fixed p-2 text-white bg-green-600 rounded-full shadow-lg top-4 right-4 hover:bg-green-700"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
-
       {/* Modal création */}
-      <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Ajouter une menuiserie" size="lg">
-        <JoineryForm onSubmit={handleCreateJoinery} onCancel={() => setShowCreateModal(false)} />
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Ajouter une menuiserie"
+        size="lg"
+      >
+        <JoineryForm
+          onSubmit={handleCreateJoinery}
+          onCancel={() => setShowCreateModal(false)}
+        />
       </Modal>
 
       {/* Modal édition */}
-      <Modal isOpen={!!editingJoinery} onClose={() => setEditingJoinery(null)} title="Modifier une menuiserie" size="lg">
+      <Modal
+        isOpen={!!editingJoinery}
+        onClose={() => setEditingJoinery(null)}
+        title="Modifier une menuiserie"
+        size="lg"
+      >
         {editingJoinery && (
-          <JoineryForm initialData={editingJoinery} onSubmit={handleUpdateJoinery} onCancel={() => setEditingJoinery(null)} />
+          <JoineryForm
+            initialData={editingJoinery}
+            onSubmit={handleUpdateJoinery}
+            onCancel={() => setEditingJoinery(null)}
+          />
         )}
+      </Modal>
+
+      {/* Modal email avec aperçu PDF */}
+      <Modal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        title="Envoyer par email"
+        size="xl"
+      >
+        <EmailForm
+          onSubmit={handleSendEmail}
+          onCancel={() => setShowEmailModal(false)}
+        />
       </Modal>
     </div>
   );
