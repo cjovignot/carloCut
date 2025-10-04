@@ -172,7 +172,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col w-full gap-4">
       {/* Type */}
       <div>
-        <label className="block mb-1 text-sm font-medium text-gray-700">
+        <label className="block mb-1 text-sm font-medium" style={{ color: "var(--color-secondary)" }}>
           Type
         </label>
         <select
@@ -181,7 +181,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
             setSelectedType(e.target.value as SheetFormValues["profileType"]);
             setSelectedModel(null);
           }}
-          className="w-full p-2 text-sm border rounded-md"
+          className="w-full p-2 text-sm rounded-md"
         >
           <option value="">Sélectionne un type</option>
           {Object.values(sheetTypes).map((type) => (
