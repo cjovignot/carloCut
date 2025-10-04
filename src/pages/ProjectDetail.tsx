@@ -22,6 +22,12 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 
+// --- Utils Cloudinary ---
+function optimizeCloudinary(url: string, width: number = 1200) {
+  if (!url || !url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+}
+
 export function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState<any>(null);
@@ -80,7 +86,8 @@ export function ProjectDetail() {
     }
   };
 
-  if (loading) return (
+  if (loading)
+    return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
@@ -131,7 +138,6 @@ export function ProjectDetail() {
 
   // --- JoineryCard ---
   const JoineryCard = ({ joinery }: { joinery: any }) => {
-    // Récupérer la vignette correspondante
     const sheetModel = sheetModels.find((m) => m.profileType === joinery.type);
     const thumbnail = sheetModel?.src || "";
 
@@ -139,7 +145,7 @@ export function ProjectDetail() {
       <SwipeableCardProvider>
         <SwipeableCard
           id={joinery._id}
-          imageURL={joinery.imageURL || thumbnail || ""}
+          imageURL={optimizeCloudinary(joinery.imageURL || thumbnail, 600)}
           onEdit={() => setEditingJoinery(joinery)}
           onDelete={() => handleDeleteJoinery(joinery._id)}
           showDelete={() => user?.role === "admin"}
@@ -160,22 +166,15 @@ export function ProjectDetail() {
                 className="flex items-center gap-2 mt-12 text-sm"
                 style={{ color: "var(--color-secondary)" }}
               >
-                <PanelsTopLeft
-                  className="w-4 h-4"
-                  style={{ color: "var(--color-secondary)" }}
-                />
-                {joineryTypes.find((t) => t.value === joinery.type)?.label ||
-                  joinery.type}
+                <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
+                {joineryTypes.find((t) => t.value === joinery.type)?.label || joinery.type}
               </div>
 
               <div
                 className="flex items-center gap-2 mt-1 text-sm"
                 style={{ color: "var(--color-secondary)" }}
               >
-                <LayoutPanelTop
-                  className="w-4 h-4"
-                  style={{ color: "var(--color-secondary)" }}
-                />
+                <LayoutPanelTop className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
                 {joinery.sheets?.length || 0}{" "}
                 {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
               </div>
@@ -195,18 +194,23 @@ export function ProjectDetail() {
       >
         {project.name}
       </h1>
+
       {/* Image projet */}
       {project.imageURL && (
         <div className="w-full mb-6">
           <img
-            src={project.imageURL}
+            src={optimizeCloudinary(project.imageURL, 1600)}
             alt={project.name}
             className="object-cover w-full"
-            style={{ height: "33vh" }} // 1/3 hauteur écran
+            style={{ height: "33vh" }}
+            loading="lazy"
+            width="1600"
+            height="600"
           />
         </div>
       )}
-      {/* Infos projet en grid 2 colonnes */}
+
+      {/* Infos projet */}
       <div
         className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg"
         style={{ backgroundColor: "var(--color-card-bg)" }}
@@ -216,10 +220,7 @@ export function ProjectDetail() {
             .filter((field) => field.value)
             .map((field, idx) => (
               <div key={idx} className="contents">
-                <div
-                  className="flex items-center gap-2"
-                  style={{ color: "var(--color-page-title)" }}
-                >
+                <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
                   {field.icon}
                   <span>{field.label}</span>
                 </div>
@@ -234,6 +235,7 @@ export function ProjectDetail() {
             ))}
         </div>
       </div>
+
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
         <div className="py-12 text-center text-gray-500">
@@ -246,6 +248,7 @@ export function ProjectDetail() {
           ))}
         </div>
       )}
+
       {/* Bouton flottant */}
       <button
         onClick={() => setShowCreateModal(true)}
@@ -253,6 +256,7 @@ export function ProjectDetail() {
       >
         <Plus className="w-6 h-6" />
       </button>
+
       {/* Modal création */}
       <Modal
         isOpen={showCreateModal}
@@ -265,6 +269,7 @@ export function ProjectDetail() {
           onCancel={() => setShowCreateModal(false)}
         />
       </Modal>
+
       {/* Modal édition */}
       <Modal
         isOpen={!!editingJoinery}
