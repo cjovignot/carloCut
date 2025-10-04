@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { sheetModels, sheetTypes } from "../../constants/sheetModels";
-import { RAL_CLASSIC, RALColor } from "../../constants/ral_classic_colors";
+import { RAL_CLASSIC } from "../../constants/ral_classic_colors";
 import { Button } from "../UI/Button";
 import { Divider } from "../UI/Divider";
 
@@ -20,7 +20,9 @@ interface SheetFormProps {
   onCancel: () => void;
 }
 
-// Composant dropdown pour RAL
+/* ------------------------------
+   Composant dropdown pour RAL
+------------------------------ */
 function RALSelect({
   value,
   onChange,
@@ -59,7 +61,13 @@ function RALSelect({
       </button>
 
       {open && (
-        <ul style={{ backgroundColor: "var(--color-input-bg)", color: "var(--color-input-text)" }} className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40">
+        <ul
+          style={{
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-input-text)",
+          }}
+          className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40"
+        >
           {RAL_CLASSIC.map((c) => (
             <li
               key={c.code}
@@ -68,7 +76,7 @@ function RALSelect({
                 onChange(c.code);
                 setOpen(false);
               }}
-style={{ color: "var(--color-input-text)" }}
+              style={{ color: "var(--color-input-text)" }}
             >
               <span
                 className="w-4 h-4 rounded-full"
@@ -84,6 +92,66 @@ style={{ color: "var(--color-input-text)" }}
   );
 }
 
+/* ------------------------------
+   Composant dropdown pour Type
+------------------------------ */
+function TypeSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedType = Object.values(sheetTypes).find((t) => t.value === value);
+
+  return (
+    <div className="relative w-full">
+      <button
+        type="button"
+        className="flex items-center justify-between w-full p-2 rounded-md"
+        onClick={() => setOpen(!open)}
+        style={{
+          backgroundColor: "var(--color-input-bg)",
+          color: "var(--color-input-text)",
+        }}
+      >
+        <span>
+          {selectedType ? selectedType.label : "Sélectionner un type"}
+        </span>
+        <ChevronDown style={{ color: "var(--color-accent)" }} />
+      </button>
+
+      {open && (
+        <ul
+          style={{
+            backgroundColor: "var(--color-input-bg)",
+            color: "var(--color-input-text)",
+          }}
+          className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40"
+        >
+          {Object.values(sheetTypes).map((t) => (
+            <li
+              key={t.value}
+              className="p-2 cursor-pointer hover:bg-gray-100"
+              onClick={() => {
+                onChange(t.value);
+                setOpen(false);
+              }}
+              style={{ color: "var(--color-input-text)" }}
+            >
+              {t.label}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------
+   Formulaire principal
+------------------------------ */
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<
@@ -128,7 +196,6 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       return;
     }
 
-    // Vérifier la couleur RAL
     if (!RAL_CLASSIC.some((c) => c.code === color)) {
       alert("Veuillez sélectionner une couleur RAL valide.");
       return;
@@ -143,23 +210,16 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         textured,
         quantity: Number(quantity) || 1,
         dimensions: Object.fromEntries(
-          Object.entries(formValues)
-            .filter(([k]) => isNaN(Number(k))) // ⚡ on garde seulement les clés non-numériques
-            .map(([k, v]) => [k, Number(v) || 0])
+          Object.entries(formValues).map(([k, v]) => [k, Number(v) || 0])
         ),
       };
-      console.log(
-        "Payload envoyé au backend:",
-        JSON.stringify(payload, null, 2)
-      );
-
+      console.log("Payload envoyé au backend:", JSON.stringify(payload, null, 2));
       await onSubmit(payload);
     } finally {
       setLoading(false);
     }
   };
 
-  // Champs dynamiques pour dimensions
   const infoFields = model
     ? model.fields.map((fieldKey, idx) => ({
         label: fieldKey,
@@ -172,24 +232,19 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col w-full gap-4">
       {/* Type */}
       <div>
-        <label className="block mb-1 text-sm font-medium" style={{ color: "var(--color-secondary)" }}>
+        <label
+          className="block mb-1 text-sm font-medium"
+          style={{ color: "var(--color-secondary)" }}
+        >
           Type
         </label>
-        <select
+        <TypeSelect
           value={selectedType}
-          onChange={(e) => {
-            setSelectedType(e.target.value as SheetFormValues["profileType"]);
+          onChange={(val) => {
+            setSelectedType(val as SheetFormValues["profileType"]);
             setSelectedModel(null);
           }}
-          className="w-full p-2 text-sm rounded-md"
-        >
-          <option value="">Sélectionne un type</option>
-          {Object.values(sheetTypes).map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       {/* Modèles */}
@@ -233,7 +288,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
         </div>
       </div>
 
-      {/* Longueur & Quantité */}
+      {/* Quantité */}
       <div className="flex gap-4">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium">Quantité</label>
@@ -277,7 +332,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
                   className="w-full p-1 mr-2 text-sm text-right border-none focus:outline-none"
                   style={{
                     backgroundColor: "transparent",
-                    color: "var(--color-input-text)",
+                    color: "var(--color-secondary)",
                   }}
                 />
                 mm
