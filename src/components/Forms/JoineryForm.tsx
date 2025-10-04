@@ -122,7 +122,6 @@ export function JoineryForm({
         imageURL,
       };
 
-      console.log("Joinery payload ->", payload);
       await onSubmit(payload);
     } catch (err) {
       console.error("JoineryForm submit error:", err);

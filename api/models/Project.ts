@@ -4,18 +4,10 @@ import { RAL_CLASSIC } from "../../src/constants/ral_classic_colors.js";
 
 export interface ISheet extends mongoose.Document {
   profileType: string;
-  widthAppui: number;
   textured: boolean;
-  dimensions: number[];
   color: string; // juste string ici
-  length: number;
   quantity: number;
-  segments: {
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-  }[];
+  dimensions: Record<string, number>; // champs dynamiques du formulaire
 }
 
 export interface IJoinery extends mongoose.Document {
@@ -25,7 +17,7 @@ export interface IJoinery extends mongoose.Document {
   sheets: Types.DocumentArray<ISheet>;
 }
 
-export interface IProject extends Document {
+export interface IProject extends mongoose.Document {
   name: string;
   client: string;
   address: string;
@@ -38,54 +30,38 @@ export interface IProject extends Document {
   updatedAt: Date;
 }
 
-const sheetSchema = new mongoose.Schema<ISheet>({
-  profileType: {
-    type: String,
-    required: [true, "Profile type is required"],
-    enum: ["tableau G", "tableau D", "linteau", "appui"],
-  },
-  textured: {
-    type: Boolean,
-    required: [true, "Profile type is required"],
-  },
-  widthAppui: {
-    type: Number,
-    required: false,
-  },
-  dimensions: [
-    {
+const sheetSchema = new mongoose.Schema<ISheet>(
+  {
+    profileType: {
+      type: String,
+      enum: ["appui", "tableau D", "tableau G", "linteau"],
+      required: [true, "Profile type is required"],
+    },
+    textured: {
+      type: Boolean,
+      required: [true, "Textured flag is required"],
+      default: false,
+    },
+    color: {
+      type: String,
+      required: [true, "Color is required"],
+      trim: true,
+      enum: RAL_CLASSIC.map((c) => c.code),
+    },
+    quantity: {
       type: Number,
+      required: [true, "Quantity is required"],
+      min: [1, "Quantity must be positive"],
+      default: 1,
+    },
+    dimensions: {
+      type: Object,
       required: true,
-      min: [1, "Dimension must be positive"],
+      default: {},
     },
-  ],
-  color: {
-    type: String,
-    required: [true, "Color is required"],
-    trim: true,
-    enum: RAL_CLASSIC.map((c) => c.code),
   },
-  length: {
-    type: Number,
-    required: [true, "Length is required"],
-    min: [1, "Length must be positive"],
-  },
-  quantity: {
-    type: Number,
-    required: [true, "Quantity is required"],
-    min: [1, "Quantity must be positive"],
-    default: 1,
-  },
-  segments: [
-    {
-      x1: { type: Number, required: true },
-      y1: { type: Number, required: true },
-      x2: { type: Number, required: true },
-      y2: { type: Number, required: true },
-    },
-  ],
-});
-// test
+  { timestamps: true }
+);
 
 const joinerySchema = new mongoose.Schema<IJoinery>({
   name: {
@@ -154,7 +130,7 @@ const projectSchema = new mongoose.Schema<IProject>(
   }
 );
 
-// Create indexes for better performance
+// Indexes pour optimiser les recherches
 projectSchema.index({ name: 1, client: 1 });
 projectSchema.index({ createdAt: -1 });
 

@@ -1,356 +1,298 @@
-import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { sheetModels, sheetTypes } from "../../constants/sheetModels";
+import { RAL_CLASSIC, RALColor } from "../../constants/ral_classic_colors";
 import { Button } from "../UI/Button";
-import { Plus, X } from "lucide-react";
-import LineDrawer, { Segment } from "../Profiles/LineDrawer";
-import { Listbox } from "@headlessui/react";
+import { Divider } from "../UI/Divider";
 
-import { RAL_CLASSIC } from "../../constants/ral_classic_colors";
-import { RAL_DESIGN } from "../../constants/ral_design_colors";
+interface SheetFormValues {
+  profileType: "appui" | "tableau D" | "tableau G" | "linteau";
+  model: string;
+  color: string; // code RAL
+  textured: boolean;
+  quantity: number;
+  dimensions: Record<string, number>;
+}
 
 interface SheetFormProps {
-  initialData?: any;
-  onSubmit: (data: any) => Promise<void>;
+  initialData?: SheetFormValues;
+  onSubmit: (data: SheetFormValues) => Promise<void>;
   onCancel: () => void;
 }
 
-const profileTypes = ["tableau G", "tableau D", "linteau", "appui"];
+// Composant dropdown pour RAL
+function RALSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedColor = RAL_CLASSIC.find((c) => c.code === value);
+
+  return (
+    <div className="relative w-full">
+      <button
+        type="button"
+        className="flex items-center justify-between w-full p-2 border rounded-md"
+        onClick={() => setOpen(!open)}
+        style={{
+          backgroundColor: "var(--color-input-bg)",
+          color: "var(--color-input-text)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          {selectedColor && (
+            <span
+              className="w-4 h-4 border rounded-full"
+              style={{ backgroundColor: selectedColor.hex }}
+            />
+          )}
+          <span>
+            {selectedColor
+              ? `${selectedColor.code} - ${selectedColor.name}`
+              : "Sélectionner une couleur"}
+          </span>
+        </div>
+        <ChevronDown style={{ color: "var(--color-accent)" }} />
+      </button>
+
+      {open && (
+        <ul className="absolute z-10 w-full mt-1 overflow-auto bg-white border rounded-md shadow-lg max-h-40">
+          {RAL_CLASSIC.map((c) => (
+            <li
+              key={c.code}
+              className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+              onClick={() => {
+                onChange(c.code);
+                setOpen(false);
+              }}
+            >
+              <span
+                className="w-4 h-4 border rounded-full"
+                style={{ backgroundColor: c.hex }}
+              />
+              <span>{c.code}</span>
+              <span className="text-gray-500">- {c.name}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<
+    SheetFormValues["profileType"] | ""
+  >("");
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [color, setColor] = useState("");
+  const [textured, setTextured] = useState(false);
+  const [quantity, setQuantity] = useState("1");
   const [loading, setLoading] = useState(false);
-  const [segments, setSegments] = useState<Segment[]>(
-    initialData?.segments || []
-  );
-  const [ralType, setRalType] = useState<"classic" | "design">("classic");
 
-  const colors = ralType === "classic" ? RAL_CLASSIC : RAL_DESIGN;
+  // Préremplissage en édition
+  useEffect(() => {
+    if (initialData) {
+      setSelectedType(initialData.profileType);
+      setSelectedModel(initialData.model);
+      setColor(initialData.color || "");
+      setTextured(initialData.textured || false);
+      setQuantity(initialData.quantity?.toString() || "1");
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm({
-    defaultValues: initialData
-      ? {
-          profileType: initialData.profileType,
-          widthAppui: initialData.widthAppui,
-          textured: initialData.textured,
-          color: initialData.color,
-          length: initialData.length,
-          quantity: initialData.quantity,
-          dimensions: initialData.dimensions.map((d: number) => ({ value: d })),
+      if (initialData.dimensions) {
+        const dims: Record<string, string> = {};
+        for (const key in initialData.dimensions) {
+          dims[key] = initialData.dimensions[key]?.toString() || "";
         }
-      : {
-          profileType: "tableau G",
-          widthAppui: 0,
-          textured: false,
-          color: "",
-          length: 0,
-          quantity: 1,
-          dimensions: [{ value: 0 }],
-        },
-  });
+        setFormValues(dims);
+      }
+    }
+  }, [initialData]);
 
-  const { fields, remove } = useFieldArray({
-    control,
-    name: "dimensions",
-  });
+  const model = sheetModels.find((m) => m.id === selectedModel);
 
-  const selectedProfileType = watch("profileType");
+  const handleInputChange = (key: string, value: string) => {
+    setFormValues((prev) => ({ ...prev, [key]: value }));
+  };
 
-  const onFormSubmit = async (data: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedType || !selectedModel) {
+      alert("Veuillez sélectionner un type et un modèle.");
+      return;
+    }
+
+    // Vérifier la couleur RAL
+    if (!RAL_CLASSIC.some((c) => c.code === color)) {
+      alert("Veuillez sélectionner une couleur RAL valide.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const dimensions = data.dimensions
-        .map((d: any) => Number(d.value))
-        .filter((d) => d > 0);
-
-      const payload = {
-        ...data,
-        segments,
-        dimensions,
-        textured: !!data.textured,
+      const payload: SheetFormValues = {
+        profileType: selectedType,
+        model: selectedModel,
+        color,
+        textured,
+        quantity: Number(quantity) || 1,
+        dimensions: Object.fromEntries(
+          Object.entries(formValues)
+            .filter(([k]) => isNaN(Number(k))) // ⚡ on garde seulement les clés non-numériques
+            .map(([k, v]) => [k, Number(v) || 0])
+        ),
       };
+      console.log(
+        "Payload envoyé au backend:",
+        JSON.stringify(payload, null, 2)
+      );
+
       await onSubmit(payload);
     } finally {
       setLoading(false);
     }
   };
 
+  // Champs dynamiques pour dimensions
+  const infoFields = model
+    ? model.fields.map((fieldKey, idx) => ({
+        label: fieldKey,
+        value: formValues[fieldKey] || "",
+        showDivider: idx !== model.fields.length - 1,
+      }))
+    : [];
+
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
-      {/* Profile Type */}
+    <form onSubmit={handleSubmit} className="flex flex-col w-full gap-4">
+      {/* Type */}
       <div>
-        <label
-          className="block mb-2 text-sm font-medium"
-          style={{ color: "var(--color-neutral-mode)" }}
-        >
-          Élément *
+        <label className="block mb-1 text-sm font-medium text-gray-700">
+          Type
         </label>
         <select
-          {...register("profileType", {
-            required: "Le type de profil est obligatoire",
-          })}
-          style={{ backgroundColor: "var(--color-input-bg)" }}
-          className="block p-1 w-full mt-1 border border-[color:var(--border)] rounded-md shadow-sm"
+          value={selectedType}
+          onChange={(e) => {
+            setSelectedType(e.target.value as SheetFormValues["profileType"]);
+            setSelectedModel(null);
+          }}
+          className="w-full p-2 text-sm border rounded-md"
         >
-          <option value="" disabled>
-            Sélection de l'élément...
-          </option>
-          {profileTypes.map((profile) => (
-            <option key={profile} value={profile}>
-              {profile}
+          <option value="">Sélectionne un type</option>
+          {Object.values(sheetTypes).map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
             </option>
           ))}
         </select>
-        {errors.profileType && (
-          <p className="mt-1 text-sm text-[color:var(--error)]">
-            {errors.profileType.message}
-          </p>
-        )}
       </div>
 
-      {/* Color */}
-      <div>
-        {/* RAL Type Buttons */}
-        <div className="flex items-center justify-between w-full my-2 mt-8">
-          <label
-            className="block mb-2 text-sm font-medium"
-            style={{ color: "var(--color-neutral-mode)" }}
-          >
-            RAL *
-          </label>
-          <div
-            style={{
-              backgroundColor: "var(--color-input-bg)",
-              border: "1.5px var(--color-input-bg) solid",
-            }}
-            className="rounded-md"
-          >
-            <Button
-              type="button"
-              size="sm"
-              className="rounded-r-none rounded-l-md"
-              variant={ralType === "classic" ? "toggle" : "secondary"}
-              onClick={() => setRalType("classic")}
-            >
-              Classic
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              className="rounded-l-none rounded-r-md"
-              variant={ralType === "design" ? "toggle" : "secondary"}
-              onClick={() => setRalType("design")}
-            >
-              Design
-            </Button>
-          </div>
-        </div>
-
-        {/* Listbox RAL */}
-        <Listbox
-          value={watch("color")}
-          onChange={(val) => setValue("color", val)}
-        >
-          {() => {
-            const selectedColor = colors.find((c) => c.code === watch("color"));
-            return (
-              <>
-                <Listbox.Button
-                  style={{
-                    backgroundColor: "var(--color-input-bg)",
-                    color: "var(--color-input-text",
-                  }}
-                  className="flex items-center w-full gap-2 p-1 text-left border rounded-md border-[color:var(--border)]"
-                >
-                  {selectedColor && (
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: selectedColor.hex }}
-                    />
-                  )}
-                  {selectedColor
-                    ? `${selectedColor.code} - ${selectedColor.name}`
-                    : "Sélectionner un RAL"}
-                </Listbox.Button>
-                <Listbox.Options
-                  style={{
-                    backgroundColor: "var(--color-input-bg)",
-                    color: "var(--color-input-text)",
-                  }}
-                  className="z-10 mt-1 overflow-auto border rounded-md max-h-60 border-[color:var(--border)]"
-                >
-                  {colors.map((color) => (
-                    <Listbox.Option
-                      key={color.code}
-                      value={color.code}
-                      className={({ active }) =>
-                        `flex items-center gap-2 p-2 cursor-pointer ${
-                          active ? "bg-[color:var(--primary)]/10" : ""
-                        }`
-                      }
-                    >
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: color.hex }}
-                      />
-                      <span>
-                        {color.code} - {color.name}
-                      </span>
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </>
-            );
-          }}
-        </Listbox>
-      </div>
-
-      {/* Length & Quantity */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label
-            className="block mb-2 text-sm font-medium"
-            style={{ color: "var(--color-neutral-mode)" }}
-          >
-            {selectedProfileType?.toLowerCase().includes("tableau")
-              ? "Hauteur (mm)"
-              : "Longueur (mm)"}{" "}
-            *
-          </label>
-          <input
-            type="number"
-            style={{
-              backgroundColor: "var(--color-input-bg)",
-              color: "var(--color-input-text",
-            }}
-            {...register("length", { required: true, min: 1 })}
-            className="block p-1 w-full border rounded-md border-[color:var(--border)]"
-          />
-        </div>
-        <div className="mb-2">
-          <label
-            className="block mb-2 text-sm font-medium"
-            style={{ color: "var(--color-neutral-mode)" }}
-          >
-            QTE *
-          </label>
-          <input
-            type="number"
-            {...register("quantity", { required: true, min: 1 })}
-            className="block p-1 w-full border rounded-md border-[color:var(--border)]"
-            style={{
-              backgroundColor: "var(--color-input-bg)",
-              color: "var(--color-input-text)",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Profondeur Appui */}
-      {selectedProfileType === "appui" && (
-        <div>
-          <label
-            className="block text-sm font-medium"
-            style={{ color: "var(--color-neutral-mode)" }}
-          >
-            Côte menuiserie ➡️ arase mur *
-          </label>
-          <input
-            type="number"
-            style={{
-              backgroundColor: "var(--color-input-bg)",
-              color: "var(--color-input-text)",
-            }}
-            {...register("widthAppui", { required: true, min: 1 })}
-            className="flex-1 p-1 mt-2 border rounded-md border-[color:var(--border)]"
-          />
-          {errors.widthAppui && (
-            <p className="mt-1 text-sm" style={{ color: "var(--color-error)" }}>
-              Saisir une côte valide
-            </p>
-          )}
+      {/* Modèles */}
+      {selectedType && (
+        <div className="flex w-full gap-2 pb-2 overflow-x-auto">
+          {sheetModels
+            .filter((m) => m.profileType === selectedType)
+            .map((m) => (
+              <div
+                key={m.id}
+                className={`flex-shrink-0 w-[90%] sm:w-80 border rounded-md p-2 cursor-pointer transition ${
+                  selectedModel === m.id ? "border-blue-500" : "border-gray-300"
+                }`}
+                onClick={() => setSelectedModel(m.id)}
+              >
+                <img
+                  src={m.src}
+                  alt={m.name}
+                  className="object-contain w-full h-auto mx-auto"
+                />
+                <p className="mt-1 text-xs text-center">{m.name}</p>
+              </div>
+            ))}
         </div>
       )}
 
-      {/* LineDrawer */}
-      <LineDrawer
-        segments={segments}
-        onSegmentsChange={(segs) => {
-          setSegments(segs);
-          setValue(
-            "dimensions",
-            segs.map((s) => ({
-              value: Math.round(Math.hypot(s.x2 - s.x1, s.y2 - s.y1)),
-            }))
-          );
-        }}
-      />
-
-      {/* Dimensions */}
-      <div className="">
-        <label
-          className="block mb-2 text-sm font-medium"
-          style={{ color: "var(--color-neutral-mode)" }}
-        >
-          Côtes (mm) *
-        </label>
-        <div className="space-y-2">
-          {fields.map((field, i) => (
-            <div key={field.id} className="grid items-center grid-cols-7 gap-0">
-              <b
-                className="col-span-0"
-                style={{
-                  color: "var(--color-neutral-mode)",
-                }}
-              >
-                {i + 1} :
-              </b>
-              <input
-                type="number"
-                {...register(`dimensions.${i}.value`, {
-                  required: true,
-                  min: 1,
-                })}
-                style={{
-                  backgroundColor: "var(--color-input-bg)",
-                  color: "var(--color-input-text)",
-                }}
-                className="-ml-4 p-1 col-span-4 border rounded-md text-end border-[color:var(--border)]"
-              />
-              <p
-                className="ml-2 col-span-0"
-                style={{ color: "var(--color-neutral-mode)" }}
-              >
-                mm
-              </p>
-              {fields.length > 1 && (
-                <div
-                  className="flex items-center justify-center w-3/4 h-full col-span-1 ml-1 rounded-lg"
-                  style={{
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-neutral-mode)",
-                    opacity: 0.95,
-                  }}
-                >
-                  <X onClick={() => remove(i)} className="p-0.5" />
-                </div>
-              )}
-            </div>
-          ))}
+      {/* Couleur & Texturé */}
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block mb-1 text-sm font-medium">RAL</label>
+          <RALSelect value={color} onChange={setColor} />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={textured}
+            onChange={(e) => setTextured(e.target.checked)}
+            className="w-4 h-4 rounded-md"
+          />
+          <label>Texturé</label>
         </div>
       </div>
 
+      {/* Longueur & Quantité */}
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block mb-1 text-sm font-medium">Quantité</label>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            className="w-full p-1 rounded-md"
+            style={{
+              backgroundColor: "var(--color-input-bg)",
+              color: "var(--color-input-text)",
+            }}
+            min={1}
+          />
+        </div>
+      </div>
+
+      {/* Dimensions dynamiques */}
+      {infoFields.length > 0 && (
+        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+          {infoFields.map((field, idx) => (
+            <div key={idx} className="contents">
+              <div
+                className="flex items-center gap-2"
+                style={{ color: "var(--color-page-title)" }}
+              >
+                <span>{field.label}</span>
+              </div>
+              <div className="flex items-center justify-end pr-2">
+                <input
+                  type="number"
+                  step="1"
+                  value={field.value}
+                  placeholder="Valeur en mm"
+                  onChange={(e) =>
+                    handleInputChange(
+                      field.label,
+                      Math.floor(Number(e.target.value)).toString()
+                    )
+                  }
+                  className="w-full p-1 mr-2 text-sm text-right border-none focus:outline-none"
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "var(--color-input-text)",
+                  }}
+                />
+                mm
+              </div>
+              {field.showDivider && <Divider />}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Actions */}
-      <div className="space-x-2 space-y-6 text-end">
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <div className="flex justify-end gap-2 mt-4">
+        <Button type="button" variant="secondary" onClick={onCancel}>
           Annuler
         </Button>
-        <Button type="submit" loading={loading} variant="success">
+        <Button type="submit" variant="success" loading={loading}>
           {initialData ? "Mettre à jour" : "Créer"} la tôle
         </Button>
       </div>

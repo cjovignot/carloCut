@@ -55,14 +55,14 @@ export function Modal({
         <div
           className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizeClasses[size]}`}
           style={{
-            backgroundColor: "var(--color-secondary)",
-            color: "var(--color-input-text)",
+            backgroundColor: "var(--color-accent)",
+            color: "var(--color-secondary)",
           }}
         >
           <div className="flex items-center justify-between mb-4">
             <h3
               className="text-lg font-medium"
-              style={{ color: "var(--color-neutral-mode)" }}
+              style={{ color: "var(--color-secondary)" }}
             >
               {title}
             </h3>

@@ -2,20 +2,21 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../services/api";
-import { Button } from "../components/UI/Button";
+import { joineryTypes } from "../components/Forms/JoineryForm";
 import { Modal } from "../components/UI/Modal";
 import { Divider } from "../components/UI/Divider";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
-import { joineryTypes } from "../components/Forms/JoineryForm";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
+import { sheetTypes, sheetModels } from "../constants/sheetModels";
 import {
   Plus,
   Calendar,
   MapPin,
   User,
+  DoorClosed,
   FileText,
   LayoutPanelTop,
   PanelsTopLeft,
@@ -47,7 +48,7 @@ export function ProjectDetail() {
   // --- CRUD joineries ---
   const handleCreateJoinery = async (joineryData: any) => {
     try {
-      await api.post(`/joineries/${id}/joineries`, joineryData);
+      await api.post(`/projects/${id}/joineries`, joineryData);
       await fetchProject();
       setShowCreateModal(false);
     } catch (error) {
@@ -79,18 +80,14 @@ export function ProjectDetail() {
     }
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+  if (loading) return <LoadingSpinner size="lg" />;
   if (!project) return <p>Projet introuvable</p>;
 
+  // Définition des infos projet
   const infoFields = [
     {
       icon: <User className="w-4 h-4" />,
-      label: "Client",
+      label: "Nom du client",
       value: project.client,
       showDivider: true,
     },
@@ -113,7 +110,7 @@ export function ProjectDetail() {
       showDivider: true,
     },
     {
-      icon: <PanelsTopLeft className="w-4 h-4" />,
+      icon: <DoorClosed className="w-4 h-4" />,
       label: "Menuiseries",
       value: `${project.joineries?.length || 0} menuiserie${
         project.joineries?.length > 1 ? "s" : ""
@@ -129,61 +126,71 @@ export function ProjectDetail() {
   ];
 
   // --- JoineryCard ---
-  const JoineryCard = ({ joinery }: { joinery: any }) => (
-    <SwipeableCardProvider>
-      <SwipeableCard
-        id={joinery._id}
-        imageURL={joinery.imageURL || ""}
-        onEdit={() => setEditingJoinery(joinery)}
-        onDelete={() => handleDeleteJoinery(joinery._id)}
-        showDelete={() => user?.role === "admin"}
-        maxSwipe={75}
-        style={{ backgroundColor: "var(--color-app-bg)" }}
-        linkTo={`/projects/${project._id}/joineries/${joinery._id}`} // 🔹 un seul paramètre à passer
-      >
-        <h3
-          className="mb-1 text-lg font-semibold"
-          style={{ color: "var(--color-card-text)" }}
+  const JoineryCard = ({ joinery }: { joinery: any }) => {
+    // Récupérer la vignette correspondante
+    const sheetModel = sheetModels.find((m) => m.profileType === joinery.type);
+    const thumbnail = sheetModel?.src || "";
+
+    return (
+      <SwipeableCardProvider>
+        <SwipeableCard
+          id={joinery._id}
+          imageURL={joinery.imageURL || thumbnail || ""}
+          onEdit={() => setEditingJoinery(joinery)}
+          onDelete={() => handleDeleteJoinery(joinery._id)}
+          showDelete={() => user?.role === "admin"}
+          maxSwipe={75}
+          style={{
+            backgroundColor: "var(--color-app-bg)",
+          }}
         >
-          {joinery.name}
-        </h3>
-        <div className="absolute bottom-6">
-          <div
-            className="flex items-center gap-2 text-sm"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            <PanelsTopLeft
-              className="w-4 h-4"
-              style={{ color: "var(--color-secondary)" }}
-            />
-            {joineryTypes.find((t) => t.value === joinery.type)?.label ||
-              joinery.type}
-          </div>
-          <div
-            className="flex items-center gap-2 mt-1 text-sm"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            <LayoutPanelTop
-              className="w-4 h-4"
-              style={{ color: "var(--color-secondary)" }}
-            />
-            {joinery.sheets?.length || 0} tôles
-          </div>
-        </div>
-      </SwipeableCard>
-    </SwipeableCardProvider>
-  );
+          <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
+            <div className="w-full p-2 cursor-pointer">
+              <h3
+                className="pb-2 mb-1 text-lg font-semibold"
+                style={{ color: "var(--color-card-text)" }}
+              >
+                {joinery.name}
+              </h3>
+              <div
+                className="flex items-center gap-2 mt-12 text-sm"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                <PanelsTopLeft
+                  className="w-4 h-4"
+                  style={{ color: "var(--color-secondary)" }}
+                />
+                {joineryTypes.find((t) => t.value === joinery.type)?.label ||
+                  joinery.type}
+              </div>
+
+              <div
+                className="flex items-center gap-2 mt-1 text-sm"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                <LayoutPanelTop
+                  className="w-4 h-4"
+                  style={{ color: "var(--color-secondary)" }}
+                />
+                {joinery.sheets?.length || 0}{" "}
+                {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
+              </div>
+            </div>
+          </Link>
+        </SwipeableCard>
+      </SwipeableCardProvider>
+    );
+  };
 
   return (
     <div className="relative pb-20">
       {/* Titre projet */}
       <h1
-        className="px-4 py-4 pt-6 mb-4 text-3xl font-bold"
+        className="px-4 py-4 mb-4 text-3xl font-bold"
         style={{ color: "var(--color-page-title)" }}
       >
         {project.name}
       </h1>
-
       {/* Image projet */}
       {project.imageURL && (
         <div className="w-full mb-6">
@@ -195,15 +202,14 @@ export function ProjectDetail() {
           />
         </div>
       )}
-
       {/* Infos projet en grid 2 colonnes */}
       <div
-        className="px-3 py-2 pr-0 mx-4 mb-6 rounded-lg"
-        style={{ backgroundColor: "var(--color-card-bg)" }}
+        className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg"
+        style={{ backgroundColor: "var(--color-primary)" }}
       >
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
           {infoFields
-            .filter((field) => field.value) // n’affiche que si une valeur existe
+            .filter((field) => field.value)
             .map((field, idx) => (
               <div key={idx} className="contents">
                 <div
@@ -224,7 +230,6 @@ export function ProjectDetail() {
             ))}
         </div>
       </div>
-
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
         <div className="py-12 text-center text-gray-500">
@@ -237,15 +242,13 @@ export function ProjectDetail() {
           ))}
         </div>
       )}
-
       {/* Bouton flottant */}
       <button
         onClick={() => setShowCreateModal(true)}
-        className="fixed p-2 text-white bg-green-600 shadow-lg rounded-xl top-4 right-4 hover:bg-green-700"
+        className="fixed p-2 text-white bg-green-600 rounded-full shadow-lg top-4 right-4 hover:bg-green-700"
       >
         <Plus className="w-6 h-6" />
       </button>
-
       {/* Modal création */}
       <Modal
         isOpen={showCreateModal}
@@ -258,7 +261,6 @@ export function ProjectDetail() {
           onCancel={() => setShowCreateModal(false)}
         />
       </Modal>
-
       {/* Modal édition */}
       <Modal
         isOpen={!!editingJoinery}

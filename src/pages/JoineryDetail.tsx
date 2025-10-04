@@ -8,8 +8,9 @@ import { Modal } from "../components/UI/Modal";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { SheetForm } from "../components/Forms/SheetForm";
 import { EmailForm } from "../components/Forms/EmailForm";
-import { SheetVisualization } from "../components/Sheets/SheetVisualization";
 import { SheetCard } from "../components/UI/SheetCard";
+import { RAL_CLASSIC } from "../constants/ral_classic_colors";
+import { sheetModels } from "../constants/sheetModels";
 
 export function JoineryDetail() {
   const { projectId, joineryId } = useParams<{
@@ -83,10 +84,7 @@ export function JoineryDetail() {
 
   if (!project || !joinery)
     return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        // style={{ backgroundColor: "var(--color-app-bg)", color: "var(--color-text-primary)" }}
-      >
+      <div className="flex items-center justify-center min-h-screen">
         Aucune menuiserie trouvée
       </div>
     );
@@ -121,66 +119,83 @@ export function JoineryDetail() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {joinery.sheets.map((sheet: any, i: number) => (
-          <div
-            key={sheet._id}
-            className="p-4 rounded-lg shadow-md h-fit"
-            style={{
-              backgroundColor: "var(--color-card-bg)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2
-                className="font-semibold"
-                style={{ color: "var(--color-card-text)" }}
-              >
-                Tôle {i + 1}
-              </h2>
-              <div className="flex space-x-2">
-                <Button variant="action" onClick={() => setEditingSheet(sheet)}>
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => handleDeleteSheet(sheet._id)}
+        {joinery.sheets.map((sheet: any, i: number) => {
+          const colorHex =
+            RAL_CLASSIC.find((c) => c.code === sheet.color)?.hex || "#ccc";
+
+          // Cherche le modèle correspondant pour la vignette
+          const sheetModel = sheetModels.find(
+            (m) => m.profileType === sheet.profileType
+          );
+
+          return (
+            <div
+              key={sheet._id}
+              className="p-4 rounded-lg shadow-md h-fit"
+              style={{
+                backgroundColor: "var(--color-card-bg)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h2
+                  className="font-semibold"
+                  style={{ color: "var(--color-card-text)" }}
                 >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                  Tôle {i + 1}
+                </h2>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="action"
+                    onClick={() => setEditingSheet(sheet)}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleDeleteSheet(sheet._id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Aperçu du modèle */}
+              {sheetModel && (
+                <div className="mb-3">
+                  <img
+                    src={sheetModel.src}
+                    alt={sheetModel.name}
+                    className="object-contain w-full h-auto mt-4 rounded-xl"
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                <SheetCard
+                  title="Type"
+                  data={sheet.profileType.toUpperCase()}
+                  textured={sheet.textured}
+                />
+                <SheetCard
+                  title="RAL"
+                  data={sheet.color}
+                  textured={sheet.textured}
+                />
+                <SheetCard
+                  title="Longueur"
+                  data={sheet.dimensions.L}
+                  unit="mm"
+                  textured={false}
+                />
+                <SheetCard title="QTE" data={sheet.quantity} textured={false} />
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
-              <SheetCard
-                title="Type"
-                data={sheet.profileType.toUpperCase()}
-                textured={false}
-              />
-              <SheetCard
-                title="RAL"
-                data={sheet.color}
-                textured={sheet.textured}
-              />
-              <SheetCard
-                title="Longueur"
-                data={sheet.length}
-                unit="mm"
-                textured={false}
-              />
-              <SheetCard title="QTE" data={sheet.quantity} textured={false} />
-            </div>
-
-            <div className="w-full h-48">
-              <SheetVisualization
-                segments={sheet.segments}
-                widthAppui={sheet.widthAppui}
-                dimensions={sheet.dimensions}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
+      {/* Modal création */}
       <Modal
         isOpen={showSheetModal}
         onClose={() => setShowSheetModal(false)}
@@ -193,6 +208,7 @@ export function JoineryDetail() {
         />
       </Modal>
 
+      {/* Modal édition */}
       <Modal
         isOpen={!!editingSheet}
         onClose={() => setEditingSheet(null)}
@@ -208,6 +224,7 @@ export function JoineryDetail() {
         )}
       </Modal>
 
+      {/* Modal email */}
       <Modal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
