@@ -10,7 +10,6 @@ export function Navbar() {
   const location = useLocation();
   const [selectedPath, setSelectedPath] = useState(location.pathname);
 
-  // Sync selectedPath with URL changes
   useEffect(() => {
     setSelectedPath(location.pathname);
   }, [location.pathname]);
@@ -24,24 +23,26 @@ export function Navbar() {
     { label: "Logout", icon: LogOut, action: logout },
   ];
 
-  const textColorStyle = { color: "var(--color-navbar-text)" };
+  const bgStyle = "var(--color-navbar-bg)";
+  const hoverStyle = "var(--color-navbar-hover)";
+  const textColor = "var(--color-navbar-text)";
 
   return (
     <nav
       className="fixed z-50 w-full transition-colors duration-300 shadow-md"
-      style={{ backgroundColor: "var(--color-navbar-bg)" }}
+      style={{ backgroundColor: bgStyle }}
     >
       {/* Desktop Navbar */}
       <div className="items-center justify-between hidden h-16 px-8 mx-auto md:flex max-w-7xl">
         <Link
           to="/"
-          style={textColorStyle}
           className="flex items-center space-x-2"
+          style={{ color: textColor }}
         >
-          <Anvil className="w-8 h-8" style={textColorStyle} />
+          <Anvil className="w-8 h-8" style={{ color: textColor }} />
           <span
             className="text-xl font-bold tracking-wide uppercase"
-            style={textColorStyle}
+            style={{ color: textColor }}
           >
             ECB-Carlo
           </span>
@@ -55,13 +56,14 @@ export function Navbar() {
               className="flex items-center px-3 py-2 text-sm font-medium transition-colors rounded-md"
               style={{
                 backgroundColor:
-                  selectedPath === item.path
-                    ? "var(--color-primary)"
-                    : "var(--color-secondary)",
-                color: "var(--color-text-on-navbar)",
+                  selectedPath === item.path ? "var(--color-primary)" : bgStyle,
+                color: textColor,
               }}
             >
-              <item.icon className="w-4 h-4 mr-2" style={textColorStyle} />
+              <item.icon
+                className="w-4 h-4 mr-2"
+                style={{ color: textColor }}
+              />
               {item.label}
             </Link>
           ))}
@@ -69,10 +71,10 @@ export function Navbar() {
           {/* Logout button */}
           <button
             onClick={logout}
-            style={textColorStyle}
-            className="flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-[var(--color-navbar-hover)] transition-colors"
+            className="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-[var(--color-primary)]"
+            style={{ backgroundColor: bgStyle, color: textColor }}
           >
-            <LogOut className="w-4 h-4 mr-2" style={textColorStyle} />
+            <LogOut className="w-4 h-4 mr-2" style={{ color: textColor }} />
             Logout
           </button>
         </div>
@@ -81,10 +83,7 @@ export function Navbar() {
       {/* Mobile Navbar */}
       <div
         className="fixed bottom-0 left-0 w-full transition-colors duration-300 shadow-md md:hidden"
-        style={{
-          backgroundColor: "var(--color-navbar-bg)",
-          color: "var(--color-navbar-text)",
-        }}
+        style={{ backgroundColor: bgStyle, color: textColor }}
       >
         <div className="grid h-12 grid-cols-4">
           {navItems.map((item) =>
@@ -93,25 +92,24 @@ export function Navbar() {
                 key={item.label}
                 to={item.path}
                 className="flex flex-col items-center justify-center flex-1 transition-colors"
+                style={{
+                  backgroundColor:
+                    selectedPath === item.path
+                      ? "var(--color-primary)"
+                      : bgStyle,
+                  color: textColor,
+                }}
               >
-                <item.icon
-                  className="w-6 h-6"
-                  style={{
-                    color:
-                      selectedPath === item.path
-                        ? "var(--color-primary)"
-                        : "var(--color-text-on-navbar)",
-                  }}
-                />
+                <item.icon className="w-6 h-6" style={{ color: textColor }} />
               </Link>
             ) : (
               <button
                 key={item.label}
                 onClick={item.action}
-                className="flex-1 flex flex-col items-center justify-center hover:bg-[var(--color-navbar-hover)] transition-colors"
-                style={{ color: "var(--color-text-on-navbar)" }}
+                className="flex-1 flex flex-col items-center justify-center transition-colors rounded-md hover:bg-[var(--color-primary)]"
+                style={{ backgroundColor: bgStyle, color: textColor }}
               >
-                <item.icon className="w-6 h-6" />
+                <item.icon className="w-6 h-6" style={{ color: textColor }} />
               </button>
             )
           )}

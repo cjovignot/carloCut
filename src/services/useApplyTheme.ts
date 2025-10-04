@@ -190,7 +190,7 @@ export function generateThemeVars(
 
   const action_bg = primary;
   const action_bg_hover = shadeColor(primary, -0.15);
-  const action_text = getBestTextColor(action_bg);
+  const action_text = "#FFFFFF";
 
   const input_bg = shadeColor(app_bg, 0.5);
   const input_text = getBestTextColor(input_bg);
