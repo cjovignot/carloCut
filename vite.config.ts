@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
@@ -30,6 +31,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // temporaire
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         runtimeCaching: [
           // API
@@ -71,7 +73,9 @@ export default defineConfig({
         ],
       },
     }),
+    visualizer({ open: true }), // génère un rapport interactif
   ],
+
   optimizeDeps: {
     exclude: ["lucide-react"],
   },

@@ -5,17 +5,14 @@ import { api } from "../services/api";
 import { joineryTypes, JoineryForm } from "../components/Forms/JoineryForm";
 import { Modal } from "../components/UI/Modal";
 import { Divider } from "../components/UI/Divider";
-import { Button } from "../components/UI/Button";
 import { FloatingActionButtons } from "../components/UI/FloatingActionButtons";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { EmailForm } from "../components/Forms/EmailForm";
-import { ProjectPDF } from "../components/Export/ProjectPDF";
 import { useAuth } from "../services/useAuth";
 import { sheetModels } from "../constants/sheetModels";
 import {
-  Plus,
   Calendar,
   MapPin,
   User,
@@ -25,13 +22,6 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 import { ImageWithPlaceholder } from "../components/UI/ImageWithPlaceholder";
-import { Buffer } from "buffer";
-import { pdf } from "@react-pdf/renderer";
-
-// --- Buffer polyfill pour le navigateur
-if (typeof window !== "undefined") {
-  (window as any).Buffer = Buffer;
-}
 
 // --- Utils Cloudinary ---
 function optimizeCloudinary(url: string, width: number = 1200) {
@@ -195,29 +185,39 @@ export function ProjectDetail() {
     );
   };
 
-  // --- Export PDF ---
-  const generatePdfBlob = async () => {
-    const blob = await pdf(<ProjectPDF project={project} />).toBlob();
-    return blob;
-  };
-
+  // --- Export PDF depuis backend ---
   const handleExportPDF = async () => {
-    const blob = await generatePdfBlob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${project.name}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+      const response = await api.get(`/export/${id}/pdf`, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${project.name}.pdf`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Erreur export PDF", err);
+      alert("Impossible de générer le PDF");
+    }
   };
 
+  // --- Envoi email avec PDF généré par le backend ---
   const handleSendEmail = async (data: any) => {
     try {
-      const pdfBlob = await generatePdfBlob();
+      const response = await api.get(`/export/${id}/pdf`, {
+        responseType: "blob",
+      });
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
 
       const formData = new FormData();
       formData.append("file", pdfBlob, `${project.name}.pdf`);
-      formData.append("recipient", "jovignot.cosme@icloud.com"); // fixe ou depuis l'input
+      formData.append("recipient", "jovignot.cosme@icloud.com"); // TODO: mettre depuis l'input
       formData.append("subject", data.subject);
       formData.append("message", data.message || "");
 

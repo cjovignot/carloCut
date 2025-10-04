@@ -64,6 +64,7 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
+app.use("/api/export", pdfRoutes);
 
 app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Server is running" });

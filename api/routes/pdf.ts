@@ -1,139 +1,87 @@
 import express from "express";
 import PDFDocument from "pdfkit";
-import Project from "../models/Project.js";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import Project from "../models/Project.js"; // <-- adapte selon ton chemin
 
 const router = express.Router();
 
-// Generate PDF for entire project
-router.get("/project/:id", authenticate, async (req: AuthRequest, res) => {
+// Génération du PDF pour un projet
+router.get("/:id/pdf", async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id).populate(
-      "createdBy",
-      "name email"
-    );
+    const project = await Project.findById(req.params.id)
+      .populate("createdBy", "name")
+      .populate("joineries.sheets"); // adapte selon ton schéma
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res.status(404).json({ error: "Projet non trouvé" });
     }
 
-    const doc = new PDFDocument();
+    // Créer le document PDF
+    const doc = new PDFDocument({ size: "A4", margin: 40 });
 
-    // Set response headers
+    // Définir les headers pour le téléchargement
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${project.name}-order.pdf"`
+      `inline; filename="${project.name || "projet"}.pdf"`
     );
 
-    // Pipe the PDF to response
+    // Pipeliner le flux vers la réponse
     doc.pipe(res);
 
-    // Add content to PDF
-    addProjectHeader(doc, project);
+    // --- Contenu du PDF ---
+    doc.fontSize(20).text(project.name, { align: "center" });
+    doc.moveDown();
 
-    project.joineries.forEach((joinery, index) => {
-      if (index > 0) doc.addPage();
-      addJoineryContent(doc, joinery, index + 1);
-    });
+    if (project.client) doc.fontSize(12).text(`Client : ${project.client}`);
+    if (project.address) doc.text(`Adresse : ${project.address}`);
+    if (project.date)
+      doc.text(`Date : ${new Date(project.date).toLocaleDateString()}`);
+    if (project.notes) doc.text(`Notes : ${project.notes}`);
+    doc.text(`Créé par : ${project.createdBy?.name || "Inconnu"}`);
+    doc.moveDown();
 
+    doc.fontSize(16).text("Menuiseries", { underline: true });
+    doc.moveDown();
+
+    if (!project.joineries?.length) {
+      doc.text("Aucune menuiserie ajoutée");
+    } else {
+      project.joineries.forEach((j: any, idx: number) => {
+        doc.fontSize(14).text(`${idx + 1}. ${j.name} (${j.type})`);
+        if (j.imageURL) {
+          try {
+            doc.image(j.imageURL, { fit: [150, 100] });
+          } catch {
+            doc.text("(Image non disponible)");
+          }
+        }
+        if (j.sheets?.length) {
+          j.sheets.forEach((s: any) => {
+            doc.fontSize(12).text(` - Modèle : ${s.modelName || s.modelId}`);
+            doc.text(`   Couleur : ${s.color}`);
+            doc.text(`   Texturé : ${s.textured ? "Oui" : "Non"}`);
+            doc.text(`   Quantité : ${s.quantity}`);
+            if (s.dimensions) {
+              const dims = Object.entries(s.dimensions)
+                .map(([k, v]) => `${k}: ${v}mm`)
+                .join(", ");
+              doc.text(`   Dimensions : ${dims}`);
+            }
+            doc.moveDown(0.5);
+          });
+        } else {
+          doc.text("   Aucune tôle ajoutée");
+        }
+        doc.moveDown();
+      });
+    }
+
+    // Finaliser
     doc.end();
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur génération PDF" });
   }
 });
-
-// Generate PDF for single joinery
-router.get(
-  "/joinery/:projectId/:joineryId",
-  authenticate,
-  async (req: AuthRequest, res) => {
-    try {
-      const project = await Project.findById(req.params.projectId);
-
-      if (!project) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-
-      const joinery = project.joineries.id(req.params.joineryId);
-      if (!joinery) {
-        return res.status(404).json({ message: "Joinery not found" });
-      }
-
-      const doc = new PDFDocument();
-
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${joinery.name}-order.pdf"`
-      );
-
-      doc.pipe(res);
-
-      addProjectHeader(doc, project);
-      addJoineryContent(doc, joinery, 1);
-
-      doc.end();
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-);
-
-function addProjectHeader(doc: PDFKit.PDFDocument, project: any) {
-  doc.fontSize(20).text("Sheet Metal Order", 50, 50);
-  doc
-    .fontSize(14)
-    .text(`Project: ${project.name}`, 50, 90)
-    .text(`Client: ${project.client}`, 50, 110)
-    .text(`Address: ${project.address}`, 50, 130)
-    .text(`Date: ${project.date.toDateString()}`, 50, 150);
-
-  if (project.notes) {
-    doc.text(`Notes: ${project.notes}`, 50, 170);
-  }
-}
-
-function addJoineryContent(
-  doc: PDFKit.PDFDocument,
-  joinery: any,
-  number: number
-) {
-  const startY = 220;
-
-  doc
-    .fontSize(16)
-    .text(`${number}. ${joinery.name} (${joinery.type})`, 50, startY);
-
-  let currentY = startY + 40;
-
-  joinery.sheets.forEach((sheet: any, index: number) => {
-    if (currentY > 700) {
-      doc.addPage();
-      currentY = 50;
-    }
-
-    doc
-      .fontSize(12)
-      .text(`Sheet ${index + 1}:`, 70, currentY)
-      .text(`Profile: ${sheet.profileType}`, 90, currentY + 20)
-      .text(`Material: ${sheet.material}`, 90, currentY + 35)
-      .text(`Color: ${sheet.color}`, 90, currentY + 50)
-      .text(`Thickness: ${sheet.thickness}mm`, 90, currentY + 65)
-      .text(`Length: ${sheet.length}mm`, 90, currentY + 80)
-      .text(`Quantity: ${sheet.quantity}`, 90, currentY + 95)
-      .text(
-        `Dimensions: ${sheet.dimensions.join(" x ")}mm`,
-        90,
-        currentY + 110
-      );
-
-    // Add simple diagram placeholder
-    doc.rect(300, currentY + 20, 200, 100).stroke();
-    doc.fontSize(10).text("Technical Diagram", 350, currentY + 65);
-
-    currentY += 150;
-  });
-}
 
 export default router;
