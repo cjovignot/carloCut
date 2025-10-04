@@ -1,5 +1,6 @@
 import express from "express";
 import PDFDocument from "pdfkit";
+import axios from "axios";
 import Project from "../models/Project.js"; // <-- adapte selon ton chemin
 
 const router = express.Router();
@@ -50,17 +51,23 @@ router.get("/:id/pdf", async (req, res) => {
     if (!project.joineries?.length) {
       doc.text("Aucune menuiserie ajoutée");
     } else {
-      project.joineries.forEach((j: any, idx: number) => {
+      for (const [idx, j] of project.joineries.entries()) {
         doc.fontSize(14).text(`${idx + 1}. ${j.name} (${j.type})`);
+
+        // Gestion image depuis Cloudinary
         if (j.imageURL) {
           try {
-            doc.image(j.imageURL, { fit: [150, 100] });
-          } catch {
+            const response = await axios.get(j.imageURL, { responseType: "arraybuffer" });
+            const imageBuffer = Buffer.from(response.data, "binary");
+            doc.image(imageBuffer, { fit: [150, 100] });
+          } catch (err) {
+            console.log("Erreur image :", err.message);
             doc.text("(Image non disponible)");
           }
         }
+
         if (j.sheets?.length) {
-          j.sheets.forEach((s: any) => {
+          for (const s of j.sheets) {
             doc.fontSize(12).text(` - Modèle : ${s.modelName || s.modelId}`);
             doc.text(`   Couleur : ${s.color}`);
             doc.text(`   Texturé : ${s.textured ? "Oui" : "Non"}`);
@@ -72,12 +79,12 @@ router.get("/:id/pdf", async (req, res) => {
               doc.text(`   Dimensions : ${dims}`);
             }
             doc.moveDown(0.5);
-          });
+          }
         } else {
           doc.text("   Aucune tôle ajoutée");
         }
         doc.moveDown();
-      });
+      }
     }
 
     // Finaliser
