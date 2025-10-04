@@ -1,3 +1,5 @@
+// SheetForm.tsx
+
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { sheetModels, sheetTypes } from "../../constants/sheetModels";
@@ -8,6 +10,7 @@ import { Divider } from "../UI/Divider";
 interface SheetFormValues {
   profileType: "appui" | "tableau D" | "tableau G" | "linteau";
   model: string;
+  modelId?: string; // 🔹 ajout pour initialisation par modelId
   color: string; // code RAL
   textured: boolean;
   quantity: number;
@@ -154,20 +157,23 @@ function TypeSelect({
 ------------------------------ */
 export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<
-    SheetFormValues["profileType"] | ""
-  >("");
+  const [selectedType, setSelectedType] = useState<SheetFormValues["profileType"] | "">("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [color, setColor] = useState("");
   const [textured, setTextured] = useState(false);
   const [quantity, setQuantity] = useState("1");
   const [loading, setLoading] = useState(false);
 
-  // Préremplissage en édition
+  // 🔹 Préremplissage en édition avec modelId
   useEffect(() => {
     if (initialData) {
       setSelectedType(initialData.profileType);
-      setSelectedModel(initialData.model);
+
+      const modelFromId = sheetModels.find(
+        (m) => m.id === (initialData.modelId || initialData.model)
+      );
+      setSelectedModel(modelFromId?.id || null);
+
       setColor(initialData.color || "");
       setTextured(initialData.textured || false);
       setQuantity(initialData.quantity?.toString() || "1");
@@ -213,7 +219,6 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
           Object.entries(formValues).map(([k, v]) => [k, Number(v) || 0])
         ),
       };
-      console.log("Payload envoyé au backend:", JSON.stringify(payload, null, 2));
       await onSubmit(payload);
     } finally {
       setLoading(false);
