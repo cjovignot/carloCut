@@ -35,7 +35,7 @@ function RALSelect({
     <div className="relative w-full">
       <button
         type="button"
-        className="flex items-center justify-between w-full p-2 border rounded-md"
+        className="flex items-center justify-between w-full p-2 rounded-md"
         onClick={() => setOpen(!open)}
         style={{
           backgroundColor: "var(--color-input-bg)",
@@ -45,7 +45,7 @@ function RALSelect({
         <div className="flex items-center gap-2">
           {selectedColor && (
             <span
-              className="w-4 h-4 border rounded-full"
+              className="w-4 h-4 rounded-full"
               style={{ backgroundColor: selectedColor.hex }}
             />
           )}
@@ -59,7 +59,7 @@ function RALSelect({
       </button>
 
       {open && (
-        <ul style={{ backgroundColor: "var(--color-input-bg)" }} className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40">
+        <ul style={{ backgroundColor: "var(--color-input-bg)", color: "var(--color-input-text)" }} className="absolute z-10 w-full mt-1 overflow-auto rounded-md shadow-lg max-h-40">
           {RAL_CLASSIC.map((c) => (
             <li
               key={c.code}
@@ -68,13 +68,14 @@ function RALSelect({
                 onChange(c.code);
                 setOpen(false);
               }}
+style={{ color: "var(--color-input-text)" }}
             >
               <span
-                className="w-4 h-4 border rounded-full"
+                className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: c.hex }}
               />
               <span>{c.code}</span>
-              <span className="text-gray-500">- {c.name}</span>
+              <span>- {c.name}</span>
             </li>
           ))}
         </ul>
