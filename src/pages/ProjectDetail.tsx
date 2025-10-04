@@ -80,7 +80,11 @@ export function ProjectDetail() {
     }
   };
 
-  if (loading) return <LoadingSpinner size="lg" />;
+  if (loading) return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   if (!project) return <p>Projet introuvable</p>;
 
   // Définition des infos projet
