@@ -297,7 +297,7 @@ export function Projects() {
         isOpen={!!editingProject}
         onClose={() => setEditingProject(null)}
         title="Modifier un chantier"
-        size="lg"
+        size="xl"
       >
         {editingProject && (
           <ProjectForm
