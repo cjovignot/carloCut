@@ -216,7 +216,7 @@ export function SheetForm({ initialData, onSubmit, onCancel }: SheetFormProps) {
       )}
 
       {/* Couleur & Texturé */}
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium">RAL</label>
           <RALSelect value={color} onChange={setColor} />
