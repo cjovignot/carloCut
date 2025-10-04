@@ -55,14 +55,14 @@ export function Modal({
         <div
           className={`inline-block align-bottom rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizeClasses[size]}`}
           style={{
-            backgroundColor: "var(--color-accent)",
-            color: "var(--color-secondary)",
+            backgroundColor: "var(--color-card-bg)",
+            color: "var(--color-card-text)",
           }}
         >
           <div className="flex items-center justify-between mb-4">
             <h3
               className="text-lg font-medium"
-              style={{ color: "var(--color-secondary)" }}
+              style={{ color: "var(--color-page-title)" }}
             >
               {title}
             </h3>
