@@ -2,11 +2,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../services/api";
-import { joineryTypes } from "../components/Forms/JoineryForm";
+import { joineryTypes, JoineryForm } from "../components/Forms/JoineryForm";
 import { Modal } from "../components/UI/Modal";
 import { Divider } from "../components/UI/Divider";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
-import { JoineryForm } from "../components/Forms/JoineryForm";
 import { SwipeableCard } from "../components/UI/SwipeableCard";
 import { SwipeableCardProvider } from "../components/UI/SwipeableCardContext";
 import { useAuth } from "../services/useAuth";
@@ -22,7 +21,6 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 import { ImageWithPlaceholder } from "../components/UI/ImageWithPlaceholder";
-
 
 // --- Utils Cloudinary ---
 function optimizeCloudinary(url: string, width: number = 1200) {
@@ -53,7 +51,7 @@ export function ProjectDetail() {
     }
   };
 
-  // --- CRUD joineries ---
+  // --- CRUD Joineries ---
   const handleCreateJoinery = async (joineryData: any) => {
     try {
       await api.post(`/projects/${id}/joineries`, joineryData);
@@ -66,10 +64,7 @@ export function ProjectDetail() {
 
   const handleUpdateJoinery = async (joineryData: any) => {
     try {
-      await api.put(
-        `/joineries/${id}/joineries/${editingJoinery._id}`,
-        joineryData
-      );
+      await api.put(`/joineries/${id}/joineries/${editingJoinery._id}`, joineryData);
       await fetchProject();
       setEditingJoinery(null);
     } catch (error) {
@@ -78,8 +73,7 @@ export function ProjectDetail() {
   };
 
   const handleDeleteJoinery = async (joineryId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?"))
-      return;
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette menuiserie ?")) return;
     try {
       await api.delete(`/joineries/${id}/joineries/${joineryId}`);
       await fetchProject();
@@ -94,51 +88,20 @@ export function ProjectDetail() {
         <LoadingSpinner size="lg" />
       </div>
     );
+
   if (!project) return <p>Projet introuvable</p>;
 
-  // Définition des infos projet
+  // --- Infos projet ---
   const infoFields = [
-    {
-      icon: <User className="w-4 h-4" />,
-      label: "Nom du client",
-      value: project.client,
-      showDivider: true,
-    },
-    {
-      icon: <MapPin className="w-4 h-4" />,
-      label: "Adresse",
-      value: project.address,
-      showDivider: true,
-    },
-    {
-      icon: <Calendar className="w-4 h-4" />,
-      label: "Date",
-      value: project.date ? new Date(project.date).toLocaleDateString() : null,
-      showDivider: true,
-    },
-    {
-      icon: <FileText className="w-4 h-4" />,
-      label: "Notes",
-      value: project.notes,
-      showDivider: true,
-    },
-    {
-      icon: <DoorClosed className="w-4 h-4" />,
-      label: "Menuiseries",
-      value: `${project.joineries?.length || 0} menuiserie${
-        project.joineries?.length > 1 ? "s" : ""
-      }`,
-      showDivider: true,
-    },
-    {
-      icon: <User className="w-4 h-4" />,
-      label: "Créé par",
-      value: project.createdBy?.name || "Inconnu",
-      showDivider: false,
-    },
+    { icon: <User className="w-4 h-4" />, label: "Nom du client", value: project.client, showDivider: true },
+    { icon: <MapPin className="w-4 h-4" />, label: "Adresse", value: project.address, showDivider: true },
+    { icon: <Calendar className="w-4 h-4" />, label: "Date", value: project.date ? new Date(project.date).toLocaleDateString() : null, showDivider: true },
+    { icon: <FileText className="w-4 h-4" />, label: "Notes", value: project.notes, showDivider: true },
+    { icon: <DoorClosed className="w-4 h-4" />, label: "Menuiseries", value: `${project.joineries?.length || 0} menuiserie${project.joineries?.length > 1 ? "s" : ""}`, showDivider: true },
+    { icon: <User className="w-4 h-4" />, label: "Créé par", value: project.createdBy?.name || "Inconnu", showDivider: false },
   ];
 
-  // --- JoineryCard ---
+  // --- Carte Joinery ---
   const JoineryCard = ({ joinery }: { joinery: any }) => {
     const sheetModel = sheetModels.find((m) => m.profileType === joinery.type);
     const thumbnail = sheetModel?.src || "";
@@ -152,37 +115,22 @@ export function ProjectDetail() {
           onDelete={() => handleDeleteJoinery(joinery._id)}
           showDelete={() => user?.role === "admin"}
           maxSwipe={75}
-          style={{
-            backgroundColor: "var(--color-app-bg)",
-          }}
+          style={{ backgroundColor: "var(--color-app-bg)" }}
+          linkTo={`/projects/${project._id}/joineries/${joinery._id}`}
         >
-          <Link to={`/projects/${project._id}/joineries/${joinery._id}`}>
-            <div className="w-full p-2 cursor-pointer">
-             
-              <h3
-                className="pb-2 mt-2 mb-1 text-lg font-semibold"
-                style={{ color: "var(--color-card-text)" }}
-              >
-                {joinery.name}
-              </h3>
-              <div
-                className="flex items-center gap-2 mt-2 text-sm"
-                style={{ color: "var(--color-secondary)" }}
-              >
-                <PanelsTopLeft className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
-                {joineryTypes.find((t) => t.value === joinery.type)?.label || joinery.type}
-              </div>
-
-              <div
-                className="flex items-center gap-2 mt-1 text-sm"
-                style={{ color: "var(--color-secondary)" }}
-              >
-                <LayoutPanelTop className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
-                {joinery.sheets?.length || 0}{" "}
-                {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
-              </div>
+          <div className="w-full p-2 cursor-pointer">
+            <h3 className="pb-2 mt-2 mb-1 text-lg font-semibold" style={{ color: "var(--color-card-text)" }}>
+              {joinery.name}
+            </h3>
+            <div className="flex items-center gap-2 mt-2 text-sm" style={{ color: "var(--color-secondary)" }}>
+              <PanelsTopLeft className="w-4 h-4" />
+              {joineryTypes.find((t) => t.value === joinery.type)?.label || joinery.type}
             </div>
-          </Link>
+            <div className="flex items-center gap-2 mt-1 text-sm" style={{ color: "var(--color-secondary)" }}>
+              <LayoutPanelTop className="w-4 h-4" />
+              {joinery.sheets?.length || 0} {joinery.sheets?.length > 1 ? "tôles" : "tôle"}
+            </div>
+          </div>
         </SwipeableCard>
       </SwipeableCardProvider>
     );
@@ -191,10 +139,7 @@ export function ProjectDetail() {
   return (
     <div className="relative pb-20">
       {/* Titre projet */}
-      <h1
-        className="px-4 py-4 mb-4 text-3xl font-bold"
-        style={{ color: "var(--color-page-title)" }}
-      >
+      <h1 className="px-4 py-4 mb-4 text-3xl font-bold" style={{ color: "var(--color-page-title)" }}>
         {project.name}
       </h1>
 
@@ -212,36 +157,25 @@ export function ProjectDetail() {
       )}
 
       {/* Infos projet */}
-      <div
-        className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg"
-        style={{ backgroundColor: "var(--color-card-bg)" }}
-      >
+      <div className="px-4 py-3 pr-0 mx-4 mb-8 rounded-lg" style={{ backgroundColor: "var(--color-card-bg)" }}>
         <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-          {infoFields
-            .filter((field) => field.value)
-            .map((field, idx) => (
-              <div key={idx} className="contents">
-                <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
-                  {field.icon}
-                  <span>{field.label}</span>
-                </div>
-                <div
-                  className="flex items-center justify-end pr-3"
-                  style={{ color: "var(--color-card-text)" }}
-                >
-                  {field.value}
-                </div>
-                {field.showDivider && <Divider />}
+          {infoFields.filter(f => f.value).map((field, idx) => (
+            <div key={idx} className="contents">
+              <div className="flex items-center gap-2" style={{ color: "var(--color-page-title)" }}>
+                {field.icon}<span>{field.label}</span>
               </div>
-            ))}
+              <div className="flex items-center justify-end pr-3" style={{ color: "var(--color-card-text)" }}>
+                {field.value}
+              </div>
+              {field.showDivider && <Divider />}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Liste des menuiseries */}
       {project.joineries.length === 0 ? (
-        <div className="py-12 text-center text-gray-500">
-          Aucune menuiserie ajoutée
-        </div>
+        <div className="py-12 text-center text-gray-500">Aucune menuiserie ajoutée</div>
       ) : (
         <div className="grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 md:grid-cols-2 lg:grid-cols-3">
           {project.joineries.map((joinery: any) => (
@@ -259,31 +193,14 @@ export function ProjectDetail() {
       </button>
 
       {/* Modal création */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Ajouter une menuiserie"
-        size="lg"
-      >
-        <JoineryForm
-          onSubmit={handleCreateJoinery}
-          onCancel={() => setShowCreateModal(false)}
-        />
+      <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Ajouter une menuiserie" size="lg">
+        <JoineryForm onSubmit={handleCreateJoinery} onCancel={() => setShowCreateModal(false)} />
       </Modal>
 
       {/* Modal édition */}
-      <Modal
-        isOpen={!!editingJoinery}
-        onClose={() => setEditingJoinery(null)}
-        title="Modifier une menuiserie"
-        size="lg"
-      >
+      <Modal isOpen={!!editingJoinery} onClose={() => setEditingJoinery(null)} title="Modifier une menuiserie" size="lg">
         {editingJoinery && (
-          <JoineryForm
-            initialData={editingJoinery}
-            onSubmit={handleUpdateJoinery}
-            onCancel={() => setEditingJoinery(null)}
-          />
+          <JoineryForm initialData={editingJoinery} onSubmit={handleUpdateJoinery} onCancel={() => setEditingJoinery(null)} />
         )}
       </Modal>
     </div>
