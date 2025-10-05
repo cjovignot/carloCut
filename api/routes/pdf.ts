@@ -4,7 +4,7 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import Project from "../models/Project.js";
-import { sheetModels } from "../../src/constants/sheetModels.js";
+import { sheetModels, sheetTypes } from "../../src/constants/sheetModels.js";
 
 const router = express.Router();
 
