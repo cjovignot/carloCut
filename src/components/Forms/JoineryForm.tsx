@@ -219,7 +219,7 @@ export function JoineryForm({
 
       {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button type="button" variant="danger" onClick={onCancel}>
           Annuler
         </Button>
         <Button type="submit" variant="success" loading={loading}>

@@ -32,11 +32,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onFormSubmit)}
-      className="p-4 space-y-4 rounded-md shadow-md"
-      style={{ backgroundColor: "var(--color-card-bg)" }}
-    >
+    <form onSubmit={handleSubmit(onFormSubmit)}>
       {/* Destinataire */}
       <div>
         <label
@@ -49,7 +45,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
           type="email"
           {...register("recipient", { required: "Le destinataire est requis" })}
           // readOnly
-          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          className="block w-full p-1 mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
             borderColor: "var(--color-neutral-dark)",
             color: "var(--color-navbar-text)",
@@ -70,7 +66,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
         <input
           type="text"
           {...register("subject", { required: "L'objet du mail est requis" })}
-          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          className="block w-full p-1 mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
             borderColor: "var(--color-neutral-dark)",
             color: "var(--color-navbar-text)",
@@ -96,7 +92,7 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
         <textarea
           rows={4}
           {...register("message")}
-          className="block w-full mt-1 rounded-md shadow-sm focus:ring-2"
+          className="block w-full p-1 mt-1 rounded-md shadow-sm focus:ring-2"
           style={{
             borderColor: "var(--color-neutral-dark)",
             color: "var(--color-navbar-text)",
@@ -109,10 +105,10 @@ export function EmailForm({ onSubmit, onCancel }: EmailFormProps) {
 
       {/* Boutons */}
       <div className="flex justify-end pt-4 space-x-3">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="danger" onClick={onCancel}>
           Annuler
         </Button>
-        <Button type="submit" loading={loading}>
+        <Button type="submit" variant="success" loading={loading}>
           Envoyer
         </Button>
       </div>

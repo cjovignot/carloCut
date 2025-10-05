@@ -43,7 +43,7 @@ export function FloatingActionButtons({
       {/* Bouton principal */}
       <button
         onClick={() => setOpen(!open)}
-        style={{ backgroundColor: "var(--color-action-bg)" }}
+        style={{ backgroundColor: "var(--color-accent)" }}
         className="flex items-center justify-center w-12 h-12 text-white transition-all rounded-full shadow-lg"
       >
         <div className="relative w-6 h-6">
