@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
@@ -73,7 +72,7 @@ export default defineConfig({
         ],
       },
     }),
-    visualizer({ open: true }), // génère un rapport interactif
+    // visualizer({ open: true }), // génère un rapport interactif
   ],
 
   optimizeDeps: {
