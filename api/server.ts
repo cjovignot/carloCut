@@ -1,3 +1,4 @@
+// server.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -23,7 +24,7 @@ const app = express();
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:5174", // frontend actuel
+  "http://localhost:5174",
   "http://localhost:5000",
   process.env.VITE_API_URL,
   "https://carlo-cut.vercel.app",
@@ -49,10 +50,24 @@ app.use(
 app.options("*", cors());
 
 // ---------------------------
+// Trust proxy pour Vercel
+// ---------------------------
+app.set("trust proxy", 1);
+
+// ---------------------------
 // Rate limiting
 // ---------------------------
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
-app.use(limiter);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  keyGenerator: (req: Request) => {
+    // Utiliser X-Forwarded-For si présent, sinon req.ip
+    return (req.headers["x-forwarded-for"] as string) || req.ip;
+  },
+});
+
+// Appliquer le rate limit uniquement aux routes API
+app.use("/api", limiter);
 
 // ---------------------------
 // Body parsing
@@ -70,7 +85,7 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
-app.use("/api/export", pdfRoutes); // export PDF depuis backend
+app.use("/api/export", pdfRoutes);
 
 // Healthcheck
 app.get("/api/health", (_req: Request, res: Response) => {
@@ -89,9 +104,15 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
+let cached = false; // Pour éviter de reconnecter MongoDB à chaque requête
+
 export default async function handler(req: any, res: any) {
   try {
-    await connectDB();
+    if (!cached) {
+      await connectDB();
+      cached = true;
+      console.log("MongoDB connected (serverless cache).");
+    }
     return app(req, res);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
