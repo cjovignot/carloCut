@@ -68,7 +68,7 @@ router.post("/:id/pdf", async (req, res) => {
       align: "right",
     });
 
-    doc.moveDown(4);
+    doc.y += 20;
 
     // --- Titre projet ---
     doc
