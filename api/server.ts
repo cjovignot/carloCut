@@ -1,7 +1,7 @@
-// server.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
@@ -14,64 +14,27 @@ import uploadRouter from "./routes/upload.js";
 
 import connectDB from "./utils/connectDB.js";
 
-// Upstash / Redis rate-limit
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-
 dotenv.config();
 
-// ---------------------------
-// Redis & Rate-limit
-// ---------------------------
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
-
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(100, "15m"), // 100 requêtes / 15 min
-});
-
-// Middleware serverless-safe
-async function rateLimitMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const ip =
-    req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
-    req.headers["cf-connecting-ip"]?.toString() ||
-    req.socket.remoteAddress ||
-    "unknown";
-
-  const { success } = await ratelimit.limit(ip);
-  if (!success) return res.status(429).json({ message: "Too many requests" });
-
-  next();
-}
-
-// ---------------------------
-// Express app
-// ---------------------------
 const app = express();
 
 // ---------------------------
-// Security & CORS
+// Security & CORS middleware
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:5174",
+  "http://localhost:5174", // frontend actuel
   "http://localhost:5000",
   process.env.VITE_API_URL,
   "https://carlo-cut.vercel.app",
 ].filter(Boolean);
 
 app.use(helmet());
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // Postman / curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
       console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error("CORS origin not allowed"));
@@ -81,18 +44,21 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Toujours répondre aux preflight
 app.options("*", cors());
+
+// ---------------------------
+// Rate limiting
+// ---------------------------
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+app.use(limiter);
 
 // ---------------------------
 // Body parsing
 // ---------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// ---------------------------
-// Rate-limit middleware
-// ---------------------------
-app.use("/api", rateLimitMiddleware);
 
 // ---------------------------
 // Routes
@@ -104,7 +70,7 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
-app.use("/api/export", pdfRoutes);
+app.use("/api/export", pdfRoutes); // export PDF depuis backend
 
 // Healthcheck
 app.get("/api/health", (_req: Request, res: Response) => {
@@ -123,15 +89,9 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-let cachedDB = false;
-
 export default async function handler(req: any, res: any) {
   try {
-    if (!cachedDB) {
-      await connectDB();
-      cachedDB = true;
-      console.log("MongoDB connected (serverless cache).");
-    }
+    await connectDB();
     return app(req, res);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
