@@ -51,6 +51,8 @@ app.use(
 
 app.options("*", cors());
 
+app.set("trust proxy", 1 /* number of proxies between user and server */);
+
 // ---------------------------
 // Body parsing
 // ---------------------------
