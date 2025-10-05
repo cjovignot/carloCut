@@ -198,12 +198,10 @@ router.post("/:id/pdf", async (req, res) => {
           if (imgBuffer) {
             doc.image(imgBuffer, col1X, y, { fit: [imgWidth, imgHeight] });
           } else {
-            doc
-              .fontSize(12)
-              .text("(Image non disponible)", col1X, y, {
-                width: imgWidth,
-                align: "center",
-              });
+            doc.fontSize(12).text("(Image non disponible)", col1X, y, {
+              width: imgWidth,
+              align: "center",
+            });
           }
 
           // Tableau de détails
