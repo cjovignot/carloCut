@@ -2,7 +2,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
@@ -15,7 +14,42 @@ import uploadRouter from "./routes/upload.js";
 
 import connectDB from "./utils/connectDB.js";
 
+// Upstash / Redis rate-limit
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
 dotenv.config();
+
+// ---------------------------
+// Redis & Rate-limit
+// ---------------------------
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(100, "15m"), // 100 requêtes / 15 min
+});
+
+// Middleware serverless-safe
+async function rateLimitMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const ip =
+    req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+    req.headers["cf-connecting-ip"]?.toString() ||
+    req.socket.remoteAddress ||
+    "unknown";
+
+  const { success } = await ratelimit.limit(ip);
+  if (!success) return res.status(429).json({ message: "Too many requests" });
+
+  next();
+}
 
 // ---------------------------
 // Express app
@@ -34,7 +68,6 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(helmet());
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -48,10 +81,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 app.options("*", cors());
-
-app.set("trust proxy", 1 /* number of proxies between user and server */);
 
 // ---------------------------
 // Body parsing
@@ -60,21 +90,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ---------------------------
-// Rate limiting (X-Forwarded-For check disabled)
+// Rate-limit middleware
 // ---------------------------
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  keyGenerator: (req: Request) => {
-    // Utilise X-Forwarded-For si présent, sinon fallback sur req.ip
-    const xff = req.headers["x-forwarded-for"];
-    if (typeof xff === "string") return xff.split(",")[0].trim();
-    return req.ip;
-  },
-  validate: { xForwardedForHeader: false }, // ⚡ supprime ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
-});
-
-app.use("/api", limiter);
+app.use("/api", rateLimitMiddleware);
 
 // ---------------------------
 // Routes
