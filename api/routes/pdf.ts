@@ -26,6 +26,22 @@ router.post("/:id/pdf", async (req, res) => {
     );
     doc.pipe(res);
 
+    // --- Fonction utilitaire pour gérer les sauts de page dynamiques ---
+    function checkPageSpace(doc, currentY, blockBottomY) {
+      const pageBottom = doc.page.height - doc.page.margins.bottom;
+      if (blockBottomY > pageBottom) {
+        doc.addPage();
+        return doc.page.margins.top; // on recommence en haut de la nouvelle page
+      }
+      return currentY;
+    }
+
+    // --- Réinitialisation automatique de y sur ajout de page manuel ---
+    let y = doc.y;
+    doc.on("pageAdded", () => {
+      y = doc.page.margins.top;
+    });
+
     // --- En-tête ---
     const logoPath = path.join(process.cwd(), "public/pwa-512x512.png");
     try {
@@ -79,7 +95,6 @@ router.post("/:id/pdf", async (req, res) => {
       { label: "Contact", value: "0" + userPhone || "Non renseigné" },
     ];
 
-    let y = doc.y;
     const margin = doc.page.margins.left;
     const pageWidth = doc.page.width;
     const tableWidth = pageWidth - 2 * margin;
@@ -169,29 +184,28 @@ router.post("/:id/pdf", async (req, res) => {
         }
 
         for (const s of j.sheets) {
-          let imgBuffer: Buffer | null = null;
-let profileLabel = "Type inconnu";
+          // --- Récupération du modèle et du label ---
+          let imgBuffer = null;
+          let profileLabel = "Type inconnu";
 
-const sheetModel = sheetModels.find((m) => m.id === s.modelId);
-if (sheetModel) {
-  // Trouver le label lisible du type de tôle
-  const typeEntry = Object.values(sheetTypes).find(
-    (t) => t.value === sheetModel.profileType
-  );
-  profileLabel = typeEntry ? typeEntry.label : sheetModel.profileType;
+          const sheetModel = sheetModels.find((m) => m.id === s.modelId);
+          if (sheetModel) {
+            const typeEntry = Object.values(sheetTypes).find(
+              (t) => t.value === sheetModel.profileType
+            );
+            profileLabel = typeEntry ? typeEntry.label : sheetModel.profileType;
 
-  // Charger l’image si elle existe
-  if (sheetModel.src) {
-    try {
-      const response = await axios.get(sheetModel.src, {
-        responseType: "arraybuffer",
-      });
-      imgBuffer = Buffer.from(response.data, "binary");
-    } catch {
-      imgBuffer = null;
-    }
-  }
-}
+            if (sheetModel.src) {
+              try {
+                const response = await axios.get(sheetModel.src, {
+                  responseType: "arraybuffer",
+                });
+                imgBuffer = Buffer.from(response.data, "binary");
+              } catch {
+                imgBuffer = null;
+              }
+            }
+          }
 
           // Nom de la menuiserie
           doc
@@ -201,7 +215,6 @@ if (sheetModel) {
             .text(`${j.name} (${j.type})`, margin, y, { align: "left" });
           y = doc.y + 10;
 
-          // Colonnes
           const col1X = margin;
           const col2X = col1X + imgWidth + colSpacing;
           const colWidth2 = tableWidth - imgWidth - colSpacing;
@@ -215,14 +228,14 @@ if (sheetModel) {
             });
           }
 
-          // Tableau de détails
           let infoY = y;
           const infoTable = [
-  { label: "Type", value: profileLabel },
-  { label: "RAL", value: s.color },
-  { label: "Texturé", value: s.textured ? "Oui" : "Non" },
-  { label: "Quantité", value: s.quantity },
-];
+            { label: "Type", value: profileLabel },
+            { label: "RAL", value: s.color },
+            { label: "Texturé", value: s.textured ? "Oui" : "Non" },
+            { label: "Quantité", value: s.quantity },
+          ];
+
           if (s.dimensions) {
             Object.entries(s.dimensions).forEach(([k, v]) => {
               infoTable.push({ label: k, value: `${v}mm` });
@@ -271,15 +284,71 @@ if (sheetModel) {
             infoY += rowHeightInfo;
           });
 
-          // Cadre autour de la tôle
+          // Fin du bloc de tôle
           const tableBottom = infoY + 10;
+
+          // Vérifie si le bloc dépasse la page AVANT de tracer
+          const newY = checkPageSpace(doc, y, tableBottom);
+          if (newY !== y) {
+            // on a ajouté une page : redessiner proprement le bloc sur la nouvelle
+            y = newY;
+            infoY = y;
+
+            if (imgBuffer) {
+              doc.image(imgBuffer, col1X, y, { fit: [imgWidth, imgHeight] });
+            } else {
+              doc.fontSize(12).text("(Image non disponible)", col1X, y, {
+                width: imgWidth,
+                align: "center",
+              });
+            }
+
+            infoTable.forEach((row, index) => {
+              const bgColor = index % 2 === 0 ? "#f7f7f7" : "#ffffff";
+              doc
+                .roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0)
+                .fillOpacity(1)
+                .fill(bgColor);
+
+              const labelHeight = doc.heightOfString(row.label, {
+                width: labelWidth2,
+              });
+              const valueHeight = doc.heightOfString(row.value, {
+                width: valueWidth2,
+              });
+              const lineHeight = Math.max(labelHeight, valueHeight);
+              const offsetY = (rowHeightInfo - lineHeight) / 2;
+
+              doc
+                .font("Helvetica-Bold")
+                .fillColor("#333333")
+                .fontSize(12)
+                .text(row.label, col2X, infoY + offsetY, {
+                  width: labelWidth2,
+                  align: "left",
+                });
+
+              doc
+                .font("Helvetica")
+                .fillColor("#000000")
+                .fontSize(12)
+                .text(row.value, col2X + labelWidth2, infoY + offsetY, {
+                  width: valueWidth2,
+                  align: "right",
+                });
+
+              infoY += rowHeightInfo;
+            });
+          }
+
+          // Cadre autour de la tôle
           doc
-            .rect(col1X - 5, y - 5, tableWidth, tableBottom - y)
+            .rect(col1X - 5, y - 5, tableWidth, infoY + 10 - y)
             .strokeColor("#cccccc")
             .lineWidth(1)
             .stroke();
 
-          y = tableBottom + 10;
+          y = infoY + 20;
         }
       }
     }
@@ -292,4 +361,3 @@ if (sheetModel) {
 });
 
 export default router;
-// test deploy
