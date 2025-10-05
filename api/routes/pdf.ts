@@ -65,10 +65,16 @@ router.post("/:id/pdf", async (req, res) => {
     )}/${exportDate.getFullYear()}`;
 
     doc.fontSize(12).fillColor("#333333").text(formattedDate, 0, 40, {
-      align: "right",
-    });
+  align: "right",
+});
 
-    doc.y += 20;
+// Force un espace clair sous le logo et la date
+const headerBottom = 100; // Ajuste à 100–120 selon la hauteur du logo
+if (doc.y < headerBottom) {
+  doc.y = headerBottom;
+} else {
+  doc.moveDown(2);
+}
 
     // --- Titre projet ---
     doc
