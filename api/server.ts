@@ -2,6 +2,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
@@ -57,34 +58,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ---------------------------
-// Rate limiting middleware serverless-safe
+// Rate limiting (X-Forwarded-For check disabled)
 // ---------------------------
-const requestCounts = new Map<string, { count: number; timestamp: number }>();
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS = 100;
-
-app.use("/api", (req: Request, res: Response, next: NextFunction) => {
-  const ip =
-    req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() ||
-    req.headers["cf-connecting-ip"]?.toString() ||
-    req.socket.remoteAddress ||
-    "unknown";
-
-  const now = Date.now();
-  const record = requestCounts.get(ip);
-
-  if (!record || now - record.timestamp > WINDOW_MS) {
-    requestCounts.set(ip, { count: 1, timestamp: now });
-  } else {
-    record.count++;
-    if (record.count > MAX_REQUESTS) {
-      return res.status(429).json({ message: "Too many requests" });
-    }
-    requestCounts.set(ip, record);
-  }
-
-  next();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  keyGenerator: (req: Request) => {
+    // Utilise X-Forwarded-For si présent, sinon fallback sur req.ip
+    const xff = req.headers["x-forwarded-for"];
+    if (typeof xff === "string") return xff.split(",")[0].trim();
+    return req.ip;
+  },
+  validate: { xForwardedForHeader: false }, // ⚡ supprime ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 });
+
+app.use("/api", limiter);
 
 // ---------------------------
 // Routes
