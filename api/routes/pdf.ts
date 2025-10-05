@@ -27,13 +27,13 @@ router.post("/:id/pdf", async (req, res) => {
     doc.pipe(res);
 
     // --- Fonction utilitaire pour gérer les sauts de page dynamiques ---
-    function checkPageSpace(doc: PDFKit.PDFDocument, currentY: number, blockBottomY: number) {
+    function checkAndAddPage(doc: PDFKit.PDFDocument, y: number, blockHeight: number): number {
       const pageBottom = doc.page.height - doc.page.margins.bottom;
-      if (blockBottomY > pageBottom) {
+      if (y + blockHeight > pageBottom) {
         doc.addPage();
         return doc.page.margins.top;
       }
-      return currentY;
+      return y;
     }
 
     // Réinitialise y automatiquement après ajout de page
@@ -68,13 +68,14 @@ router.post("/:id/pdf", async (req, res) => {
       align: "right",
     });
 
-    // 🔽 Espace minimum sous l'en-tête
-    const headerBottom = 100; // hauteur à ajuster selon logo/date
+    // Espace minimum sous l'en-tête
+    const headerBottom = 100;
     if (doc.y < headerBottom) {
       doc.y = headerBottom;
     } else {
       doc.moveDown(2);
     }
+    y = doc.y;
 
     // --- Titre projet ---
     doc
@@ -191,118 +192,74 @@ router.post("/:id/pdf", async (req, res) => {
         }
 
         for (const s of j.sheets) {
-          let imgBuffer = null;
-          let profileLabel = "Type inconnu";
-
+          // Récupérer le modèle et type lisible
           const sheetModel = sheetModels.find((m) => m.id === s.modelId);
-          if (sheetModel) {
-            const typeEntry = Object.values(sheetTypes).find(
-              (t) => t.value === sheetModel.profileType
-            );
-            profileLabel = typeEntry ? typeEntry.label : sheetModel.profileType;
+          const typeEntry = sheetModel ? Object.values(sheetTypes).find(t => t.value === sheetModel.profileType) : null;
+          const profileLabel = typeEntry ? typeEntry.label : "Type inconnu";
 
-            if (sheetModel.src) {
-              try {
-                const response = await axios.get(sheetModel.src, {
-                  responseType: "arraybuffer",
-                });
-                imgBuffer = Buffer.from(response.data, "binary");
-              } catch {
-                imgBuffer = null;
-              }
-            }
-          }
-
-          // Nom de la menuiserie
-          doc
-            .fontSize(14)
-            .fillColor("#000000")
-            .font("Helvetica-Bold")
-            .text(`${j.name} (${j.type})`, margin, y, { align: "left" });
-          y = doc.y + 10;
-
-          const col1X = margin;
-          const col2X = col1X + imgWidth + colSpacing;
-          const colWidth2 = tableWidth - imgWidth - colSpacing;
-
-          if (imgBuffer) {
-            doc.image(imgBuffer, col1X, y, { fit: [imgWidth, imgHeight] });
-          } else {
-            doc.fontSize(12).text("(Image non disponible)", col1X, y, {
-              width: imgWidth,
-              align: "center",
-            });
-          }
-
-          let infoY = y;
+          // Préparer le tableau de détails
           const infoTable = [
             { label: "Type", value: profileLabel },
             { label: "RAL", value: s.color },
             { label: "Texturé", value: s.textured ? "Oui" : "Non" },
             { label: "Quantité", value: s.quantity },
           ];
-
           if (s.dimensions) {
-            Object.entries(s.dimensions).forEach(([k, v]) => {
-              infoTable.push({ label: k, value: `${v}mm` });
-            });
+            Object.entries(s.dimensions).forEach(([k, v]) => infoTable.push({ label: k, value: `${v}mm` }));
+          }
+          const rowHeightInfo = 20;
+          const tableHeight = infoTable.length * rowHeightInfo;
+
+          // Calcul hauteur totale du bloc (nom + image + tableau + padding)
+          const nameHeight = doc.heightOfString(`${j.name} (${j.type})`, { width: tableWidth });
+          const paddingBlock = 20;
+          const blockHeight = nameHeight + imgHeight + tableHeight + paddingBlock;
+
+          // Vérifier si le bloc tient dans l'espace restant
+          y = checkAndAddPage(doc, y, blockHeight);
+
+          // Dessiner nom menuiserie
+          doc.font("Helvetica-Bold").fontSize(14).fillColor("#000").text(`${j.name} (${j.type})`, margin, y);
+          y += nameHeight + 10;
+
+          // Dessiner image
+          if (sheetModel?.src) {
+            try {
+              const response = await axios.get(sheetModel.src, { responseType: "arraybuffer" });
+              const imgBuffer = Buffer.from(response.data, "binary");
+              doc.image(imgBuffer, margin, y, { fit: [imgWidth, imgHeight] });
+            } catch {
+              doc.fontSize(12).text("(Image non disponible)", margin, y, { width: imgWidth, align: "center" });
+            }
+          } else {
+            doc.fontSize(12).text("(Image non disponible)", margin, y, { width: imgWidth, align: "center" });
           }
 
-          const rowHeightInfo = 20;
+          // Dessiner tableau à côté de l'image
+          let infoY = y;
+          const col2X = margin + imgWidth + colSpacing;
+          const colWidth2 = tableWidth - imgWidth - colSpacing;
           const labelWidth2 = 0.4 * colWidth2;
           const valueWidth2 = 0.6 * colWidth2 - paddingRight;
 
-          // Calcul du bas du bloc pour checkPageSpace
-          let tableBottom = infoY + infoTable.length * rowHeightInfo + 10;
-          y = checkPageSpace(doc, y, tableBottom);
-
-          // Affichage du tableau
           infoTable.forEach((row, index) => {
-            const bgColor = index % 2 === 0 ? "#f7f7f7" : "#ffffff";
+            const bgColor = index % 2 === 0 ? "#f7f7f7" : "#fff";
+            doc.roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0).fillOpacity(1).fill(bgColor);
 
-            doc
-              .roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0)
-              .fillOpacity(1)
-              .fill(bgColor);
-
-            const labelHeight = doc.heightOfString(row.label, {
-              width: labelWidth2,
-            });
-            const valueHeight = doc.heightOfString(row.value, {
-              width: valueWidth2,
-            });
-            const lineHeight = Math.max(labelHeight, valueHeight);
+            const lineHeight = Math.max(doc.heightOfString(row.label, { width: labelWidth2 }), doc.heightOfString(row.value, { width: valueWidth2 }));
             const offsetY = (rowHeightInfo - lineHeight) / 2;
 
-            doc
-              .font("Helvetica-Bold")
-              .fillColor("#333333")
-              .fontSize(12)
-              .text(row.label, col2X, infoY + offsetY, {
-                width: labelWidth2,
-                align: "left",
-              });
-
-            doc
-              .font("Helvetica")
-              .fillColor("#000000")
-              .fontSize(12)
-              .text(row.value, col2X + labelWidth2, infoY + offsetY, {
-                width: valueWidth2,
-                align: "right",
-              });
+            doc.font("Helvetica-Bold").fontSize(12).fillColor("#333").text(row.label, col2X, infoY + offsetY, { width: labelWidth2, align: "left" });
+            doc.font("Helvetica").fontSize(12).fillColor("#000").text(row.value, col2X + labelWidth2, infoY + offsetY, { width: valueWidth2, align: "right" });
 
             infoY += rowHeightInfo;
           });
 
           // Cadre autour de la tôle
-          doc
-            .rect(col1X - 5, y - 5, tableWidth, infoY + 10 - y)
-            .strokeColor("#cccccc")
-            .lineWidth(1)
-            .stroke();
+          const tableBottom = infoY + 10;
+          doc.rect(margin - 5, y - 5, tableWidth, tableBottom - y).strokeColor("#ccc").lineWidth(1).stroke();
 
-          y = infoY + 20;
+          y = tableBottom + 10; // mettre à jour y pour le bloc suivant
         }
       }
     }
