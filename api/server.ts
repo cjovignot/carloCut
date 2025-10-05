@@ -17,15 +17,13 @@ import connectDB from "./utils/connectDB.js";
 
 dotenv.config();
 
+// ---------------------------
+// Express app
+// ---------------------------
 const app = express();
 
 // ---------------------------
-// Trust proxy (doit être avant tout middleware)
-// ---------------------------
-app.set("trust proxy", 1);
-
-// ---------------------------
-// Security & CORS middleware
+// Security & CORS
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
@@ -40,7 +38,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman / curl
+      if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error("CORS origin not allowed"));
@@ -51,31 +49,32 @@ app.use(
   })
 );
 
-// Toujours répondre aux preflight
 app.options("*", cors());
-
-// ---------------------------
-// Rate limiting (compatible serverless)
-// ---------------------------
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  keyGenerator: (req: Request) => {
-    // Prend l'IP réelle depuis X-Forwarded-For ou req.ip
-    const xff = req.headers["x-forwarded-for"];
-    if (typeof xff === "string") return xff.split(",")[0].trim();
-    return req.ip;
-  },
-});
-
-// Appliquer uniquement sur les routes API
-app.use("/api", limiter);
 
 // ---------------------------
 // Body parsing
 // ---------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ---------------------------
+// Rate limiting compatible serverless
+// ---------------------------
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  keyGenerator: (req: Request) => {
+    // Récupère l'IP depuis X-Forwarded-For, CF-Connecting-IP, ou socket
+    const xff = req.headers["x-forwarded-for"];
+    if (typeof xff === "string") return xff.split(",")[0].trim();
+    const cf = req.headers["cf-connecting-ip"];
+    if (typeof cf === "string") return cf;
+    return req.socket.remoteAddress || "unknown";
+  },
+});
+
+// Appliquer uniquement sur les routes API
+app.use("/api", limiter);
 
 // ---------------------------
 // Routes
@@ -106,13 +105,13 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-let cached = false; // Pour éviter de reconnecter MongoDB à chaque requête
+let cachedDB = false;
 
 export default async function handler(req: any, res: any) {
   try {
-    if (!cached) {
+    if (!cachedDB) {
       await connectDB();
-      cached = true;
+      cachedDB = true;
       console.log("MongoDB connected (serverless cache).");
     }
     return app(req, res);
