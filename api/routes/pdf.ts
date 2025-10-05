@@ -170,17 +170,28 @@ router.post("/:id/pdf", async (req, res) => {
 
         for (const s of j.sheets) {
           let imgBuffer: Buffer | null = null;
-          try {
-            const sheetModel = sheetModels.find((m) => m.id === s.modelId);
-            if (sheetModel?.src) {
-              const response = await axios.get(sheetModel.src, {
-                responseType: "arraybuffer",
-              });
-              imgBuffer = Buffer.from(response.data, "binary");
-            }
-          } catch {
-            imgBuffer = null;
-          }
+let profileLabel = "Type inconnu";
+
+const sheetModel = sheetModels.find((m) => m.id === s.modelId);
+if (sheetModel) {
+  // Trouver le label lisible du type de tôle
+  const typeEntry = Object.values(sheetTypes).find(
+    (t) => t.value === sheetModel.profileType
+  );
+  profileLabel = typeEntry ? typeEntry.label : sheetModel.profileType;
+
+  // Charger l’image si elle existe
+  if (sheetModel.src) {
+    try {
+      const response = await axios.get(sheetModel.src, {
+        responseType: "arraybuffer",
+      });
+      imgBuffer = Buffer.from(response.data, "binary");
+    } catch {
+      imgBuffer = null;
+    }
+  }
+}
 
           // Nom de la menuiserie
           doc
@@ -207,10 +218,11 @@ router.post("/:id/pdf", async (req, res) => {
           // Tableau de détails
           let infoY = y;
           const infoTable = [
-            { label: "RAL", value: s.color },
-            { label: "Texturé", value: s.textured ? "Oui" : "Non" },
-            { label: "Quantité", value: s.quantity },
-          ];
+  { label: "Type", value: profileLabel },
+  { label: "RAL", value: s.color },
+  { label: "Texturé", value: s.textured ? "Oui" : "Non" },
+  { label: "Quantité", value: s.quantity },
+];
           if (s.dimensions) {
             Object.entries(s.dimensions).forEach(([k, v]) => {
               infoTable.push({ label: k, value: `${v}mm` });
