@@ -27,16 +27,16 @@ router.post("/:id/pdf", async (req, res) => {
     doc.pipe(res);
 
     // --- Fonction utilitaire pour gérer les sauts de page dynamiques ---
-    function checkPageSpace(doc, currentY, blockBottomY) {
+    function checkPageSpace(doc: PDFKit.PDFDocument, currentY: number, blockBottomY: number) {
       const pageBottom = doc.page.height - doc.page.margins.bottom;
       if (blockBottomY > pageBottom) {
         doc.addPage();
-        return doc.page.margins.top; // on recommence en haut de la nouvelle page
+        return doc.page.margins.top;
       }
       return currentY;
     }
 
-    // --- Réinitialisation automatique de y sur ajout de page manuel ---
+    // Réinitialise y automatiquement après ajout de page
     let y = doc.y;
     doc.on("pageAdded", () => {
       y = doc.page.margins.top;
@@ -65,16 +65,16 @@ router.post("/:id/pdf", async (req, res) => {
     )}/${exportDate.getFullYear()}`;
 
     doc.fontSize(12).fillColor("#333333").text(formattedDate, 0, 40, {
-  align: "right",
-});
+      align: "right",
+    });
 
-// Force un espace clair sous le logo et la date
-const headerBottom = 100; // Ajuste à 100–120 selon la hauteur du logo
-if (doc.y < headerBottom) {
-  doc.y = headerBottom;
-} else {
-  doc.moveDown(2);
-}
+    // 🔽 Espace minimum sous l'en-tête
+    const headerBottom = 100; // hauteur à ajuster selon logo/date
+    if (doc.y < headerBottom) {
+      doc.y = headerBottom;
+    } else {
+      doc.moveDown(2);
+    }
 
     // --- Titre projet ---
     doc
@@ -82,6 +82,7 @@ if (doc.y < headerBottom) {
       .fillColor("#000000")
       .text(project.name || "Projet", { align: "center" });
     doc.moveDown(2);
+    y = doc.y;
 
     // --- Infos générales ---
     const totalSheets = project.joineries?.reduce((acc, j) => {
@@ -190,7 +191,6 @@ if (doc.y < headerBottom) {
         }
 
         for (const s of j.sheets) {
-          // --- Récupération du modèle et du label ---
           let imgBuffer = null;
           let profileLabel = "Type inconnu";
 
@@ -252,6 +252,11 @@ if (doc.y < headerBottom) {
           const labelWidth2 = 0.4 * colWidth2;
           const valueWidth2 = 0.6 * colWidth2 - paddingRight;
 
+          // Calcul du bas du bloc pour checkPageSpace
+          let tableBottom = infoY + infoTable.length * rowHeightInfo + 10;
+          y = checkPageSpace(doc, y, tableBottom);
+
+          // Affichage du tableau
           infoTable.forEach((row, index) => {
             const bgColor = index % 2 === 0 ? "#f7f7f7" : "#ffffff";
 
@@ -289,63 +294,6 @@ if (doc.y < headerBottom) {
 
             infoY += rowHeightInfo;
           });
-
-          // Fin du bloc de tôle
-          const tableBottom = infoY + 10;
-
-          // Vérifie si le bloc dépasse la page AVANT de tracer
-          const newY = checkPageSpace(doc, y, tableBottom);
-          if (newY !== y) {
-            // on a ajouté une page : redessiner proprement le bloc sur la nouvelle
-            y = newY;
-            infoY = y;
-
-            if (imgBuffer) {
-              doc.image(imgBuffer, col1X, y, { fit: [imgWidth, imgHeight] });
-            } else {
-              doc.fontSize(12).text("(Image non disponible)", col1X, y, {
-                width: imgWidth,
-                align: "center",
-              });
-            }
-
-            infoTable.forEach((row, index) => {
-              const bgColor = index % 2 === 0 ? "#f7f7f7" : "#ffffff";
-              doc
-                .roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0)
-                .fillOpacity(1)
-                .fill(bgColor);
-
-              const labelHeight = doc.heightOfString(row.label, {
-                width: labelWidth2,
-              });
-              const valueHeight = doc.heightOfString(row.value, {
-                width: valueWidth2,
-              });
-              const lineHeight = Math.max(labelHeight, valueHeight);
-              const offsetY = (rowHeightInfo - lineHeight) / 2;
-
-              doc
-                .font("Helvetica-Bold")
-                .fillColor("#333333")
-                .fontSize(12)
-                .text(row.label, col2X, infoY + offsetY, {
-                  width: labelWidth2,
-                  align: "left",
-                });
-
-              doc
-                .font("Helvetica")
-                .fillColor("#000000")
-                .fontSize(12)
-                .text(row.value, col2X + labelWidth2, infoY + offsetY, {
-                  width: valueWidth2,
-                  align: "right",
-                });
-
-              infoY += rowHeightInfo;
-            });
-          }
 
           // Cadre autour de la tôle
           doc
