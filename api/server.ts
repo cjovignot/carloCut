@@ -20,6 +20,11 @@ dotenv.config();
 const app = express();
 
 // ---------------------------
+// Trust proxy (doit être avant tout middleware)
+// ---------------------------
+app.set("trust proxy", 1);
+
+// ---------------------------
 // Security & CORS middleware
 // ---------------------------
 const allowedOrigins = [
@@ -50,23 +55,20 @@ app.use(
 app.options("*", cors());
 
 // ---------------------------
-// Trust proxy pour Vercel
-// ---------------------------
-app.set("trust proxy", 1);
-
-// ---------------------------
-// Rate limiting
+// Rate limiting (compatible serverless)
 // ---------------------------
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
   keyGenerator: (req: Request) => {
-    // Utiliser X-Forwarded-For si présent, sinon req.ip
-    return (req.headers["x-forwarded-for"] as string) || req.ip;
+    // Prend l'IP réelle depuis X-Forwarded-For ou req.ip
+    const xff = req.headers["x-forwarded-for"];
+    if (typeof xff === "string") return xff.split(",")[0].trim();
+    return req.ip;
   },
 });
 
-// Appliquer le rate limit uniquement aux routes API
+// Appliquer uniquement sur les routes API
 app.use("/api", limiter);
 
 // ---------------------------
