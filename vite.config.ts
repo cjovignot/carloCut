@@ -73,7 +73,7 @@ export default defineConfig({
         ],
       },
     }),
-    visualizer({ open: true }), // génère un rapport interactif
+    // visualizer({ open: true }), // génère un rapport interactif
   ],
 
   optimizeDeps: {
