@@ -8,7 +8,7 @@ const router = express.Router();
 // Register user (admin only in production)
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, role = "employee" } = req.body;
+    const { name, email, phone, password, role = "employee" } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -19,7 +19,7 @@ router.post("/register", async (req, res) => {
     }
 
     // Create new user
-    const user = new User({ name, email, password, role });
+    const user = new User({ name, email, phone, password, role });
     await user.save();
 
     // Generate JWT token
@@ -35,6 +35,7 @@ router.post("/register", async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        phone: user.phone,
         email: user.email,
         role: user.role,
       },
@@ -86,6 +87,7 @@ router.post("/login", async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        phone: user.phone,
         email: user.email,
         role: user.role,
       },
@@ -104,6 +106,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res) => {
     user: {
       id: req.user._id,
       name: req.user.name,
+      phone: req.user.phone,
       email: req.user.email,
       role: req.user.role,
     },

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 export interface IUser extends mongoose.Document {
   name: string;
   email: string;
+  phone: number;
   password: string;
   role: "admin" | "employee";
   createdAt: Date;
@@ -26,6 +27,12 @@ const userSchema = new mongoose.Schema<IUser>({
       /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
       "Invalid email format",
     ],
+  },
+  phone: {
+    type: Number,
+    required: [true, "Phone number is required"],
+    unique: true,
+    minLength: [10, "Phone number must be at least 10 numbers"],
   },
   password: {
     type: String,

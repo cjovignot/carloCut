@@ -9,6 +9,7 @@ import logo from "../../public/pwa-512x512.png";
 export function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "employee">("employee");
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,7 @@ export function Register() {
       const response = await api.post("/auth/register", {
         name,
         email,
+        phone,
         password,
         role,
       });
@@ -122,6 +124,28 @@ export function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="votre_email@exemple.com"
+                className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none"
+                style={{
+                  borderColor: "var(--color-border)",
+                  backgroundColor: "var(--color-input-bg)",
+                  color: "var(--color-text-primary)",
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-sm font-medium"
+                style={{ color: "var(--color-text-primary)" }}
+              >
+                Téléphone
+              </label>
+              <input
+                type="phone"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Numéro de contact"
                 className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none"
                 style={{
                   borderColor: "var(--color-border)",

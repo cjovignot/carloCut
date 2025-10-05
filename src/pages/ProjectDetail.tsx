@@ -188,9 +188,17 @@ export function ProjectDetail() {
   // --- Export PDF depuis backend ---
   const handleExportPDF = async () => {
     try {
-      const response = await api.get(`/export/${id}/pdf`, {
-        responseType: "blob",
-      });
+      if (!project) return;
+
+      // On envoie project et user.phone au backend
+      const response = await api.post(
+        `/export/${id}/pdf`,
+        {
+          project,
+          userPhone: user?.phone || "",
+        },
+        { responseType: "blob" }
+      );
 
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
@@ -210,9 +218,14 @@ export function ProjectDetail() {
   // --- Envoi email avec PDF généré par le backend ---
   const handleSendEmail = async (data: any) => {
     try {
-      const response = await api.get(`/export/${id}/pdf`, {
-        responseType: "blob",
-      });
+      const response = await api.post(
+        `/export/${id}/pdf`,
+        {
+          project,
+          userPhone: user?.phone || "",
+        },
+        { responseType: "blob" }
+      );
       const pdfBlob = new Blob([response.data], { type: "application/pdf" });
 
       const formData = new FormData();
