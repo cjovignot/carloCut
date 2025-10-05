@@ -2,7 +2,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
@@ -58,23 +57,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ---------------------------
-// Rate limiting compatible serverless
+// Rate limiting middleware serverless-safe
 // ---------------------------
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  keyGenerator: (req: Request) => {
-    // Récupère l'IP depuis X-Forwarded-For, CF-Connecting-IP, ou socket
-    const xff = req.headers["x-forwarded-for"];
-    if (typeof xff === "string") return xff.split(",")[0].trim();
-    const cf = req.headers["cf-connecting-ip"];
-    if (typeof cf === "string") return cf;
-    return req.socket.remoteAddress || "unknown";
-  },
-});
+const requestCounts = new Map<string, { count: number; timestamp: number }>();
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const MAX_REQUESTS = 100;
 
-// Appliquer uniquement sur les routes API
-app.use("/api", limiter);
+app.use("/api", (req: Request, res: Response, next: NextFunction) => {
+  const ip =
+    req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() ||
+    req.headers["cf-connecting-ip"]?.toString() ||
+    req.socket.remoteAddress ||
+    "unknown";
+
+  const now = Date.now();
+  const record = requestCounts.get(ip);
+
+  if (!record || now - record.timestamp > WINDOW_MS) {
+    requestCounts.set(ip, { count: 1, timestamp: now });
+  } else {
+    record.count++;
+    if (record.count > MAX_REQUESTS) {
+      return res.status(429).json({ message: "Too many requests" });
+    }
+    requestCounts.set(ip, record);
+  }
+
+  next();
+});
 
 // ---------------------------
 // Routes
