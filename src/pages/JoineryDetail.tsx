@@ -11,6 +11,7 @@ import { EmailForm } from "../components/Forms/EmailForm";
 import { SheetCard } from "../components/UI/SheetCard";
 import { RAL_CLASSIC } from "../constants/ral_classic_colors";
 import { sheetModels } from "../constants/sheetModels";
+import { FloatingActionButtons } from "../components/UI/FloatingActionButtons";
 
 export function JoineryDetail() {
   const { projectId, joineryId } = useParams<{
@@ -91,7 +92,7 @@ export function JoineryDetail() {
 
   return (
     <div className="px-4 py-8 mx-auto pb-14 max-w-7xl sm:px-6 lg:px-8">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center mb-4 space-x-4">
         <Link to={`/projects/${projectId}`}>
           <ArrowLeft
             className="w-5 h-5"
@@ -106,17 +107,22 @@ export function JoineryDetail() {
         </h1>
       </div>
 
-      <div className="flex pb-3 mt-6 mb-4 space-x-2 border-b border-black/70">
-        <Button onClick={() => setShowSheetModal(true)} variant="success">
+      {/* <Button onClick={() => setShowSheetModal(true)} variant="success">
           <Plus className="w-4 h-4 mr-1" /> Ajouter une tôle
-        </Button>
-        <Button variant="secondary" onClick={handleExportPDF}>
+        </Button> */}
+      {/* <Button variant="secondary" onClick={handleExportPDF}>
           <FileText className="w-4 h-4 mr-1" /> PDF
         </Button>
         <Button variant="secondary" onClick={() => setShowEmailModal(true)}>
           <Mail className="w-4 h-4 mr-1" /> Email
-        </Button>
-      </div>
+        </Button> */}
+
+      <FloatingActionButtons
+        onAddJoinery={() => setShowSheetModal(true)}
+        onExportPDF={handleExportPDF}
+        onEmail={() => setShowEmailModal(true)}
+        joinery={true}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {joinery.sheets.map((sheet: any, i: number) => {

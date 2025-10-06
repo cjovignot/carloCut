@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Plus, FileText, Mail, Menu, X } from "lucide-react";
 
 export function FloatingActionButtons({
+  joinery,
   onAddJoinery,
   onExportPDF,
   onEmail,
 }: {
+  joinery: boolean;
   onAddJoinery: () => void;
   onExportPDF: () => void;
   onEmail: () => void;
@@ -18,25 +20,28 @@ export function FloatingActionButtons({
       {open && (
         <>
           <button
-            onClick={onExportPDF}
-            className="flex items-center justify-center w-12 h-12 mb-2 text-white transition-all bg-blue-600 rounded-full shadow-lg hover:bg-blue-700"
-          >
-            <FileText className="w-6 h-6" />
-          </button>
-
-          <button
-            onClick={onEmail}
-            className="flex items-center justify-center w-12 h-12 mb-2 text-white transition-all bg-purple-600 rounded-full shadow-lg hover:bg-purple-700"
-          >
-            <Mail className="w-6 h-6" />
-          </button>
-
-          <button
             onClick={onAddJoinery}
             className="flex items-center justify-center w-12 h-12 text-white transition-all bg-green-600 rounded-full shadow-lg hover:bg-green-700"
           >
             <Plus className="w-6 h-6 transition-transform duration-200 transform" />
           </button>
+
+          {!joinery && (
+            <>
+              <button
+                onClick={onExportPDF}
+                className="flex items-center justify-center w-12 h-12 mb-2 text-white transition-all bg-blue-600 rounded-full shadow-lg hover:bg-blue-700"
+              >
+                <FileText className="w-6 h-6" />
+              </button>
+              <button
+                onClick={onEmail}
+                className="flex items-center justify-center w-12 h-12 mb-2 text-white transition-all bg-purple-600 rounded-full shadow-lg hover:bg-purple-700"
+              >
+                <Mail className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </>
       )}
 
