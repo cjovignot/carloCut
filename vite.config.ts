@@ -45,10 +45,19 @@ export default defineConfig({
               },
             },
           },
-          // Pages HTML
+          // Login et Register → jamais en cache
+          {
+            urlPattern: /^https:\/\/ecb-carlo\.app\/login$/,
+            handler: "NetworkOnly",
+          },
+          {
+            urlPattern: /^https:\/\/ecb-carlo\.app\/register$/,
+            handler: "NetworkOnly",
+          },
+          // Pages HTML → NetworkFirst (SPA)
           {
             urlPattern: /^https:\/\/ecb-carlo\.app\/.*$/,
-            handler: "CacheFirst",
+            handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
               expiration: {
@@ -57,7 +66,7 @@ export default defineConfig({
               },
             },
           },
-          // Assets JS/CSS
+          // Assets JS/CSS/Images
           {
             urlPattern: /\.(?:js|css|png|svg|ico)$/,
             handler: "CacheFirst",
