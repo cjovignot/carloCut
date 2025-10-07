@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
+import { Response, Request } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -79,7 +80,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: unknown, _req: Request, res: Response) => {
   const error = err instanceof Error ? err : new Error("Unknown error");
   console.error(error.stack);
   res.status(500).json({ message: error.message });
@@ -89,7 +90,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // Serverless handler (Vercel)
 // ---------------------------
 // 👇 CORRECTION : Express handler adapté à Vercel
-const handler = async (req: any, res: any) => {
+const handler = async (req: Request, res: Response) => {
   try {
     await connectDB();
     return app(req, res); // Express peut être appelé directement ici
