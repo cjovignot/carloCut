@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import type { IncomingMessage, ServerResponse } from "http";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -24,18 +24,18 @@ const app = express();
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:5174",
+  "http://localhost:5174", // frontend actuel
   "http://localhost:5000",
   process.env.VITE_API_URL,
   "https://carlo-cut.vercel.app",
-].filter(Boolean) as string[];
+].filter(Boolean);
 
 app.use(helmet());
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // Postman / curl
       if (allowedOrigins.includes(origin)) return callback(null, true);
       console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error("CORS origin not allowed"));
@@ -71,7 +71,7 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
-app.use("/api/export", pdfRoutes);
+app.use("/api/export", pdfRoutes); // export PDF depuis backend
 
 // Healthcheck
 app.get("/api/health", (_req: Request, res: Response) => {
@@ -81,7 +81,6 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-// 👇 Ajout du 4e paramètre `_next` pour que TypeScript comprenne qu’il s’agit d’un middleware d’erreur
 app.use((err: unknown, _req: Request, res: Response) => {
   const error = err instanceof Error ? err : new Error("Unknown error");
   console.error(error.stack);
@@ -91,20 +90,14 @@ app.use((err: unknown, _req: Request, res: Response) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-export default async function handler(
-  req: IncomingMessage,
-  res: ServerResponse
-): Promise<void> {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     await connectDB();
-
     return app(req, res);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
     console.error("Serverless handler error:", error);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ message: error.message }));
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -123,3 +116,4 @@ if (process.env.NODE_ENV !== "production") {
       console.error("Failed to connect to MongoDB:", err);
     });
 }
+//test
