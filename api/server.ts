@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
+import type { IncomingMessage, ServerResponse } from "http";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -27,7 +28,7 @@ const allowedOrigins = [
   "http://localhost:5000",
   process.env.VITE_API_URL,
   "https://carlo-cut.vercel.app",
-].filter(Boolean);
+].filter(Boolean) as string[];
 
 app.use(helmet());
 
@@ -80,7 +81,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: unknown, _req: Request, res: Response) => {
   const error = err instanceof Error ? err : new Error("Unknown error");
   console.error(error.stack);
   res.status(500).json({ message: error.message });
@@ -89,14 +90,20 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-export default async function handler(req: any, res: any) {
+export default async function handler(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
   try {
     await connectDB();
+
     return app(req, res);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
     console.error("Serverless handler error:", error);
-    return res.status(500).json({ message: error.message });
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: error.message }));
   }
 }
 
@@ -115,4 +122,3 @@ if (process.env.NODE_ENV !== "production") {
       console.error("Failed to connect to MongoDB:", err);
     });
 }
-//test
