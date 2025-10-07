@@ -24,7 +24,7 @@ const app = express();
 // ---------------------------
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:5174", // frontend actuel
+  "http://localhost:5174",
   "http://localhost:5000",
   process.env.VITE_API_URL,
   "https://carlo-cut.vercel.app",
@@ -35,7 +35,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman / curl
+      if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error("CORS origin not allowed"));
@@ -71,7 +71,7 @@ app.use("/api/sheets", sheetRoutes);
 app.use("/api/pdf", pdfRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
-app.use("/api/export", pdfRoutes); // export PDF depuis backend
+app.use("/api/export", pdfRoutes);
 
 // Healthcheck
 app.get("/api/health", (_req: Request, res: Response) => {
@@ -81,6 +81,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // ---------------------------
 // Error handling
 // ---------------------------
+// 👇 Ajout du 4e paramètre `_next` pour que TypeScript comprenne qu’il s’agit d’un middleware d’erreur
 app.use((err: unknown, _req: Request, res: Response) => {
   const error = err instanceof Error ? err : new Error("Unknown error");
   console.error(error.stack);
