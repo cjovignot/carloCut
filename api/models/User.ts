@@ -5,6 +5,7 @@ import { IUser } from "../../shared/types/user.js";
 export interface IUserDocument extends IUser, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
+// push
 
 const userSchema = new Schema<IUserDocument>({
   name: {
