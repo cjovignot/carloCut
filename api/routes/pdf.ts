@@ -6,6 +6,7 @@ import path from "path";
 import Project from "../../shared/types/project.js";
 import { sheetModels, sheetTypes } from "../../src/constants/sheetModels.js";
 import { IJoinery } from "../../shared/types/joinery.js";
+import { IUser } from "../../shared/types/user.js";
 
 const router = express.Router();
 
@@ -96,6 +97,8 @@ router.post("/:id/pdf", async (req, res) => {
       0
     );
 
+    const createdBy = project.createdBy as IUser | null;
+
     const generalInfo = [
       { label: "Nom du projet", value: project.name },
       { label: "Client", value: project.client },
@@ -105,7 +108,7 @@ router.post("/:id/pdf", async (req, res) => {
         label: "QTE Tôles",
         value: `${totalSheets} tôle${totalSheets > 1 ? "s" : ""}`,
       },
-      { label: "Créé par", value: project.createdBy?.name || "Inconnu" },
+      { label: "Créé par", value: createdBy?.name || "Inconnu" },
       { label: "Contact", value: "0" + userPhone || "Non renseigné" },
     ];
 
@@ -278,7 +281,7 @@ router.post("/:id/pdf", async (req, res) => {
 
             const lineHeight = Math.max(
               doc.heightOfString(row.label, { width: labelWidth2 }),
-              doc.heightOfString(row.value, { width: valueWidth2 })
+              doc.heightOfString(String(row.value), { width: valueWidth2 })
             );
             const offsetY = (rowHeightInfo - lineHeight) / 2;
 
@@ -294,7 +297,7 @@ router.post("/:id/pdf", async (req, res) => {
               .font("Helvetica")
               .fontSize(12)
               .fillColor("#000")
-              .text(row.value, col2X + labelWidth2, infoY + offsetY, {
+              .text(String(row.value), col2X + labelWidth2, infoY + offsetY, {
                 width: valueWidth2,
                 align: "right",
               });
