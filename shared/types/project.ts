@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import type { Types } from "mongoose";
-import { IJoinery } from "./joinery.js";
+import { joinerySchema, IJoinery } from "./joinery.js";
 
 export interface IProject extends mongoose.Document {
   name: string;
