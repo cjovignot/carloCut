@@ -1,6 +1,7 @@
 import express from "express";
-import Project from "../models/Project.js";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import Project from "../../shared/types/project.js";
+import { authenticate } from "../middleware/auth.js";
+import { AuthRequest } from "../../shared/types/auth.js";
 
 const router = express.Router();
 
@@ -26,8 +27,9 @@ router.post(
 
       const newSheet = joinery.sheets[joinery.sheets.length - 1];
       res.status(201).json(newSheet);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: "Invalid token." });
     }
   }
 );
@@ -60,8 +62,9 @@ router.put(
       await project.save();
 
       res.json(sheet);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: "Invalid token." });
     }
   }
 );
@@ -87,8 +90,9 @@ router.delete(
       await project.save();
 
       res.json({ message: "Sheet deleted successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Invalid token." });
     }
   }
 );

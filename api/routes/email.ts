@@ -1,7 +1,8 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import multer from "multer";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import { authenticate } from "../middleware/auth.js";
+import { AuthRequest } from "../../shared/types/auth.js";
 
 const router = express.Router();
 

@@ -3,8 +3,9 @@ import PDFDocument from "pdfkit";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-import Project from "../models/Project.js";
+import Project from "../../shared/types/project.js";
 import { sheetModels, sheetTypes } from "../../src/constants/sheetModels.js";
+import { IJoinery } from "../../shared/types/joinery.js";
 
 const router = express.Router();
 
@@ -27,7 +28,11 @@ router.post("/:id/pdf", async (req, res) => {
     doc.pipe(res);
 
     // --- Fonction utilitaire pour gérer les sauts de page dynamiques ---
-    function checkAndAddPage(doc: PDFKit.PDFDocument, y: number, blockHeight: number): number {
+    function checkAndAddPage(
+      doc: PDFKit.PDFDocument,
+      y: number,
+      blockHeight: number
+    ): number {
       const pageBottom = doc.page.height - doc.page.margins.bottom;
       if (y + blockHeight > pageBottom) {
         doc.addPage();
@@ -86,9 +91,10 @@ router.post("/:id/pdf", async (req, res) => {
     y = doc.y;
 
     // --- Infos générales ---
-    const totalSheets = project.joineries?.reduce((acc, j) => {
-      return acc + (j.sheets?.length || 0);
-    }, 0);
+    const totalSheets = project.joineries?.reduce(
+      (acc: number, j: IJoinery) => acc + (j.sheets?.length || 0),
+      0
+    );
 
     const generalInfo = [
       { label: "Nom du projet", value: project.name },
@@ -194,7 +200,11 @@ router.post("/:id/pdf", async (req, res) => {
         for (const s of j.sheets) {
           // Récupérer le modèle et type lisible
           const sheetModel = sheetModels.find((m) => m.id === s.modelId);
-          const typeEntry = sheetModel ? Object.values(sheetTypes).find(t => t.value === sheetModel.profileType) : null;
+          const typeEntry = sheetModel
+            ? Object.values(sheetTypes).find(
+                (t) => t.value === sheetModel.profileType
+              )
+            : null;
           const profileLabel = typeEntry ? typeEntry.label : "Type inconnu";
 
           // Préparer le tableau de détails
@@ -205,34 +215,51 @@ router.post("/:id/pdf", async (req, res) => {
             { label: "Quantité", value: s.quantity },
           ];
           if (s.dimensions) {
-            Object.entries(s.dimensions).forEach(([k, v]) => infoTable.push({ label: k, value: `${v}mm` }));
+            Object.entries(s.dimensions).forEach(([k, v]) =>
+              infoTable.push({ label: k, value: `${v}mm` })
+            );
           }
           const rowHeightInfo = 20;
           const tableHeight = infoTable.length * rowHeightInfo;
 
           // Calcul hauteur totale du bloc (nom + image + tableau + padding)
-          const nameHeight = doc.heightOfString(`${j.name} (${j.type})`, { width: tableWidth });
+          const nameHeight = doc.heightOfString(`${j.name} (${j.type})`, {
+            width: tableWidth,
+          });
           const paddingBlock = 20;
-          const blockHeight = nameHeight + imgHeight + tableHeight + paddingBlock;
+          const blockHeight =
+            nameHeight + imgHeight + tableHeight + paddingBlock;
 
           // Vérifier si le bloc tient dans l'espace restant
           y = checkAndAddPage(doc, y, blockHeight);
 
           // Dessiner nom menuiserie
-          doc.font("Helvetica-Bold").fontSize(14).fillColor("#000").text(`${j.name} (${j.type})`, margin, y);
+          doc
+            .font("Helvetica-Bold")
+            .fontSize(14)
+            .fillColor("#000")
+            .text(`${j.name} (${j.type})`, margin, y);
           y += nameHeight + 10;
 
           // Dessiner image
           if (sheetModel?.src) {
             try {
-              const response = await axios.get(sheetModel.src, { responseType: "arraybuffer" });
+              const response = await axios.get(sheetModel.src, {
+                responseType: "arraybuffer",
+              });
               const imgBuffer = Buffer.from(response.data, "binary");
               doc.image(imgBuffer, margin, y, { fit: [imgWidth, imgHeight] });
             } catch {
-              doc.fontSize(12).text("(Image non disponible)", margin, y, { width: imgWidth, align: "center" });
+              doc.fontSize(12).text("(Image non disponible)", margin, y, {
+                width: imgWidth,
+                align: "center",
+              });
             }
           } else {
-            doc.fontSize(12).text("(Image non disponible)", margin, y, { width: imgWidth, align: "center" });
+            doc.fontSize(12).text("(Image non disponible)", margin, y, {
+              width: imgWidth,
+              align: "center",
+            });
           }
 
           // Dessiner tableau à côté de l'image
@@ -244,20 +271,44 @@ router.post("/:id/pdf", async (req, res) => {
 
           infoTable.forEach((row, index) => {
             const bgColor = index % 2 === 0 ? "#f7f7f7" : "#fff";
-            doc.roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0).fillOpacity(1).fill(bgColor);
+            doc
+              .roundedRect(col2X - 5, infoY - 2, colWidth2, rowHeightInfo, 0)
+              .fillOpacity(1)
+              .fill(bgColor);
 
-            const lineHeight = Math.max(doc.heightOfString(row.label, { width: labelWidth2 }), doc.heightOfString(row.value, { width: valueWidth2 }));
+            const lineHeight = Math.max(
+              doc.heightOfString(row.label, { width: labelWidth2 }),
+              doc.heightOfString(row.value, { width: valueWidth2 })
+            );
             const offsetY = (rowHeightInfo - lineHeight) / 2;
 
-            doc.font("Helvetica-Bold").fontSize(12).fillColor("#333").text(row.label, col2X, infoY + offsetY, { width: labelWidth2, align: "left" });
-            doc.font("Helvetica").fontSize(12).fillColor("#000").text(row.value, col2X + labelWidth2, infoY + offsetY, { width: valueWidth2, align: "right" });
+            doc
+              .font("Helvetica-Bold")
+              .fontSize(12)
+              .fillColor("#333")
+              .text(row.label, col2X, infoY + offsetY, {
+                width: labelWidth2,
+                align: "left",
+              });
+            doc
+              .font("Helvetica")
+              .fontSize(12)
+              .fillColor("#000")
+              .text(row.value, col2X + labelWidth2, infoY + offsetY, {
+                width: valueWidth2,
+                align: "right",
+              });
 
             infoY += rowHeightInfo;
           });
 
           // Cadre autour de la tôle
           const tableBottom = infoY + 10;
-          doc.rect(margin - 5, y - 5, tableWidth, tableBottom - y).strokeColor("#ccc").lineWidth(1).stroke();
+          doc
+            .rect(margin - 5, y - 5, tableWidth, tableBottom - y)
+            .strokeColor("#ccc")
+            .lineWidth(1)
+            .stroke();
 
           y = tableBottom + 10; // mettre à jour y pour le bloc suivant
         }

@@ -1,6 +1,7 @@
 import express from "express";
-import Project from "../models/Project.js";
-import { authenticate, AuthRequest } from "../middleware/auth.js";
+import Project from "../../shared/types/project.js";
+import { authenticate } from "../middleware/auth.js";
+import { AuthRequest } from "../../shared/types/auth.js";
 
 const router = express.Router();
 
@@ -21,8 +22,12 @@ router.post(
 
       const newJoinery = project.joineries[project.joineries.length - 1];
       res.status(201).json(newJoinery);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(400).json({ message: "Unknown server error" });
+      }
     }
   }
 );
@@ -48,8 +53,12 @@ router.put(
       await project.save();
 
       res.json(joinery);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(400).json({ message: "Unknown server error" });
+      }
     }
   }
 );
@@ -70,8 +79,12 @@ router.delete(
       await project.save();
 
       res.json({ message: "Joinery deleted successfully" });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Unknown server error" });
+      }
     }
   }
 );

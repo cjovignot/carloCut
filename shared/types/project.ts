@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import type { Types } from "mongoose";
 import { joinerySchema, IJoinery } from "./joinery.js";
+import { IUser } from "./user.js";
 
 export interface IProject extends mongoose.Document {
   name: string;
@@ -10,7 +11,7 @@ export interface IProject extends mongoose.Document {
   notes: string;
   joineries: Types.DocumentArray<IJoinery>;
   imageURL?: string;
-  createdBy: mongoose.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId | IUser;
   createdAt: Date;
   updatedAt: Date;
 }
