@@ -1,5 +1,4 @@
-import express from "express";
-import { Response, Request } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -89,7 +88,6 @@ app.use((err: unknown, _req: Request, res: Response) => {
 // ---------------------------
 // Serverless handler (Vercel)
 // ---------------------------
-// 👇 CORRECTION : Express handler adapté à Vercel
 const handler = async (req: Request, res: Response) => {
   try {
     await connectDB();

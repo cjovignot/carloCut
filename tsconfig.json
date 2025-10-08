@@ -13,7 +13,7 @@
     "noImplicitAny": true, // interdit les any implicites
     "allowJs": true, // permet les imports JS si besoin
     "checkJs": false, // pas de check JS
-    "types": ["node", "express"] // types disponibles
+    "types": ["@vercel/node", "node", "express"] // types disponibles
   },
   "references": [
     { "path": "./tsconfig.app.json" },

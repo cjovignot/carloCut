@@ -53,7 +53,7 @@ router.post(
             message ||
             "Vous trouverez ci-joint les différentes tôles à réaliser."
           }</p>
-          <p>Cordialement,<br>${req.user.name}</p>
+          <p>Cordialement,<br>${req.user!.name}</p>
         `,
         attachments: [
           {
@@ -67,13 +67,13 @@ router.post(
       await transporter.sendMail(mailOptions);
 
       res.json({ message: "Email sent successfully" });
-    } catch (error: any) {
-      console.error("Email sending failed:");
-      console.error(error); // log complet pour debugger
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error("Unknown error");
+      console.error("Email sending failed:", err);
       res.status(500).json({
         message: "Failed to send email",
-        error: error.message,
-        stack: error.stack,
+        error: err.message,
+        stack: err.stack,
       });
     }
   }

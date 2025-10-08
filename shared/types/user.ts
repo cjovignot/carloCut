@@ -1,12 +1,17 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
-import { IUser } from "../../shared/types/user.js";
 
-export interface IUserDocument extends IUser, Document {
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  phone: number;
+  password: string;
+  role: "admin" | "employee";
+  createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUserDocument>({
+export const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: [true, "Name is required"],
@@ -18,7 +23,10 @@ const userSchema = new Schema<IUserDocument>({
     required: [true, "Email is required"],
     unique: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Invalid email"],
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      "Invalid email format",
+    ],
   },
   phone: {
     type: Number,
@@ -42,22 +50,32 @@ const userSchema = new Schema<IUserDocument>({
   },
 });
 
+// ---------------------------
+// Hash password before saving
+// ---------------------------
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
-    if (error instanceof Error) next(error);
-    else next(new Error("Unknown error during password hashing"));
+    if (error instanceof Error) {
+      next(error);
+    } else {
+      next(new Error("Unknown error during password hashing"));
+    }
   }
 });
 
+// ---------------------------
+// Compare password method
+// ---------------------------
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model<IUserDocument>("User", userSchema);
+export default mongoose.model<IUser>("User", userSchema);

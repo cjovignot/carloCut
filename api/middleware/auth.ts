@@ -1,9 +1,13 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User from "../models/User.js";
+import User, { IUser } from "../../shared/types/user.js";
 
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: IUser;
+}
+
+interface DecodedToken extends JwtPayload {
+  userId: string;
 }
 
 export const authenticate = async (
@@ -23,7 +27,7 @@ export const authenticate = async (
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "fallback-secret"
-    ) as any;
+    ) as DecodedToken;
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
@@ -35,6 +39,7 @@ export const authenticate = async (
     req.user = user;
     next();
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Invalid token." });
   }
 };
