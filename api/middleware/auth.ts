@@ -1,14 +1,7 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-import User, { IUser } from "../../shared/types/user.js";
-
-export interface AuthRequest extends Request {
-  user?: IUser;
-}
-
-interface DecodedToken extends JwtPayload {
-  userId: string;
-}
+import jwt from "jsonwebtoken";
+import { Response, NextFunction } from "express";
+import User from "../../shared/types/user.js";
+import { AuthRequest, DecodedToken } from "../../shared/types/auth.js";
 
 export const authenticate = async (
   req: AuthRequest,

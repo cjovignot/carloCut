@@ -3,9 +3,15 @@ import bcrypt from "bcryptjs";
 import { IUser } from "../../shared/types/user.js";
 
 export interface IUserDocument extends IUser, Document {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  phone: number;
+  password: string;
+  role: "admin" | "employee";
+  createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
-// push
 
 const userSchema = new Schema<IUserDocument>({
   name: {
