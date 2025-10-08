@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { RAL_CLASSIC } from "../../src/constants/ral_classic_colors.js";
 
 export interface ISheet extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   profileType: string;
   imageURL: string;
   modelId: string;

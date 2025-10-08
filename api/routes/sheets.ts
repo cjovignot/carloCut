@@ -5,22 +5,21 @@ import { AuthRequest } from "../../shared/types/auth.js";
 
 const router = express.Router();
 
-// Add sheet to joinery
+// Add sheet
 router.post(
   "/:projectId/joineries/:joineryId/sheets",
   authenticate,
   async (req: AuthRequest, res) => {
     try {
       const project = await Project.findById(req.params.projectId);
-
-      if (!project) {
+      if (!project)
         return res.status(404).json({ message: "Project not found" });
-      }
 
-      const joinery = project.joineries.id(req.params.joineryId);
-      if (!joinery) {
+      const joinery = project.joineries.find(
+        (j) => j._id.toString() === req.params.joineryId
+      );
+      if (!joinery)
         return res.status(404).json({ message: "Joinery not found" });
-      }
 
       joinery.sheets.push(req.body);
       await project.save();
@@ -41,22 +40,19 @@ router.put(
   async (req: AuthRequest, res) => {
     try {
       const project = await Project.findById(req.params.projectId);
-
-      if (!project) {
+      if (!project)
         return res.status(404).json({ message: "Project not found" });
-      }
 
-      const joinery = project.joineries.id(req.params.joineryId);
-      if (!joinery) {
+      const joinery = project.joineries.find(
+        (j) => j._id.toString() === req.params.joineryId
+      );
+      if (!joinery)
         return res.status(404).json({ message: "Joinery not found" });
-      }
 
-      const sheet = joinery.sheets.id(req.params.sheetId);
-      if (!sheet) {
-        return res.status(404).json({ message: "Sheet not found" });
-      }
-
-      console.log(sheet);
+      const sheet = joinery.sheets.find(
+        (s) => s._id.toString() === req.params.sheetId
+      );
+      if (!sheet) return res.status(404).json({ message: "Sheet not found" });
 
       Object.assign(sheet, req.body);
       await project.save();
@@ -76,17 +72,22 @@ router.delete(
   async (req: AuthRequest, res) => {
     try {
       const project = await Project.findById(req.params.projectId);
-
-      if (!project) {
+      if (!project)
         return res.status(404).json({ message: "Project not found" });
-      }
 
-      const joinery = project.joineries.id(req.params.joineryId);
-      if (!joinery) {
+      const joinery = project.joineries.find(
+        (j) => j._id.toString() === req.params.joineryId
+      );
+      if (!joinery)
         return res.status(404).json({ message: "Joinery not found" });
-      }
 
-      joinery.sheets.id(req.params.sheetId)?.deleteOne();
+      const index = joinery.sheets.findIndex(
+        (s) => s._id.toString() === req.params.sheetId
+      );
+      if (index === -1)
+        return res.status(404).json({ message: "Sheet not found" });
+
+      joinery.sheets.splice(index, 1);
       await project.save();
 
       res.json({ message: "Sheet deleted successfully" });
