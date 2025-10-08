@@ -3,6 +3,7 @@ import type { Types } from "mongoose";
 import { sheetSchema, ISheet } from "./sheet.js";
 
 export interface IJoinery extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   name: string;
   type: string;
   imageURL?: string;

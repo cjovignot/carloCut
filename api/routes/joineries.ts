@@ -44,7 +44,9 @@ router.put(
         return res.status(404).json({ message: "Project not found" });
       }
 
-      const joinery = project.joineries.id(req.params.joineryId);
+      const joinery = project.joineries.find(
+        (j) => j._id.toString() === req.params.joineryId
+      );
       if (!joinery) {
         return res.status(404).json({ message: "Joinery not found" });
       }
@@ -75,7 +77,15 @@ router.delete(
         return res.status(404).json({ message: "Project not found" });
       }
 
-      project.joineries.id(req.params.joineryId)?.deleteOne();
+      const index = project.joineries.findIndex(
+        (j) => j._id.toString() === req.params.joineryId
+      );
+
+      if (index === -1) {
+        return res.status(404).json({ message: "Joinery not found" });
+      }
+
+      project.joineries.splice(index, 1);
       await project.save();
 
       res.json({ message: "Joinery deleted successfully" });
