@@ -21,25 +21,20 @@ const app = express();
 // ---------------------------
 // Security & CORS middleware
 // ---------------------------
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5000",
-  process.env.VITE_API_URL,
-  "https://carlo-cut.app",
-  "https://www.carlo-cut.app",
-].filter(Boolean);
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "http://localhost:5174",
+//   "http://localhost:5000",
+//   process.env.VITE_API_URL,
+//   "https://carlo-cut.app",
+//   "https://www.carlo-cut.app",
+// ].filter(Boolean);
 
 app.use(helmet());
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman / curl
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      console.warn(`CORS blocked for origin: ${origin}`);
-      return callback(new Error("CORS origin not allowed"));
-    },
+    origin: true, // Autorise automatiquement l'origine de la requête
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
