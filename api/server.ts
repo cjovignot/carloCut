@@ -26,7 +26,7 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://localhost:5000",
   process.env.VITE_API_URL,
-  "https://carlo-cut.vercel.app",
+  "[https://carlo-cut.vercel.app](https://carlo-cut.vercel.app)",
 ].filter(Boolean);
 
 app.use(helmet());
@@ -71,7 +71,9 @@ app.use("/api/email", emailRoutes);
 app.use("/api/upload", uploadRouter);
 app.use("/api/export", pdfRoutes);
 
+// ---------------------------
 // Healthcheck
+// ---------------------------
 app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Server is running" });
 });
@@ -91,7 +93,7 @@ app.use((err: unknown, _req: Request, res: Response) => {
 const handler = async (req: Request, res: Response) => {
   try {
     await connectDB();
-    return app(req, res); // Express peut être appelé directement ici
+    return app(req, res); // Express peut être directement appelé ici
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error("Server error");
     console.error("Serverless handler error:", error);
@@ -111,7 +113,7 @@ if (process.env.NODE_ENV !== "production") {
   connectDB()
     .then(() => {
       app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+        console.log(`Server running locally at http://localhost:${PORT}`);
       });
     })
     .catch((err) => {
