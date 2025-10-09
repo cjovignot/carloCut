@@ -12,23 +12,58 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-  name: { type: String, required: true, trim: true, maxLength: 50 },
-  email: { type: String, required: true, unique: true, lowercase: true },
-  phone: { type: Number, required: true, unique: true },
-  password: { type: String, required: true, minLength: 6 },
-  role: { type: String, enum: ["admin", "employee"], default: "employee" },
-  createdAt: { type: Date, default: Date.now },
+  name: {
+    type: String,
+    required: [true, "Name is required"],
+    trim: true,
+    maxLength: [50, "Name cannot exceed 50 characters"],
+  },
+  email: {
+    type: String,
+    required: [true, "Email is required"],
+    unique: true,
+    lowercase: true,
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      "Invalid email format",
+    ],
+  },
+  phone: {
+    type: Number,
+    required: [true, "Phone number is required"],
+    unique: true,
+    minLength: [10, "Phone number must be at least 10 numbers"],
+  },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    minLength: [6, "Password must be at least 6 characters"],
+  },
+  role: {
+    type: String,
+    enum: ["admin", "employee"],
+    default: "employee",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (err) {
-    next(err instanceof Error ? err : new Error("Password hashing failed"));
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error);
+    } else {
+      next(new Error("Unknown error during password hashing"));
+    }
   }
 });
 
@@ -39,6 +74,6 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// ✅ Solution robuste pour serverless/ESM
-const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
-export default User;
+// ✅ Prevent OverwriteModelError
+export default mongoose.models.User ||
+  mongoose.model<IUser>("User", userSchema);

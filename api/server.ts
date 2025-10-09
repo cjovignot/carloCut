@@ -26,7 +26,8 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://localhost:5000",
   process.env.VITE_API_URL,
-  "[https://carlo-cut.vercel.app](https://carlo-cut.vercel.app)",
+  "https://carlo-cut.app",
+  "https://ecb-carlo.app",
 ].filter(Boolean);
 
 app.use(helmet());
