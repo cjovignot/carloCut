@@ -35,7 +35,7 @@ export default defineConfig({
         runtimeCaching: [
           // API
           {
-            urlPattern: /^https:\/\/ecb-carlo\.app\/api\/.*$/,
+            urlPattern: /^https:\/\/carlo-cut\.app\/api\/.*$/,
             handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",
@@ -47,16 +47,16 @@ export default defineConfig({
           },
           // Login et Register → jamais en cache
           {
-            urlPattern: /^https:\/\/ecb-carlo\.app\/login$/,
+            urlPattern: /^https:\/\/carlo-cut\.app\/login$/,
             handler: "NetworkOnly",
           },
           {
-            urlPattern: /^https:\/\/ecb-carlo\.app\/register$/,
+            urlPattern: /^https:\/\/carlo-cut\.app\/register$/,
             handler: "NetworkOnly",
           },
           // Pages HTML → NetworkFirst (SPA)
           {
-            urlPattern: /^https:\/\/ecb-carlo\.app\/.*$/,
+            urlPattern: /^https:\/\/carlo-cut\.app\/.*$/,
             handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
